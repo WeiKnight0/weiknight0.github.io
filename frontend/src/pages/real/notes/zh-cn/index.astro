@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+
+import NotePage from '@/templates/NotePage.astro';
+import {
+  formatSubjectName,
+  getSubjectNotes,
+} from '@/utils/notes';
+
+const notes = (await getCollection('notes')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const subjects = getSubjectNotes(notes);
+const subjectNames = Object.keys(subjects).sort((a, b) =>
+  formatSubjectName(a).localeCompare(formatSubjectName(b))
+);
+---
+
+<NotePage
+  title="WeiKnight's Study Notes Index"
+  description='技术学习、阅读与实践笔记。'
+  date={new Date('2025-07-29T15:29:52')}
+  locale='zh-cn'
+  showBackLink={false}
+>
+  <h1>Subjects Index</h1>
+  <p>Currently available subjects:</p>
+  <ul>
+    <li>
+      <a href='/real/notes/algorithm-templates/'>Algorithm Templates 算法模板速查</a>
+    </li>
+    {subjectNames.map((subject) => (
+      <li>
+        <a href={`/real/notes/${subject}/`}>{formatSubjectName(subject)}</a>
+      </li>
+    ))}
+  </ul>
+
+  <p>Also, you can check out my GitHub repositories for more study materials:</p>
+  <ul>
+    <li>
+      <a href='https://github.com/WeiKnight0/MachineLearningStudy'>Machine Learning</a>
+    </li>
+  </ul>
+</NotePage>

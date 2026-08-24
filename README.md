@@ -1,37 +1,44 @@
-# WKN-Personal-Site
+# WKN Personal Site
 
-#### 介绍
-personal site
+前后端分离的个人网站：Astro 提供静态页面，Spring Boot 与 PostgreSQL 提供动态内容 API。生产环境由 Nginx 提供静态文件并将 `/api/` 反向代理到后端。
 
-#### 软件架构
-软件架构说明
+## 目录
 
+- `frontend/`：Astro 前端源码、静态资源、Node.js 配置与前端 Dockerfile。
+- `backend/`：Spring Boot API 服务。
+- `postgres`：由 Docker Compose 启动的内容数据库，数据持久化于本地 `data/postgres/`（已忽略，不提交 Git）。
+- `nginx/wkn-personal-site.conf`：生产 Nginx 示例配置。
 
-#### 安装教程
+## Docker 启动
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+服务器仅需 Docker 与 Docker Compose 插件，无需安装 Node.js、Java、Maven 或 Nginx。
 
-#### 使用说明
+```bash
+docker compose up -d --build
+```
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+默认通过 `http://localhost` 访问网站；`http://localhost/api/health` 可验证 Nginx 到 Spring Boot 的路由。使用 `HTTP_PORT=8088 docker compose up -d --build` 可变更对外端口。
 
-#### 参与贡献
+运行时包含两个轻量服务：Nginx（`nginx:1.27-alpine`，上限 128MB）与后端（`eclipse-temurin:17-jre-alpine`，上限 512MB）。Node 和 Maven 仅用于镜像构建，不会驻留在服务器内存中，适合 2GB 服务器。
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+首次启动会自动创建 PostgreSQL 数据表并导入现有项目和博客列表。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
 
+将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。管理员先请求 `POST /api/v1/auth/login` 建立 Session，随后可使用受保护的 `/api/v1/admin/projects` 与 `/api/v1/admin/posts` 执行 CRUD。
 
-#### 特技
+停止服务：
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+```bash
+docker compose down
+```
+
+## 生产部署
+
+```bash
+SITE_URL=https://your-domain.example docker compose up -d --build
+```
+
+容器内的 [Nginx 配置](nginx/wkn-personal-site.conf) 已提供静态资源、长期缓存与 `/api/` 到后端容器的反向代理。若要配置 HTTPS，建议在此 Compose 服务前再放置已有的证书终止代理，或在该配置中额外添加证书与 `443` server block。
+
+## 不使用 Docker 的前端开发
+
+安装 Node.js 后运行 `cd frontend && npm install && npm run dev`。Astro 开发服务器直接提供静态资源，并会将 `/api/*` 代理至 `http://localhost:8080`；可用 `BACKEND_URL` 修改目标地址。

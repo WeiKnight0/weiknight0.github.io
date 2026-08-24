@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+
+import FictionPage from '@/templates/FictionPage.astro';
+import { worldCategoryLabels } from '@/utils/i18n';
+
+const locale = 'en';
+const labels = worldCategoryLabels[locale];
+
+const items = (await getCollection('world'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .filter((item) => item.slug.startsWith(`${locale}/`));
+
+const getWorldSlug = (slug: string) => slug.split('/').at(-1);
+const theoryItems = items.filter((item) =>
+  item.slug.startsWith(`${locale}/theory/`)
+);
+const settingItems = items.filter((item) =>
+  item.slug.startsWith(`${locale}/setting/`)
+);
+---
+
+<FictionPage
+  title='Worldbuilding | My Homepage'
+  description='Worldbuilding archive.'
+>
+  <section class='mx-auto max-w-[92rem] px-4 py-24 sm:px-6 lg:px-8'>
+    <div class='border-b border-fiction-accent/30 pb-6'>
+      <p class='mb-4 border-l-2 border-fiction-accent pl-4 font-real-mono text-xs font-black uppercase tracking-[0.28em] text-fiction-accent md:text-sm'>
+        Worldbuilding
+      </p>
+      <h1 class='font-fiction-serif text-4xl font-black leading-none tracking-wide text-fiction-text md:text-6xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]'>
+        Worldbuilding
+      </h1>
+    </div>
+    <section class='mt-14'>
+      <h2 class='font-fiction-serif text-3xl font-black text-fiction-accent md:text-4xl'>
+        {labels.theory}
+      </h2>
+      <div class='mt-7 grid gap-5 md:grid-cols-3'>
+        {theoryItems.map((item) => (
+          <a
+            href={`/fiction/world/${getWorldSlug(item.slug)}/`}
+            class="group border border-fiction-accent/25 bg-fiction-surface/80 p-7 shadow-md transition hover:border-fiction-accent/60 hover:bg-fiction-accent/10"
+          >
+            <h3 class="font-fiction-serif text-3xl font-black text-fiction-text transition group-hover:text-fiction-accent">
+              {item.data.title}
+            </h3>
+            <p class="mt-4 font-fiction-serif text-base leading-7 text-fiction-text/75">
+              {item.data.description}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class='mt-16'>
+      <h2 class='font-fiction-serif text-3xl font-black text-fiction-accent md:text-4xl'>
+        {labels.setting}
+      </h2>
+      <div class='mt-7 grid gap-5 md:grid-cols-3'>
+        {settingItems.map((item) => (
+          <a
+            href={`/fiction/world/${getWorldSlug(item.slug)}/`}
+            class="group border border-fiction-accent/25 bg-fiction-surface/80 p-7 shadow-md transition hover:border-fiction-accent/60 hover:bg-fiction-accent/10"
+          >
+            <h3 class="font-fiction-serif text-3xl font-black text-fiction-text transition group-hover:text-fiction-accent">
+              {item.data.title}
+            </h3>
+            <p class="mt-4 font-fiction-serif text-base leading-7 text-fiction-text/75">
+              {item.data.description}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </section>
+</FictionPage>

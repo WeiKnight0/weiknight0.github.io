@@ -1,0 +1,18 @@
+site_name: WeiKnight Notes
+theme:
+  name: material
+  custom_dir: overrides
+  language: zh
+  palette:
+    - scheme: slate
+      primary: cyan
+      accent: cyan
+plugins:
+  - search
+copyright: '<a href="/real/notes/about/">About</a> · <a href="/real/notes/privacy/">Privacy</a>'
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - toc:
+      permalink: true

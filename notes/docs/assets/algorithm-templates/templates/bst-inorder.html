@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>BST 中序：有序遍历 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">二叉树</p><h1>BST 中序：有序遍历</h1><div class="tag-row"><span class="tag category">BST</span><span class="tag">中序</span><span class="tag">第K小</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">int kthSmallest(TreeNode* root, int k) {
+    stack<TreeNode*> st;
+    TreeNode* cur = root;
+    while (cur || !st.empty()) {
+        while (cur) {
+            st.push(cur);
+            cur = cur-&gt;left;
+        }
+        cur = st.top();
+        st.pop();
+        if (--k == 0) return cur-&gt;val;
+        cur = cur-&gt;right;
+    }
+    return -1;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

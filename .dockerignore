@@ -1,0 +1,9 @@
+.git/
+frontend/.astro/
+frontend/dist/
+frontend/node_modules/
+backend/target/
+.idea/
+.vscode/
+*.log
+.env

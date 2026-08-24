@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>K 个一组翻转链表 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">链表</p><h1>K 个一组翻转链表</h1><div class="tag-row"><span class="tag category">链表</span><span class="tag">反转</span><span class="tag">分组</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">ListNode* reverseKGroup(ListNode* head, int k) {
+    ListNode dummy(0, head);
+    ListNode* groupPrev = &dummy;
+    while (true) {
+        ListNode* kth = groupPrev;
+        for (int i = 0; i &lt; k && kth; i++) kth = kth-&gt;next;
+        if (!kth) break;
+
+        ListNode* groupNext = kth-&gt;next;
+        ListNode* prev = groupNext;
+        ListNode* cur = groupPrev-&gt;next;
+        while (cur != groupNext) {
+            ListNode* nxt = cur-&gt;next;
+            cur-&gt;next = prev;
+            prev = cur;
+            cur = nxt;
+        }
+        ListNode* tail = groupPrev-&gt;next;
+        groupPrev-&gt;next = kth;
+        groupPrev = tail;
+    }
+    return dummy.next;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

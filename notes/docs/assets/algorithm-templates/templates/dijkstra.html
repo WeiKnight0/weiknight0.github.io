@@ -1,0 +1,33 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Dijkstra：非负权单源最短路 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">图论</p><h1>Dijkstra：非负权单源最短路</h1><div class="tag-row"><span class="tag category">灵神风格</span><span class="tag">最短路</span><span class="tag">堆优化</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">vector<long long> dijkstra(int n, vector<vector<pair<int, int>>>& g, int start) {
+    const long long INF = LLONG_MAX / 2;
+    vector<long long> dis(n, INF);
+    dis[start] = 0;
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater&lt;&gt;&gt; pq;
+    pq.emplace(0, start);
+
+    while (!pq.empty()) {
+        auto [dx, x] = pq.top();
+        pq.pop();
+        if (dx &gt; dis[x]) { // 懒删除
+            continue;
+        }
+        for (auto [y, w] : g[x]) {
+            long long new_dis = dx + w;
+            if (new_dis &lt; dis[y]) {
+                dis[y] = new_dis;
+                pq.emplace(new_dis, y);
+            }
+        }
+    }
+    return dis;
+}
+
+vector<vector<pair<int, int>>> buildGraph(int n, vector<vector<int>>& edges) {
+    vector<vector<pair<int, int>>> g(n);
+    for (auto& e : edges) {
+        int x = e[0], y = e[1], w = e[2];
+        g[x].emplace_back(y, w);
+        // 无向图加上：g[y].emplace_back(x, w);
+    }
+    return g;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

@@ -1,0 +1,20 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>二叉树三序遍历：前中后序 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">二叉树</p><h1>二叉树三序遍历：前中后序</h1><div class="tag-row"><span class="tag category">基础模板</span><span class="tag">前序</span><span class="tag">中序</span><span class="tag">后序</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">void preorder(TreeNode* root, vector<int>& ans) {
+    if (root == nullptr) return;
+    ans.push_back(root->val);
+    preorder(root->left, ans);
+    preorder(root->right, ans);
+}
+
+void inorder(TreeNode* root, vector<int>& ans) {
+    if (root == nullptr) return;
+    inorder(root->left, ans);
+    ans.push_back(root->val);
+    inorder(root->right, ans);
+}
+
+void postorder(TreeNode* root, vector<int>& ans) {
+    if (root == nullptr) return;
+    postorder(root->left, ans);
+    postorder(root->right, ans);
+    ans.push_back(root->val);
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

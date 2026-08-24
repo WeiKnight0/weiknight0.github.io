@@ -1,0 +1,16 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>每日温度：递减栈 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">栈与单调栈</p><h1>每日温度：递减栈</h1><div class="tag-row"><span class="tag category">Hot100 739</span><span class="tag">单调栈</span><span class="tag">下一个更大元素</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">vector<int> dailyTemperatures(vector<int>& temperatures) {
+    int n = temperatures.size();
+    vector<int> ans(n, 0);
+    stack<int> st;
+
+    for (int i = 0; i < n; i++) {
+        while (!st.empty() && temperatures[i] > temperatures[st.top()]) {
+            int j = st.top();
+            st.pop();
+            ans[j] = i - j;
+        }
+        st.push(i);
+    }
+
+    return ans;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

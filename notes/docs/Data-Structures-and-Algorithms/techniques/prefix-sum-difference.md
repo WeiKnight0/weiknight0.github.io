@@ -1,0 +1,502 @@
+---
+title: Prefix Sum and Differential 前缀和与差分
+date: 2025-10-7
+lang: zh-cn
+---
+
+# 一维前缀和
+
+前缀和可以简单理解为「数列的前 $n$ 项的和」，是一种重要的预处理方式。
+给定数组$a_i$，$0 \le i \le n$，则其前缀和：
+$$
+S_i=\begin{cases}
+    0 & i=0 \\
+    a_0+a_1+\cdots+a_{i-1} & 1 \le i \le n \\
+    \end{cases}
+$$
+前缀和数组$S$的长度为$n+1$，其中$S[0]=0$，$S[i]$表示$a$数组前$i$个元素的和。这样我们可以在$O(1)$的时间内计算出任意区间$[l,r)$的和：
+$$
+\sum_{i=l}^{r-1} a_i = S[r]-S[l]
+$$
+模板C++
+
+```cpp
+int n;                // Array size.
+std::vector<int> a;   // Array. (indexed from 1)
+std::vector<int> ps;  // Prefix sum array.
+
+// Calculate prefix sum.
+void prefix_sum() {
+  ps = a;
+  // Or simply:
+  // std::partial_sum(a.begin(), a.end(), ps.begin());
+  for (int i = 1; i <= n; ++i) {
+    ps[i] += ps[i - 1];
+  }
+}
+// Query sum of elements in [l, r].
+int query(int l, int r) { return ps[r] - ps[l - 1]; }
+```
+
+## 560. 和为 K 的子数组
+
+题目来源：[560. 和为 K 的子数组](https://leetcode.cn/problems/subarray-sum-equals-k/description/)
+
+题目描述：给你一个整数数组 `nums` 和一个整数 `k`，请统计并返回数组中和为 `k` 的连续子数组个数。
+
+示例：
+
+```text
+输入：nums = [1,1,1], k = 2
+输出：2
+```
+
+```text
+输入：nums = [1,2,3], k = 3
+输出：2
+```
+
+思路：
+- 设当前前缀和为 `sum`。
+- 如果存在之前的前缀和 `sum - k`，那么从那个位置之后到当前位置的子数组和就是 `k`。
+- 用 `unordered_map<long long, int>` 统计每种前缀和出现过几次。
+- 初始 `cnt[0] = 1`，表示空前缀，方便统计从下标 `0` 开始的子数组。
+
+OI 输入格式：
+
+```text
+n k
+nums[0] nums[1] ... nums[n-1]
+```
+
+OI 输出格式：
+
+```text
+和为 k 的连续子数组个数
+```
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    long long k;
+    cin >> n >> k;
+
+    unordered_map<long long, int> cnt;
+    cnt[0] = 1;
+
+    long long sum = 0;
+    int ans = 0;
+
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        sum += x;
+
+        if (cnt.count(sum - k)) {
+            ans += cnt[sum - k];
+        }
+        cnt[sum]++;
+    }
+
+    cout << ans << '\n';
+    return 0;
+}
+```
+
+# 一维差分
+
+对于区间修改，差分数组可以将时间复杂度从$O(n)$降到$O(1)$。给定数组$a_i$，$0 \le i < n$，则其差分数组$b_i$定义为：
+$$
+b_i = 
+\begin{cases}
+    a_0 & i=0 \\
+    a_i - a_{i-1} & 1 \le i < n
+\end{cases}
+$$
+差分数组$b$的长度为$n$，其中$b[0]=a[0]$，$b[i]$表示$a[i]$与$a[i-1]$的差值。这样我们可以在$O(1)$的时间内将区间$[l,r]$的每个元素增加$x$：
+```cpp
+b[l] += x;
+b[r + 1] -= x;
+```
+模板C++
+
+```cpp
+int n;                // Array size.
+std::vector<int> a;   // Array. (indexed from 0)
+std::vector<int> diff; // Difference array.
+// Calculate difference array.
+void difference() {
+  diff = a;
+  for (int i = n - 1; i > 0; --i) {
+    diff[i] -= diff[i - 1];
+  }
+}
+// Range update: add x to elements in [l, r].
+void range_update(int l, int r, int x) {
+  diff[l] += x;
+  if (r + 1 < n) {
+    diff[r + 1] -= x;
+  }
+}
+```
+使用的时候，需要注意边界条件，尤其是$r$是否为数组的最后一个元素。因此，差分数组通常会比原数组多一个元素，且最后一个元素初始化为0。
+
+## 1109. 航班预订统计
+
+题目来源：[1109. 航班预订统计](https://leetcode.cn/problems/corporate-flight-bookings/description/)
+
+题目描述：这里有 `n` 个航班，编号从 `1` 到 `n`。给你若干条预订记录 `bookings[i] = [first, last, seats]`，表示从 `first` 到 `last` 的每个航班都预订了 `seats` 个座位。请返回每个航班被预订的座位总数。
+
+示例：
+
+```text
+输入：bookings = [[1,2,10],[2,3,20],[2,5,25]], n = 5
+输出：[10,55,45,25,25]
+```
+
+```text
+输入：bookings = [[1,2,10],[2,2,15]], n = 2
+输出：[10,25]
+```
+
+思路：
+- 每条预订记录都是一次区间加法。
+- 用差分数组 `diff` 记录变化量：`diff[first] += seats`，`diff[last + 1] -= seats`。
+- 最后对 `diff` 求前缀和，就得到每个航班的最终座位数。
+
+OI 输入格式：
+
+```text
+n m
+first1 last1 seats1
+first2 last2 seats2
+...
+firstm lastm seatsm
+```
+
+OI 输出格式：
+
+```text
+每个航班被预订的座位总数，空格分隔
+```
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m;
+    cin >> n >> m;
+
+    vector<int> diff(n + 2, 0);
+    for (int i = 0; i < m; i++) {
+        int first, last, seats;
+        cin >> first >> last >> seats;
+        diff[first] += seats;
+        diff[last + 1] -= seats;
+    }
+
+    int cur = 0;
+    for (int i = 1; i <= n; i++) {
+        cur += diff[i];
+        if (i > 1) {
+            cout << ' ';
+        }
+        cout << cur;
+    }
+    cout << '\n';
+
+    return 0;
+}
+```
+
+# 二维前缀和
+二维前缀和是前缀和的扩展，适用于二维数组。给定二维数组$a_{i,j}$，$0 \le i < n$，$0 \le j < m$，则其二维前缀和$S_{i,j}$定义为：
+$$
+S_{i,j} = \sum_{x=0}^{i-1} \sum_{y=0}^{j-1} a_{x,y}
+$$
+$S_{i,j}$表示从矩阵左上角$(0,0)$到$(i-1,j-1)$的子矩阵的和。
+我们可以将其改写成递推形式：
+$$
+S_{i+1, j+1} = a_{i,j} + S_{i,j+1} + S_{i+1,j} - S_{i,j}
+$$
+
+二维前缀和数组$S$的大小为$(n+1) \times (m+1)$，其中$S[0][j]=0$和$S[i][0]=0$。这样我们可以在$O(1)$的时间内计算出任意子矩阵$(x_1,y_1)$到$(x_2,y_2)$的和：
+$$
+\sum_{i=x_1}^{x_2-1} \sum_{j=y_1}^{y_2-1} a_{i,j} = S[x_2][y_2] - S[x_1][y_2] - S[x_2][y_1] + S[x_1][y_1]
+$$
+模板C++
+
+```cpp
+#define N 100
+#define M 100
+int n, m;                // Matrix size.
+int a[N][M];            // Matrix. (indexed from 1)
+int ps[N + 1][M + 1];   // Prefix sum matrix.
+// Calculate prefix sum.
+void prefix_sum() {
+  for (int i = 1; i <= n; ++i) {
+    for (int j = 1; j <= m; ++j) {
+      ps[i][j] = a[i][j] + ps[i - 1][j] + ps[i][j - 1] - ps[i - 1][j - 1];
+    }
+  }
+}
+// Query sum of submatrix [(x1, y1), (x2, y2)].
+int query(int x1, int y1, int x2, int y2) {
+  return ps[x2][y2] - ps[x1 - 1][y2] - ps[x2][y1 - 1] + ps[x1 - 1][y1 - 1];
+}
+```
+
+## 304. 二维区域和检索 - 矩阵不可变
+
+题目来源：[304. 二维区域和检索 - 矩阵不可变](https://leetcode.cn/problems/range-sum-query-2d-immutable/description/)
+
+题目描述：给定一个二维矩阵 `matrix`，多次查询子矩阵范围内元素的总和。子矩阵由左上角 `(row1, col1)` 和右下角 `(row2, col2)` 确定。
+
+示例：
+
+```text
+输入：
+matrix = [
+  [3,0,1,4,2],
+  [5,6,3,2,1],
+  [1,2,0,1,5],
+  [4,1,0,1,7],
+  [1,0,3,0,5]
+]
+sumRegion(2,1,4,3)
+
+输出：8
+```
+
+思路：
+- 预处理二维前缀和 `sum`，其中 `sum[i + 1][j + 1]` 表示左上角到 `(i, j)` 的矩阵和。
+- 查询 `(row1, col1)` 到 `(row2, col2)` 时，用大矩形减去上方和左方，再加回被减两次的左上角。
+- 查询公式：`sum[row2 + 1][col2 + 1] - sum[row1][col2 + 1] - sum[row2 + 1][col1] + sum[row1][col1]`。
+
+OI 输入格式：
+
+```text
+n m q
+matrix[0][0] matrix[0][1] ... matrix[0][m-1]
+...
+matrix[n-1][0] matrix[n-1][1] ... matrix[n-1][m-1]
+row1 col1 row2 col2
+...
+```
+
+OI 输出格式：
+
+```text
+每个查询输出一行子矩阵和
+```
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n, m, q;
+    cin >> n >> m >> q;
+
+    vector<vector<int>> sum(n + 1, vector<int>(m + 1, 0));
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            int x;
+            cin >> x;
+            sum[i + 1][j + 1] = x + sum[i][j + 1] + sum[i + 1][j] - sum[i][j];
+        }
+    }
+
+    while (q--) {
+        int row1, col1, row2, col2;
+        cin >> row1 >> col1 >> row2 >> col2;
+
+        int ans = sum[row2 + 1][col2 + 1]
+                - sum[row1][col2 + 1]
+                - sum[row2 + 1][col1]
+                + sum[row1][col1];
+        cout << ans << '\n';
+    }
+
+    return 0;
+}
+```
+
+# 二维差分
+二维差分是差分数组的扩展，适用于二维数组。通常采用逐维度计算一维差分的方式来实现。
+对于二维差分的区域更新方法，要想将子矩阵$(x_1,y_1)$到$(x_2,y_2)$的每个元素增加$x$，可以进行如下操作：
+$$
+\begin{cases}
+  b[x_1][y_1] \leftarrow b[x_1][y_1] + x \\
+  b[x_1][y_2 + 1] \leftarrow b[x_1][y_2 + 1] - x \\
+  b[x_2 + 1][y_1] \leftarrow b[x_2 + 1][y_1] - x \\
+  b[x_2 + 1][y_2 + 1] \leftarrow b[x_2 + 1][y_2 + 1] + x \\
+\end{cases}
+$$
+模板C++
+
+```cpp
+int n, m;
+std::vector<std::vector<int>> diff, a;
+
+// Add v to each element from [x1, y1] to [x2, y2].
+void add(int x1, int y1, int x2, int y2, int v) {
+  diff[x1][y1] += v;
+  if (x2 < n) diff[x2 + 1][y1] -= v;
+  if (y2 < m) diff[x1][y2 + 1] -= v;
+  if (x2 < n && y2 < m) diff[x2 + 1][y2 + 1] += v;
+}
+
+// Execute this after all modifications and before all queries.
+void prefix_sum() {
+  a = diff;
+
+  for (int i = 1; i <= n; ++i)
+    for (int j = 1; j <= m; ++j) a[i][j] += a[i - 1][j];
+
+  for (int i = 1; i <= n; ++i)
+    for (int j = 1; j <= m; ++j) a[i][j] += a[i][j - 1];
+}
+```
+
+# 树上前缀和
+树上前缀和是前缀和在树结构上的应用。对于树上前缀和，主要分为点权和边权两种情况。
+
+## 点权前缀和
+点权前缀和是指计算从根节点到某个节点的路径上所有节点的权值之和。有递推关系：
+$$
+sum[u] = w[u] + sum[fa[u]]
+$$
+其中$sum[u]$表示从根节点到节点$u$的路径上所有节点的权值之和，$w[u]$表示节点$u$的权值，$fa[u]$表示节点$u$的父节点。可以通过DFS遍历树来实现。
+
+预处理完成后，可以在$O(1)$的时间内计算出节点$u$到节点$v$路径上所有节点的权值之和：
+$$
+\sum_{x \in path(u,v)} w[x] = sum[u] + sum[v] - sum[lca(u,v)] - sum[parent[lca(u,v)]]
+$$
+其中$lca(u,v)$表示节点$u$和节点$v$的最近公共祖先。
+
+## 边权前缀和
+边权前缀和是指计算从根节点到某个节点的路径上所有边的权值之和。可以假设边权存储在离根远的结点上，根结点处存储的权值是0。此时，节点$u$到节点$v$路径上所有边的权值之和可以表示为：
+$$
+\sum_{e \in path(u,v)} w[e] = sum[u] + sum[v] - 2 \times sum[lca(u,v)]
+$$
+
+## 子树和
+子树和是指计算以某个节点为根的子树中所有节点的权值之和。可以通过DFS遍历树来实现。
+
+# 树上差分
+树上差分是差分数组在树结构上的应用。对于树上差分，一般分为点权和边权两种情况。点权差分可以通过树的DFS序列来实现，而边权差分则需要将边权转化为点权。
+树上差分的差分数组的产生通常通过 **逐步更新权值** 的方式实现。
+
+## 点权差分
+如果要对结点$u$到结点$v$路径上的所有结点增加$x$，可以通过以下步骤实现：
+1. 找到$u$和$v$的最近公共祖先$lca(u,v)$。
+2. 对**差分数组**进行如下操作：
+  $$
+  \begin{cases}
+    diff[u] \leftarrow diff[u] + x \\
+    diff[v] \leftarrow diff[v] + x \\
+    diff[lca(u,v)] \leftarrow diff[lca(u,v)] - x \\
+    \text{if } lca(u,v) \neq \text{root}: \\
+    \quad diff[parent[lca(u,v)]] \leftarrow diff[parent[lca(u,v)]] - x
+  \end{cases}
+  $$
+3. 最后通过一次DFS计算出每个节点的最终值。
+
+## 边权差分
+边权差分可以将边权转化为点权来处理。通常，我们可以将每条边的权值加到其远离根的节点上，并令根节点的权值为0，然后使用点权差分的方法进行处理。
+需要注意的是，边权差分在处理边权更新时，仍然需要找到路径的最近公共祖先，但由于公共祖先代表的边不在路径上，因此更新操作会有所不同。
+假设要对路径$u$到$v$上的所有边增加$x$，可以通过以下步骤实现：
+1. 找到$u$和$v$的最近公共祖先$lca(u,v)$。
+2. 对**差分数组**进行如下操作：
+  $$
+  \begin{cases}
+    diff[u] \leftarrow diff[u] + x \\
+    diff[v] \leftarrow diff[v] + x \\
+    diff[lca(u,v)] \leftarrow diff[lca(u,v)] - 2x \\
+  \end{cases}
+  $$
+3. 最后通过一次DFS计算出每个节点的最终值。
+
+模板C++
+
+```cpp
+const int N = 1e5 + 10;
+const int LOG = 20; // For LCA
+vector<int> g[N];  // Adjacency list for the tree
+int w[N];          // Node weights
+int diff[N];      // Difference array
+int parent[N];     // Parent node
+int sum[N];        // Final values after applying differences
+int depth[N];      // Depth of each node
+int fa[N][LOG]; // Ancestor table for LCA
+int n;             // Number of nodes
+
+// Preprocess for LCA
+void dfs_lca(int u, int p) {
+  parent[u] = p;
+  depth[u] = (p == -1) ? 0 : depth[p] + 1;
+  fa[u][0] = p;
+  for (int i = 1; i < LOG; ++i) {
+    if (fa[u][i - 1] != -1)
+      fa[u][i] = fa[fa[u][i - 1]][i - 1];
+    else
+      fa[u][i] = -1;
+  }
+  for (int v : g[u]) {
+    if (v != p) {
+      dfs_lca(v, u);
+    }
+  }
+}
+```
+```cpp
+// Find LCA of u and v
+int lca(int u, int v) {
+  if (depth[u] < depth[v]) swap(u, v);
+  for (int i = LOG - 1; i >= 0; --i) {
+    if (fa[u][i] != -1 && depth[fa[u][i]] >= depth[v]) {
+      u = fa[u][i];
+    }
+  }
+  if (u == v) return u;
+  for (int i = LOG - 1; i >= 0; --i) {
+    if (fa[u][i] != fa[v][i]) {
+      u = fa[u][i];
+      v = fa[v][i];
+    }
+  }
+  return parent[u];
+}
+```
+```cpp
+// Range update: add x to all nodes on the path from u to v
+void range_update(int u, int v, int x) {
+  int ancestor = lca(u, v);
+  diff[u] += x;
+  diff[v] += x;
+  diff[ancestor] -= x;
+  if (parent[ancestor] != -1) {
+    diff[parent[ancestor]] -= x;
+  }
+}
+```
+```cpp
+// DFS to apply the differences and compute final values
+void apply_differences(int u, int p) {
+  sum[u] = w[u] + diff[u];
+  for (int v : g[u]) {
+    if (v != p) {
+      apply_differences(v, u);
+      sum[u] += sum[v]; // If you want to accumulate values from children
+    }
+  }
+}
+```
+
+# 参考
+ - [前缀和与差分 - OI Wiki](https://oi-wiki.org/basic/prefix-sum/)

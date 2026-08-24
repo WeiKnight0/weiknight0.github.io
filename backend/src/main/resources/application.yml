@@ -1,0 +1,17 @@
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
+
+spring:
+  application:
+    name: wkn-personal-site-backend
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/wkn_site}
+    username: ${DATABASE_USERNAME:wkn}
+    password: ${DATABASE_PASSWORD:change-me}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true

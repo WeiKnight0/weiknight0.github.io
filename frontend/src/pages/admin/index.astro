@@ -1,0 +1,21 @@
+---
+import Base from '@/templates/Base.astro';
+---
+
+<Base head={{ title: 'Admin | WeiKnight', description: 'Content administration' }} theme='real'>
+  <main class='mx-auto w-full max-w-6xl px-5 py-16 font-real-mono text-real-text'>
+    <section id='admin-panel'>
+      <div class='mb-10 flex items-center justify-between border-b border-real-accent/30 pb-6'>
+        <div><p class='text-xs uppercase tracking-[0.25em] text-real-accent'>Content control</p><h1 class='mt-2 text-4xl font-black'>Admin</h1></div>
+        <button id='logout' class='border border-white/20 px-4 py-2 text-sm'>Sign out</button>
+      </div>
+      <a href='/admin/notes/' class='mb-8 inline-block border border-real-accent/40 bg-real-accent/10 px-5 py-3 text-real-accent'>Manage Notes →</a>
+      <div class='grid gap-10 lg:grid-cols-2'>
+        <section><h2 class='text-2xl font-bold'>Projects</h2><form id='project-form' class='mt-5 grid gap-3 border border-white/10 bg-black/20 p-5'><input type='hidden' name='id' /><input name='slug' required placeholder='Slug' class='input' /><input name='title' required placeholder='Title' class='input' /><textarea name='description' required placeholder='Description' class='input min-h-24'></textarea><input name='displayOrder' required type='number' value='1' placeholder='Display order' class='input' /><input name='tags' placeholder='Tags, separated by commas' class='input' /><input name='repoUrl' placeholder='Repository URL (optional)' class='input' /><button class='bg-real-accent p-3 font-bold text-black'>Save project</button><button type='button' data-reset='project-form' class='text-sm text-white/60'>Clear</button></form><div id='projects-list' class='mt-5 grid gap-3'></div></section>
+        <section><h2 class='text-2xl font-bold'>Posts</h2><form id='post-form' class='mt-5 grid gap-3 border border-white/10 bg-black/20 p-5'><input type='hidden' name='id' /><input name='slug' required placeholder='Slug' class='input' /><input name='title' required placeholder='Title' class='input' /><textarea name='description' required placeholder='Description' class='input min-h-24'></textarea><input name='publishedAt' required type='datetime-local' class='input' /><input name='tags' placeholder='Tags, separated by commas' class='input' /><button class='bg-real-accent p-3 font-bold text-black'>Save post</button><button type='button' data-reset='post-form' class='text-sm text-white/60'>Clear</button></form><div id='posts-list' class='mt-5 grid gap-3'></div></section>
+      </div>
+    </section>
+  </main>
+  <script is:inline src='/js/admin.js'></script>
+  <style is:global>.input { @apply border border-white/20 bg-black/30 p-3 text-white placeholder:text-white placeholder:opacity-40; }</style>
+</Base>

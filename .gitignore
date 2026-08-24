@@ -16,3 +16,26 @@ bin-release/
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
+.astro/
+dist/
+node_modules/
+backend/target/
+data/postgres/
+notes/site/
+notes/.publish
+
+# Local secrets. Keep the safe, documented template under version control.
+.env
+.env.*
+!.env.example
+
+# Local tooling and generated diagnostics
+.DS_Store
+.idea/
+.vscode/
+*.iml
+*.log
+__pycache__/
+*.py[cod]
+.pytest_cache/
+notes/.cache/

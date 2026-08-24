@@ -1,0 +1,15 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>第 K 小：二分值域 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">二分查找</p><h1>第 K 小：二分值域</h1><div class="tag-row"><span class="tag category">第K小</span><span class="tag">计数</span><span class="tag">值域二分</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">long long kthSmallest(long long low, long long high, long long k) {
+    auto countLE = [&](long long x) -&gt; long long {
+        // TODO: 返回 &lt;= x 的元素个数
+        return 0;
+    };
+
+    long long left = low - 1;
+    long long right = high;
+    while (left + 1 &lt; right) {
+        long long mid = left + (right - left) / 2;
+        if (countLE(mid) &gt;= k) right = mid;
+        else left = mid;
+    }
+    return right;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

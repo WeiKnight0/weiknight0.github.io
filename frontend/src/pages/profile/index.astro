@@ -1,0 +1,14 @@
+---
+import Base from '@/templates/Base.astro';
+---
+
+<Base head={{ title: 'Personal Center | WeiKnight', description: 'Account information' }} theme='real'>
+  <main class='mx-auto max-w-2xl px-5 py-20 font-real-mono text-real-text'>
+    <section class='border border-real-accent/30 bg-real-surface p-8'>
+      <p class='text-xs uppercase tracking-widest text-real-accent'>Member access</p>
+      <h1 class='mt-3 text-3xl font-black'>Personal center</h1>
+      <div id='profile-content' class='mt-8 text-white/70'>Loading account…</div>
+    </section>
+  </main>
+  <script is:inline src='/js/profile.js'></script>
+</Base>

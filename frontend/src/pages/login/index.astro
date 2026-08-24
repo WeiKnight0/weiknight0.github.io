@@ -1,0 +1,6 @@
+---
+import Base from '@/templates/Base.astro';
+---
+<Base head={{ title: 'Login | WeiKnight', description: 'User login' }} theme='real'>
+  <main class='mx-auto max-w-md px-5 py-20 font-real-mono text-real-text'><section class='border border-real-accent/30 bg-real-surface p-8'><p class='text-xs uppercase tracking-widest text-real-accent'>Member access</p><h1 class='mt-3 text-3xl font-black'>Login</h1><form action='/api/v1/auth/login-form' method='post' class='mt-8 grid gap-4'><input name='username' required placeholder='Username' class='border border-white/20 bg-black/30 p-3'/><input name='password' required type='password' placeholder='Password' class='border border-white/20 bg-black/30 p-3'/><button type='submit' class='bg-real-accent p-3 font-bold text-black'>Login</button>{Astro.url.searchParams.get('error') === '1' && <p class='text-red-300'>Invalid username or password.</p>}</form></section></main>
+</Base>

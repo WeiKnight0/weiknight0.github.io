@@ -1,0 +1,32 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>数位 DP：记忆化搜索 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">动态规划</p><h1>数位 DP：记忆化搜索</h1><div class="tag-row"><span class="tag category">灵神风格</span><span class="tag">is_limit</span><span class="tag">is_num</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">// 统计 [1,n] 中没有重复数字的正整数个数
+int countSpecialNumbers(int n) {
+    string s = to_string(n);
+    int m = s.length();
+    vector<vector<int>> memo(m, vector<int>(1 &lt;&lt; 10, -1));
+
+    auto dfs = [&](auto&& dfs, int i, int mask, bool is_limit, bool is_num) -&gt; int {
+        if (i == m) {
+            return is_num;
+        }
+        if (!is_limit && is_num && memo[i][mask] != -1) {
+            return memo[i][mask];
+        }
+
+        int res = 0;
+        if (!is_num) {
+            res = dfs(dfs, i + 1, mask, false, false); // 跳过当前数位
+        }
+        int up = is_limit ? s[i] - '0' : 9;
+        for (int d = 1 - is_num; d &lt;= up; d++) {
+            if ((mask &gt;&gt; d & 1) == 0) {
+                res += dfs(dfs, i + 1, mask | (1 &lt;&lt; d), is_limit && d == up, true);
+            }
+        }
+        if (!is_limit && is_num) {
+            memo[i][mask] = res;
+        }
+        return res;
+    };
+
+    return dfs(dfs, 0, 0, true, false);
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>
