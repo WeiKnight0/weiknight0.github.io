@@ -28,18 +28,8 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./notes:/workspace/notes
-
-  docs-builder:
-    build:
-      context: ./notes
-    restart: "no"
-    working_dir: /workspace
-    entrypoint: []
-    volumes:
-      - ./notes:/workspace
-    command: ["/bin/sh", "-c", "mkdocs build --clean || exit $?; while true; do if [ -f .publish ]; then rm .publish; mkdocs build --clean || exit $?; fi; sleep 2; done"]
-    mem_limit: 128m
+      - ./data/note-assets:/data/note-assets
+      - ./notes/docs:/data/legacy-notes:ro
 
   nginx:
     build:
@@ -50,9 +40,6 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
-      - docs-builder
-    volumes:
-      - ./notes/site:/usr/share/nginx/notes:ro
     ports:
       - "${HTTP_PORT:-80}:80"
     mem_limit: 128m

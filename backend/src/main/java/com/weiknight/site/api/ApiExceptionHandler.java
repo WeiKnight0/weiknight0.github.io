@@ -1,5 +1,6 @@
 package com.weiknight.site.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.NoSuchFileException;
@@ -33,6 +34,11 @@ class ApiExceptionHandler {
   @ExceptionHandler(IllegalArgumentException.class)
   ResponseEntity<ApiError> badRequest(IllegalArgumentException exception) {
     return response(HttpStatus.BAD_REQUEST, "invalid_request", exception.getMessage());
+  }
+
+  @ExceptionHandler(JsonProcessingException.class)
+  ResponseEntity<ApiError> invalidJson(JsonProcessingException exception) {
+    return response(HttpStatus.BAD_REQUEST, "invalid_content", "The editor content is not valid JSON");
   }
 
   @ExceptionHandler(FileAlreadyExistsException.class)

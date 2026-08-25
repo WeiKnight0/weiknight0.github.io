@@ -19,3 +19,7 @@ spring:
     open-in-view: false
   flyway:
     enabled: true
+
+site:
+  note-assets-root: ${NOTE_ASSETS_ROOT:/data/note-assets}
+  legacy-notes-root: ${LEGACY_NOTES_ROOT:/data/legacy-notes}
