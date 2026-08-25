@@ -1,5 +1,6 @@
 ---
 import 'katex/dist/katex.min.css';
+import '@/styles/theme.css';
 
 import ClientI18n from '@/partials/ClientI18n.astro';
 import { Footer } from '@/partials/Footer';
@@ -38,7 +39,7 @@ const canonicalPath = alternatePaths[locale];
 const hasAlternates = hasDistinctLocalePaths(Astro.url.pathname);
 ---
 
-<html lang={htmlLangs[locale]}>
+<html lang={htmlLangs[locale]} data-color-theme='dark'>
   <head>
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
@@ -62,9 +63,16 @@ const hasAlternates = hasDistinctLocalePaths(Astro.url.pathname);
 
     <link rel='alternate' type='application/rss+xml' href='/rss.xml' />
     <link rel='icon' type='image/x-icon' href='/favicon.ico' />
+    <script is:inline>
+      const savedColorTheme = localStorage.getItem('wkn-color-theme');
+      const initialColorTheme = savedColorTheme
+        ?? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.dataset.colorTheme = initialColorTheme;
+      document.documentElement.style.colorScheme = initialColorTheme;
+    </script>
   </head>
   <body
-    class={`flex min-h-screen flex-col bg-slate-950 text-gray-100 ${theme}-theme`}
+    class={`site-body flex min-h-screen flex-col ${theme}-theme`}
   >
     <Navbar locale={locale} pathname={Astro.url.pathname} />
 

@@ -1,22 +1,12 @@
 ---
+import AdminHeader from '@/components/admin/AdminHeader.astro';
 import Base from '@/templates/Base.astro';
 ---
 
 <Base head={{ title: 'Blog Admin | WeiKnight', description: 'Blog administration' }} theme='real'>
-  <main class='mx-auto w-full max-w-[96rem] px-4 py-10 font-real-mono text-real-text sm:px-6 lg:px-8'>
+  <main class='mx-auto w-full max-w-[110rem] px-4 py-10 font-formal-sans text-real-text sm:px-6 lg:px-8'>
     <section id='admin-panel'>
-      <header class='mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-real-accent/30 pb-6'>
-        <div>
-          <p class='text-xs font-bold uppercase tracking-[0.25em] text-real-accent'>Content control</p>
-          <h1 class='mt-2 text-3xl font-black sm:text-4xl'>Blog editor</h1>
-        </div>
-        <nav class='flex flex-wrap items-center gap-3 text-sm'>
-          <a href='/real/blog/' target='_blank' class='border border-white/20 px-4 py-2 text-white/70 transition hover:border-real-accent/50 hover:text-real-accent'>View blog ↗</a>
-          <a href='/admin/users/' class='border border-white/20 px-4 py-2 text-white/70 transition hover:border-real-accent/50 hover:text-real-accent'>Manage users</a>
-          <a href='/admin/notes/' class='border border-real-accent/40 bg-real-accent/10 px-4 py-2 text-real-accent transition hover:bg-real-accent hover:text-black'>Manage notes</a>
-          <button id='logout' type='button' class='border border-white/20 px-4 py-2 text-white/70 transition hover:border-red-300/60 hover:text-red-200'>Sign out</button>
-        </nav>
-      </header>
+      <AdminHeader eyebrow='Content control' title='Blog editor' active='blogs' viewHref='/real/blog/' viewLabel='View blog' showLogout />
 
       <div id='notice' class='mb-5 hidden border px-4 py-3 text-sm' role='status' aria-live='polite'></div>
 
@@ -96,7 +86,7 @@ import Base from '@/templates/Base.astro';
                   <span class='field-label'>Markdown content</span>
                   <span id='content-count' class='text-xs font-normal normal-case tracking-normal text-white/35'>0 characters</span>
                 </span>
-                <textarea name='content' required spellcheck='true' placeholder='# Start writing…' class='input min-h-[32rem] resize-y font-mono text-sm leading-7 [tab-size:2]'></textarea>
+                <textarea name='content' required spellcheck='true' placeholder='# Start writing…' class='input min-h-[32rem] resize-y font-real-mono text-base leading-7 [tab-size:2]'></textarea>
               </label>
             </div>
           </form>

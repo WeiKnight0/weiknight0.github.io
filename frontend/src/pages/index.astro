@@ -7,9 +7,9 @@ const { title, description } = AppConfig;
 ---
 
 <Base head={{ title, description }} theme='home'>
-  <main class="bg-black text-white font-sans selection:bg-white/20">
+  <main class="home-canvas bg-black text-white font-sans selection:bg-white/20">
     {/* 顶部巨幕区 - 强烈的阵营色彩对比与清晰的日文排版 */}
-    <section class='relative min-h-[85vh] flex flex-col justify-center overflow-hidden bg-black border-b border-white/10'>
+    <section class='home-hero relative min-h-[85vh] flex flex-col justify-center overflow-hidden bg-black border-b border-white/10'>
       {/* 复杂的背景光效 - 增强饱和度和对比 */}
       <div class='pointer-events-none absolute inset-0'>
         <div class='absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px]'></div>
@@ -51,7 +51,7 @@ const { title, description } = AppConfig;
         </h1>
 
         {/* 个人简介区 */}
-        <div class="mt-16 max-w-3xl mx-auto bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-2xl shadow-2xl">
+        <div class="home-intro-card mt-16 max-w-3xl mx-auto bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-2xl shadow-2xl">
           <h2 class="text-3xl font-black mb-4 text-white drop-shadow-md">{Profile.name}</h2>
           
           {/* 中二感日文 Tagline */}

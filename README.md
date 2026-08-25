@@ -2,6 +2,8 @@
 
 前后端分离的个人网站：Astro 提供静态页面，Spring Boot 与 PostgreSQL 提供动态内容 API。生产环境由 Nginx 提供静态文件并将 `/api/` 反向代理到后端。
 
+导航栏提供浅色/深色主题切换并在浏览器中保存偏好。Real 保留代码字体风格，Fiction 使用文学衬线字体，管理后台与 Notes 使用正式的中西文字体栈。
+
 ## 目录
 
 - `frontend/`：Astro 前端源码、静态资源、Node.js 配置与前端 Dockerfile。
@@ -23,9 +25,9 @@ docker compose up -d --build
 
 运行时仅包含 Nginx（上限 128MB）、Spring Boot 后端（上限 512MB）和 PostgreSQL（上限 256MB）。Node 和 Maven 仅用于镜像构建，不会驻留在服务器内存中，适合 2GB 服务器。
 
-首次启动会自动创建 PostgreSQL 数据表、导入现有项目和博客列表，并将 `notes/docs/` 中尚未导入的 Markdown 转为文章。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
+首次启动会自动创建 PostgreSQL 数据表、导入现有项目和博客列表，并将 `notes/docs/` 中尚未导入的 Markdown 转为带目录层级的文章。About 与 Privacy 是 `/about/`、`/privacy/` 独立静态页面，不属于笔记数据。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
 
-将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。登录后可从 `/admin/` 管理博客、从 `/admin/users/` 管理用户、从 `/admin/notes/` 创建草稿、使用文章编辑器、上传图片并发布文章。公开注册入口不存在。
+将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。登录后可从 `/admin/` 管理博客、从 `/admin/users/` 管理用户、从 `/admin/notes/` 在目录树中创建、移动和排序笔记，也可使用文章编辑器、上传图片并发布文章。公开注册入口不存在。
 
 停止服务：
 

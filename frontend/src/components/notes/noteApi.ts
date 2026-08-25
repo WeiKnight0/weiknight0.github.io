@@ -7,23 +7,23 @@ export interface NoteAsset {
   createdAt: string;
 }
 
-export interface NoteSummary {
+export interface NoteListItem {
   id?: number;
   slug: string;
   title: string;
-  summary?: string;
   coverUrl?: string | null;
   tags?: string[];
   series?: string | null;
   seriesOrder?: number | null;
+  directory: string | null;
+  sortOrder: number | null;
   status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   publishedAt?: string | null;
   updatedAt: string;
 }
 
-export interface NoteArticle extends Omit<NoteSummary, 'tags'> {
+export interface NoteArticle extends Omit<NoteListItem, 'tags'> {
   id: number;
-  summary: string;
   coverUrl: string | null;
   tags: string;
   status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';

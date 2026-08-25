@@ -23,6 +23,8 @@ module.exports = {
         'real-mono': ['"JetBrains Mono"', 'Consolas', 'Courier New', '"Noto Sans SC"', '"Microsoft YaHei"', 'monospace'],
         'fiction-serif': ['Georgia', '"Noto Serif SC"', '"Source Han Serif SC"', '"Songti SC"', 'SimSun', 'serif'],
         'fiction-sans': ['"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'sans-serif'],
+        'formal-sans': ['Arial', '"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'SimHei', 'sans-serif'],
+        'formal-serif': ['"Times New Roman"', '"Noto Serif SC"', '"Songti SC"', 'SimSun', 'serif'],
         fiction: ['Georgia', '"Noto Serif SC"', '"Source Han Serif SC"', '"Songti SC"', 'SimSun', 'serif'],
         'readable-mono': ['"JetBrains Mono"', 'Consolas', 'Courier New', '"Noto Sans SC"', '"Microsoft YaHei"', 'monospace'],
         zh: ['Inter', '"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'sans-serif'],
@@ -33,32 +35,32 @@ module.exports = {
       colors: {
         // Real: Deep Cyber/Tech Theme
         real: {
-          bg: '#020b18',        // Very dark blue background
-          surface: '#0a192f',   // Deep tech blue panel background
-          surfaceHover: '#112240',
-          text: '#e6f1ff',      // Bright legible text
-          muted: '#8892b0',     // Muted text
-          accent: '#00f5ff',    // Neon Cyan
-          accentSecondary: '#b026ff', // Neon Purple
-          glow: 'rgba(0, 245, 255, 0.2)',
+          bg: 'rgb(var(--real-bg) / <alpha-value>)',
+          surface: 'rgb(var(--real-surface) / <alpha-value>)',
+          surfaceHover: 'rgb(var(--real-surface-hover) / <alpha-value>)',
+          text: 'rgb(var(--real-text) / <alpha-value>)',
+          muted: 'rgb(var(--real-muted) / <alpha-value>)',
+          accent: 'rgb(var(--real-accent) / <alpha-value>)',
+          accentSecondary: 'rgb(var(--real-accent-secondary) / <alpha-value>)',
+          glow: 'rgb(var(--real-accent) / 0.2)',
         },
         // Fiction: Warm Magical/Twilight Theme
         fiction: {
-          bg: '#1a0b16',        // Very dark warm purple
-          surface: '#2d1b36',   // Rich twilight purple panel background
-          surfaceHover: '#3b2346',
-          text: '#fdf8f5',      // Warm off-white
-          muted: '#bda6c4',     // Muted purple-grey
-          accent: '#ffd700',    // Bright Gold
-          accentSecondary: '#ff3366', // Magenta/Pink
-          gold: '#ffd700',
-          ink: '#fdf8f5',
-          glow: 'rgba(255, 215, 0, 0.2)',
+          bg: 'rgb(var(--fiction-bg) / <alpha-value>)',
+          surface: 'rgb(var(--fiction-surface) / <alpha-value>)',
+          surfaceHover: 'rgb(var(--fiction-surface-hover) / <alpha-value>)',
+          text: 'rgb(var(--fiction-text) / <alpha-value>)',
+          muted: 'rgb(var(--fiction-muted) / <alpha-value>)',
+          accent: 'rgb(var(--fiction-accent) / <alpha-value>)',
+          accentSecondary: 'rgb(var(--fiction-accent-secondary) / <alpha-value>)',
+          gold: 'rgb(var(--fiction-accent) / <alpha-value>)',
+          ink: 'rgb(var(--fiction-text) / <alpha-value>)',
+          glow: 'rgb(var(--fiction-accent) / 0.2)',
         },
       },
       backgroundImage: {
-        'real-gradient': 'linear-gradient(135deg, #020b18 0%, #0a192f 100%)',
-        'fiction-gradient': 'linear-gradient(135deg, #1a0b16 0%, #2d1b36 100%)',
+        'real-gradient': 'linear-gradient(135deg, rgb(var(--real-bg)) 0%, rgb(var(--real-surface)) 100%)',
+        'fiction-gradient': 'linear-gradient(135deg, rgb(var(--fiction-bg)) 0%, rgb(var(--fiction-surface)) 100%)',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

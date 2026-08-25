@@ -1,22 +1,12 @@
 ---
+import AdminHeader from '@/components/admin/AdminHeader.astro';
 import NotesAdmin from '@/components/notes/NotesAdmin';
 import Base from '@/templates/Base.astro';
 ---
 
 <Base head={{ title: 'Notes Admin | WeiKnight', description: 'Article administration' }} theme='real'>
-  <main class='mx-auto w-full max-w-[110rem] px-4 py-10 font-real-mono text-real-text sm:px-6 lg:px-8'>
-    <header class='mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-real-accent/30 pb-6'>
-      <div>
-        <p class='text-xs font-bold uppercase tracking-[0.25em] text-real-accent'>Content control</p>
-        <h1 class='mt-2 text-3xl font-black sm:text-4xl'>Notes studio</h1>
-        <p class='mt-2 text-sm text-white/40'>Draft, edit, preview, and publish without rebuilding the site.</p>
-      </div>
-      <nav class='flex flex-wrap items-center gap-3 text-sm'>
-        <a href='/real/notes/' target='_blank' class='border border-white/20 px-4 py-2 text-white/70'>View notes ↗</a>
-        <a href='/admin/' class='border border-white/20 px-4 py-2 text-white/70'>Blog editor</a>
-        <a href='/admin/users/' class='border border-white/20 px-4 py-2 text-white/70'>Manage users</a>
-      </nav>
-    </header>
+  <main class='mx-auto w-full max-w-[110rem] px-4 py-10 font-formal-sans text-real-text sm:px-6 lg:px-8'>
+    <AdminHeader eyebrow='Content control' title='Notes studio' description='Draft, edit, preview, and publish without rebuilding the site.' active='notes' viewHref='/real/notes/' viewLabel='View notes' />
     <NotesAdmin client:load />
   </main>
 </Base>

@@ -1,25 +1,15 @@
 ---
+import AdminHeader from '@/components/admin/AdminHeader.astro';
 import Base from '@/templates/Base.astro';
 ---
 
 <Base head={{ title: 'User Admin | WeiKnight', description: 'User administration' }} theme='real'>
-  <main class='mx-auto max-w-6xl px-5 py-12 font-real-mono text-real-text'>
-    <header class='mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-real-accent/30 pb-5'>
-      <div>
-        <p class='text-xs font-bold uppercase tracking-[0.25em] text-real-accent'>Access control</p>
-        <h1 class='mt-2 text-3xl font-black'>User management</h1>
-        <p class='mt-2 text-sm text-white/45'>Only administrators can create or revoke accounts. Public registration remains disabled.</p>
-      </div>
-      <nav class='flex flex-wrap gap-3 text-sm'>
-        <a href='/admin/' class='border border-white/20 px-4 py-2 text-white/70'>Blog editor</a>
-        <a href='/admin/notes/' class='border border-white/20 px-4 py-2 text-white/70'>Manage notes</a>
-        <button id='logout' type='button' class='border border-red-300/25 px-4 py-2 text-red-200'>Sign out</button>
-      </nav>
-    </header>
+  <main class='mx-auto w-full max-w-[110rem] px-4 py-10 font-formal-sans text-real-text sm:px-6 lg:px-8'>
+    <AdminHeader eyebrow='Access control' title='User management' description='Only administrators can create or revoke accounts. Public registration remains disabled.' active='users' showLogout />
+    <div class='mx-auto max-w-6xl'>
+      <div id='notice' class='mb-5 hidden border px-4 py-3 text-sm' role='status' aria-live='polite'></div>
 
-    <div id='notice' class='mb-5 hidden border px-4 py-3 text-sm' role='status' aria-live='polite'></div>
-
-    <div class='grid gap-6 lg:grid-cols-[22rem_1fr]'>
+      <div class='grid gap-6 lg:grid-cols-[22rem_1fr]'>
       <section class='border border-white/10 bg-real-surface p-5'>
         <h2 class='text-lg font-bold text-white'>Add user</h2>
         <form id='user-form' class='mt-5 grid gap-4'>
@@ -43,6 +33,7 @@ import Base from '@/templates/Base.astro';
         </div>
         <div id='users-list' class='divide-y divide-white/10'></div>
       </section>
+      </div>
     </div>
   </main>
   <script is:inline src='/js/api.js'></script>

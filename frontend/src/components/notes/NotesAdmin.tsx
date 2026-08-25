@@ -4,7 +4,8 @@ import type { EditorView } from '@tiptap/pm/view';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { createNoteExtensions } from './editorExtensions';
-import { noteApi, type NoteArticle, type NoteAsset, type NoteSummary, uploadNoteAsset } from './noteApi';
+import NoteTree from './NoteTree';
+import { noteApi, type NoteArticle, type NoteAsset, type NoteListItem, uploadNoteAsset } from './noteApi';
 import './note-editor.css';
 
 const EMPTY_DOCUMENT: JSONContent = { type: 'doc', content: [{ type: 'paragraph' }] };
@@ -27,6 +28,10 @@ function slugify(value: string) {
   return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 160);
 }
 
+function normalizeDirectory(value: string) {
+  return value.split('/').map(slugify).filter(Boolean).join('/').slice(0, 1000);
+}
+
 function localDateTime(value?: string | null) {
   const date = value ? new Date(value) : new Date();
   return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
@@ -37,8 +42,8 @@ function editorContent(article: NoteArticle) {
 }
 
 function toolbarButton(active: boolean) {
-  return `border px-3 py-1.5 text-xs font-bold transition ${active
-    ? 'border-real-accent bg-real-accent text-black'
+  return `note-toolbar-button border px-3 py-1.5 text-xs font-bold transition ${active
+    ? 'note-toolbar-button-active border-real-accent bg-real-accent text-black'
     : 'border-white/15 text-white/65 hover:border-real-accent/50 hover:text-real-accent'}`;
 }
 
@@ -58,7 +63,7 @@ function EditorToolbar({ editor, onImage }: { editor: Editor; onImage: () => voi
   };
 
   return (
-    <div className="sticky top-0 z-20 flex flex-wrap gap-1 border-b border-white/10 bg-slate-950/95 p-3 backdrop-blur">
+    <div className="note-toolbar sticky top-0 z-20 flex flex-wrap gap-1 border-b border-white/10 bg-slate-950/95 p-3 backdrop-blur">
       <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={toolbarButton(editor.isActive('bold'))}>Bold</button>
       <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={toolbarButton(editor.isActive('italic'))}>Italic</button>
       <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={toolbarButton(editor.isActive('heading', { level: 2 }))}>H2</button>
@@ -72,7 +77,7 @@ function EditorToolbar({ editor, onImage }: { editor: Editor; onImage: () => voi
       <button type="button" onClick={insertMath} className={toolbarButton(editor.isActive('inlineMath'))}>Math</button>
       <button type="button" onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} className={toolbarButton(editor.isActive('table'))}>Table</button>
       <button type="button" onClick={onImage} className={toolbarButton(false)}>Image</button>
-      <span className="mx-1 w-px bg-white/10" />
+      <span className="note-toolbar-separator mx-1 w-px bg-white/10" />
       <button type="button" disabled={!editor.can().undo()} onClick={() => editor.chain().focus().undo().run()} className={toolbarButton(false)}>Undo</button>
       <button type="button" disabled={!editor.can().redo()} onClick={() => editor.chain().focus().redo().run()} className={toolbarButton(false)}>Redo</button>
     </div>
@@ -83,7 +88,7 @@ function EditorToolbar({ editor, onImage }: { editor: Editor; onImage: () => voi
  * @description Renders the complete social-style note administration workspace.
  */
 export default function NotesAdmin() {
-  const [summaries, setSummaries] = useState<NoteSummary[]>([]);
+  const [notes, setNotes] = useState<NoteListItem[]>([]);
   const [article, setArticle] = useState<NoteArticle | null>(null);
   const [assets, setAssets] = useState<NoteAsset[]>([]);
   const [query, setQuery] = useState('');
@@ -122,9 +127,9 @@ export default function NotesAdmin() {
     },
   });
 
-  const loadSummaries = useCallback(async () => {
-    const loaded = await noteApi<NoteSummary[]>('/api/v1/admin/notes');
-    setSummaries(loaded);
+  const loadNotes = useCallback(async () => {
+    const loaded = await noteApi<NoteListItem[]>('/api/v1/admin/notes');
+    setNotes(loaded);
     return loaded;
   }, []);
 
@@ -140,7 +145,7 @@ export default function NotesAdmin() {
   }, [dirty]);
 
   useEffect(() => {
-    Promise.all([loadSummaries(), loadAssets()])
+    Promise.all([loadNotes(), loadAssets()])
       .then(([loaded]) => {
         if (loaded[0]?.id) selectArticle(loaded[0].id);
       })
@@ -179,8 +184,8 @@ export default function NotesAdmin() {
   const save = useCallback(async (statusOverride?: NoteArticle['status'], silent = false) => {
     if (!article || !editor || saving) return;
     const status = statusOverride ?? article.status;
-    if (!article.title.trim() || !article.slug.trim() || !article.summary.trim() || editor.isEmpty) {
-      if (!silent) setError('Title, slug, summary, and article body are required.');
+    if (!article.title.trim() || !article.slug.trim() || editor.isEmpty) {
+      if (!silent) setError('Title, slug, and article body are required.');
       return;
     }
     setSaving(true);
@@ -190,9 +195,10 @@ export default function NotesAdmin() {
       id: undefined,
       title: article.title.trim(),
       slug: article.slug.trim(),
-      summary: article.summary.trim(),
       tags: article.tags.split(',').map((tag) => tag.trim()).filter(Boolean).join(','),
       series: article.series?.trim() || null,
+      directory: normalizeDirectory(article.directory ?? ''),
+      sortOrder: article.sortOrder ?? 1000,
       status,
       contentFormat: 'JSON',
       content: JSON.stringify(editor.getJSON()),
@@ -212,13 +218,13 @@ export default function NotesAdmin() {
         : status === 'PUBLISHED'
           ? 'Article published.'
           : status === 'ARCHIVED' ? 'Article archived.' : 'Draft saved.');
-      await loadSummaries();
+      await loadNotes();
     } catch (reason) {
       setError((reason as Error).message);
     } finally {
       setSaving(false);
     }
-  }, [article, editor, saving, loadSummaries]);
+  }, [article, editor, saving, loadNotes]);
 
   useEffect(() => {
     if (!dirty || !article?.id || saving) return;
@@ -242,11 +248,12 @@ export default function NotesAdmin() {
       id: 0,
       slug: '',
       title: '',
-      summary: '',
       coverUrl: null,
       tags: '',
       series: null,
       seriesOrder: null,
+      directory: '',
+      sortOrder: 1000,
       status: 'DRAFT',
       contentFormat: 'JSON',
       content: JSON.stringify(EMPTY_DOCUMENT),
@@ -283,7 +290,7 @@ export default function NotesAdmin() {
     await noteApi<void>(`/api/v1/admin/notes/${article.id}`, { method: 'DELETE' });
     setArticle(null);
     setDirty(false);
-    await loadSummaries();
+    await loadNotes();
   };
 
   const deleteAsset = async (asset: NoteAsset) => {
@@ -296,17 +303,18 @@ export default function NotesAdmin() {
     }
   };
 
-  const visible = summaries.filter((item) => {
-    const matchesText = `${item.title} ${item.slug} ${item.series ?? ''}`.toLowerCase().includes(query.toLowerCase());
+  const visible = notes.filter((item) => {
+    const matchesText = `${item.title} ${item.slug} ${item.directory ?? ''}`.toLowerCase().includes(query.toLowerCase());
     return matchesText && (statusFilter === 'ALL' || item.status === statusFilter);
   });
+  const directories = Array.from(new Set(notes.map((item) => item.directory).filter(Boolean))).sort();
 
   return (
     <div className="grid min-h-[48rem] overflow-hidden border border-white/10 bg-black/20 lg:grid-cols-[21rem_minmax(0,1fr)]">
       <aside className="flex min-h-0 flex-col border-b border-white/10 bg-black/25 lg:border-b-0 lg:border-r">
         <div className="border-b border-white/10 p-4">
           <div className="flex items-center justify-between gap-3">
-            <div><h2 className="font-bold text-white">Articles</h2><p className="mt-1 text-xs text-white/40">{summaries.length} total</p></div>
+            <div><h2 className="font-bold text-white">Note tree</h2><p className="mt-1 text-xs text-white/40">{notes.length} notes</p></div>
             <button type="button" onClick={newArticle} className="bg-real-accent px-3 py-2 text-sm font-black text-black">+ New</button>
           </div>
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search articles…" className="mt-4 w-full border border-white/20 bg-black/30 p-2 text-sm outline-none focus:border-real-accent" />
@@ -315,14 +323,12 @@ export default function NotesAdmin() {
           </select>
         </div>
         <div className="max-h-[calc(100vh-15rem)] flex-1 overflow-y-auto p-2">
-          {visible.map((item) => <button key={item.id} type="button" onClick={() => item.id && selectArticle(item.id)} className={`mb-1 w-full border-l-2 p-3 text-left ${item.id === article?.id ? 'border-real-accent bg-real-accent/10' : 'border-transparent hover:bg-white/5'}`}>
-            <span className="block truncate font-bold text-white/85">{item.title}</span><span className="mt-1 block truncate text-xs text-white/35">{item.slug}</span><span className="mt-2 inline-block border border-white/10 px-2 py-0.5 text-[10px] text-white/45">{item.status}</span>
-          </button>)}
+          {visible.length ? <NoteTree notes={visible} currentId={article?.id} admin onSelect={selectArticle} /> : <p className="p-4 text-sm text-white/35">No matching notes.</p>}
         </div>
       </aside>
 
       {!article || !editor ? <div className="flex min-h-[36rem] items-center justify-center text-white/40">Select an article or create a new draft.</div> : <main className="min-w-0">
-        <header className="sticky top-0 z-30 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-slate-950/95 px-5 py-3 backdrop-blur">
+        <header className="note-editor-actions sticky top-0 z-30 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-slate-950/95 px-5 py-3 backdrop-blur">
           <div><p className="text-xs text-white/45"><span className="mr-2 border border-white/15 px-2 py-0.5 text-[10px]">{article.status}</span>{saving ? 'Saving…' : dirty ? 'Unsaved changes' : message || 'All changes saved'}</p>{error && <p className="mt-1 text-xs text-red-300">{error}</p>}</div>
           <div className="flex gap-2">
             {article.id > 0 && <a href={`/real/notes/${article.slug}/?preview=${article.id}`} target="_blank" rel="noreferrer" className="border border-white/20 px-4 py-2 text-sm text-white/65">Preview ↗</a>}
@@ -336,15 +342,13 @@ export default function NotesAdmin() {
         <section className="mx-auto max-w-5xl p-5 sm:p-8">
           {article.coverUrl && <div className="relative mb-7 aspect-[2.4/1] overflow-hidden bg-black/30"><img src={article.coverUrl} alt="Article cover" className="h-full w-full object-cover" /><button type="button" onClick={() => update('coverUrl', null)} className="absolute right-3 top-3 bg-black/75 px-3 py-1 text-xs">Remove cover</button></div>}
           <input value={article.title} onChange={(event) => { update('title', event.target.value); if (!article.id) update('slug', slugify(event.target.value)); }} placeholder="Article title" className="w-full bg-transparent text-4xl font-black leading-tight text-white outline-none placeholder:text-white/20 sm:text-5xl" />
-          <textarea value={article.summary} onChange={(event) => update('summary', event.target.value)} placeholder="Write a short summary…" className="mt-4 min-h-20 w-full resize-none bg-transparent text-lg leading-7 text-white/55 outline-none placeholder:text-white/20" />
-
           <details className="mb-6 border-y border-white/10 py-4">
             <summary className="cursor-pointer text-xs font-bold uppercase tracking-[.18em] text-real-accent">Article settings</summary>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <label className="grid gap-1 text-xs text-white/55">URL slug<input value={article.slug} onChange={(event) => update('slug', slugify(event.target.value))} className="border border-white/20 bg-black/30 p-2 text-white" /></label>
               <label className="grid gap-1 text-xs text-white/55">Tags<input value={article.tags} onChange={(event) => update('tags', event.target.value)} placeholder="algorithm, java" className="border border-white/20 bg-black/30 p-2 text-white" /></label>
-              <label className="grid gap-1 text-xs text-white/55">Series<input value={article.series ?? ''} onChange={(event) => update('series', event.target.value)} className="border border-white/20 bg-black/30 p-2 text-white" /></label>
-              <label className="grid gap-1 text-xs text-white/55">Series order<input type="number" min="1" value={article.seriesOrder ?? ''} onChange={(event) => update('seriesOrder', event.target.value ? Number(event.target.value) : null)} className="border border-white/20 bg-black/30 p-2 text-white" /></label>
+              <label className="grid gap-1 text-xs text-white/55">Directory path<input list="note-directories" value={article.directory ?? ''} onChange={(event) => update('directory', event.target.value)} onBlur={(event) => update('directory', normalizeDirectory(event.target.value))} placeholder="programming/java" className="border border-white/20 bg-black/30 p-2 text-white" /><span className="text-[10px] text-white/30">Use / for nested folders. Leaving it empty places the note at root.</span></label>
+              <label className="grid gap-1 text-xs text-white/55">Order in directory<input type="number" min="0" value={article.sortOrder ?? 1000} onChange={(event) => update('sortOrder', Number(event.target.value))} className="border border-white/20 bg-black/30 p-2 text-white" /></label>
               <label className="grid gap-1 text-xs text-white/55">Publish time<input type="datetime-local" value={localDateTime(article.publishedAt)} onChange={(event) => update('publishedAt', new Date(event.target.value).toISOString())} className="border border-white/20 bg-black/30 p-2 text-white" /></label>
               <div className="flex items-end"><button type="button" onClick={() => coverInput.current?.click()} className="border border-white/20 px-4 py-2 text-sm text-white/70">Upload cover</button></div>
             </div>
@@ -369,6 +373,7 @@ export default function NotesAdmin() {
         </section>
         <input ref={imageInput} type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) uploadIntoEditor(file); event.target.value = ''; }} />
         <input ref={coverInput} type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) uploadCover(file); event.target.value = ''; }} />
+        <datalist id="note-directories">{directories.map((directory) => <option key={directory} value={directory!} />)}</datalist>
       </main>}
     </div>
   );

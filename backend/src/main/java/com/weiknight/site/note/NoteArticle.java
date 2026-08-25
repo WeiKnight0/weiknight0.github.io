@@ -25,8 +25,6 @@ public class NoteArticle {
   private String slug;
   @Column(length = 240)
   private String title;
-  @Column(columnDefinition = "TEXT")
-  private String summary;
   @Column(length = 1000)
   private String coverUrl;
   @Column(length = 1000)
@@ -34,6 +32,9 @@ public class NoteArticle {
   @Column(length = 240)
   private String series;
   private Integer seriesOrder;
+  @Column(length = 1000)
+  private String directory;
+  private Integer sortOrder;
   @Enumerated(EnumType.STRING)
   private ArticleStatus status;
   @Enumerated(EnumType.STRING)
@@ -59,11 +60,6 @@ public class NoteArticle {
     return title;
   }
 
-  /** @description Returns the listing summary. */
-  public String getSummary() {
-    return summary;
-  }
-
   /** @description Returns the optional cover resource URL. */
   public String getCoverUrl() {
     return coverUrl;
@@ -82,6 +78,16 @@ public class NoteArticle {
   /** @description Returns the optional article position within its series. */
   public Integer getSeriesOrder() {
     return seriesOrder;
+  }
+
+  /** @description Returns the slash-separated directory path containing this article. */
+  public String getDirectory() {
+    return directory;
+  }
+
+  /** @description Returns the article position inside its directory. */
+  public Integer getSortOrder() {
+    return sortOrder;
   }
 
   /** @description Returns the current publication lifecycle state. */
@@ -113,11 +119,12 @@ public class NoteArticle {
    * @description Replaces every administrator-editable article field atomically.
    * @param slug Stable URL identifier.
    * @param title Article title.
-   * @param summary Listing summary.
    * @param coverUrl Optional cover resource URL.
    * @param tags Comma-separated tags.
    * @param series Optional series name.
    * @param seriesOrder Optional article position inside the series.
+   * @param directory Slash-separated directory path; an empty value means the tree root.
+   * @param sortOrder Article position inside its directory.
    * @param status Publication lifecycle state.
    * @param contentFormat Body serialization format.
    * @param content Complete article body.
@@ -126,26 +133,43 @@ public class NoteArticle {
   public void update(
       String slug,
       String title,
-      String summary,
       String coverUrl,
       String tags,
       String series,
       Integer seriesOrder,
+      String directory,
+      Integer sortOrder,
       ArticleStatus status,
       ArticleContentFormat contentFormat,
       String content,
       Instant publishedAt) {
     this.slug = slug;
     this.title = title;
-    this.summary = summary;
     this.coverUrl = coverUrl;
     this.tags = tags;
     this.series = series;
     this.seriesOrder = seriesOrder;
+    this.directory = directory;
+    this.sortOrder = sortOrder;
     this.status = status;
     this.contentFormat = contentFormat;
     this.content = content;
     this.publishedAt = publishedAt;
+  }
+
+  /**
+   * @description Backfills the legacy file-tree position without changing online-edited content.
+   * @param directory Slash-separated directory derived from the source file parent.
+   * @param sortOrder Numeric position derived from the source filename.
+   * @return True only when the previously uninitialized location was assigned.
+   */
+  public boolean initializeLocation(String directory, Integer sortOrder) {
+    if (this.directory != null) {
+      return false;
+    }
+    this.directory = directory;
+    this.sortOrder = sortOrder;
+    return true;
   }
 
   /**

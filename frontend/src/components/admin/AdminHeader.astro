@@ -1,0 +1,59 @@
+---
+/**
+ * @description Defines the stable heading and section navigation shared by every administration page.
+ */
+export interface Props {
+  eyebrow: string;
+  title: string;
+  description?: string;
+  active: 'blogs' | 'users' | 'notes';
+  viewHref?: string;
+  viewLabel?: string;
+  showLogout?: boolean;
+}
+
+const {
+  eyebrow,
+  title,
+  description,
+  active,
+  viewHref,
+  viewLabel,
+  showLogout = false,
+} = Astro.props as Props;
+const links = [
+  { id: 'blogs', href: '/admin/', label: 'Edit blogs' },
+  { id: 'users', href: '/admin/users/', label: 'Manage users' },
+  { id: 'notes', href: '/admin/notes/', label: 'Edit notes' },
+] as const;
+---
+
+<header class='mb-6 flex flex-wrap items-start justify-between gap-5 border-b border-real-accent/30 pb-6'>
+  <div class='max-w-3xl'>
+    <p class='text-xs font-bold uppercase tracking-[0.25em] text-real-accent'>{eyebrow}</p>
+    <h1 class='mt-2 text-3xl font-black sm:text-4xl'>{title}</h1>
+    {description && <p class='mt-2 text-sm text-white/45'>{description}</p>}
+  </div>
+  <div class='ml-auto flex w-full flex-col items-end gap-2 sm:w-auto'>
+    <nav class='grid w-full grid-cols-3 text-sm sm:w-[25rem]' aria-label='Administration sections'>
+      {links.map((link) => (
+        <a
+          href={link.href}
+          aria-current={link.id === active ? 'page' : undefined}
+          class:list={[
+            'border px-3 py-2 text-center transition first:border-r-0 last:border-l-0',
+            link.id === active
+              ? 'border-real-accent/50 bg-real-accent/10 font-bold text-real-accent'
+              : 'border-white/20 text-white/70 hover:border-real-accent/40 hover:text-real-accent',
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+    {(viewHref || showLogout) && <div class='flex min-h-9 flex-wrap justify-end gap-2 text-xs'>
+      {viewHref && <a href={viewHref} target='_blank' class='border border-white/20 px-3 py-2 text-white/65 transition hover:border-real-accent/50 hover:text-real-accent'>{viewLabel} ↗</a>}
+      {showLogout && <button id='logout' type='button' class='border border-red-300/25 px-3 py-2 text-red-200 transition hover:bg-red-300/10'>Sign out</button>}
+    </div>}
+  </div>
+</header>

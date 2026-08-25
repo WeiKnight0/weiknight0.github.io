@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class NotesController {
-  private static final Set<String> INFORMATION_ARTICLES = Set.of("index", "about", "privacy", "terms");
+  private static final Set<String> INFORMATION_ARTICLES = Set.of("index", "terms");
   private final NoteArticleRepository articles;
   private final SessionAccess access;
 
@@ -44,11 +44,11 @@ public class NotesController {
    * @throws AccessDeniedException when the session is anonymous.
    */
   @GetMapping("/notes")
-  public List<NoteSummary> notes(HttpSession session) {
+  public List<NoteListItem> notes(HttpSession session) {
     access.requireMember(session);
-    return articles.findAllByStatusOrderByPublishedAtDesc(ArticleStatus.PUBLISHED).stream()
+    return articles.findAllByStatusOrderByDirectoryAscSortOrderAscTitleAsc(ArticleStatus.PUBLISHED).stream()
         .filter(article -> !INFORMATION_ARTICLES.contains(article.getSlug()))
-        .map(NoteSummary::from)
+        .map(NoteListItem::from)
         .toList();
   }
 
@@ -68,25 +68,27 @@ public class NotesController {
   }
 
   /** @description Feed representation of one published article. */
-  public record NoteSummary(
+  public record NoteListItem(
       String slug,
       String title,
-      String summary,
       String coverUrl,
       List<String> tags,
       String series,
       Integer seriesOrder,
+      String directory,
+      Integer sortOrder,
       Instant publishedAt,
       Instant updatedAt) {
-    static NoteSummary from(NoteArticle article) {
-      return new NoteSummary(
+    static NoteListItem from(NoteArticle article) {
+      return new NoteListItem(
           article.getSlug(),
           article.getTitle(),
-          article.getSummary(),
           article.getCoverUrl(),
           parseTags(article.getTags()),
           article.getSeries(),
           article.getSeriesOrder(),
+          article.getDirectory(),
+          article.getSortOrder(),
           article.getPublishedAt(),
           article.getUpdatedAt());
     }
@@ -96,11 +98,12 @@ public class NotesController {
   public record NoteDetail(
       String slug,
       String title,
-      String summary,
       String coverUrl,
       List<String> tags,
       String series,
       Integer seriesOrder,
+      String directory,
+      Integer sortOrder,
       Instant publishedAt,
       Instant updatedAt,
       String contentFormat,
@@ -109,11 +112,12 @@ public class NotesController {
       return new NoteDetail(
           article.getSlug(),
           article.getTitle(),
-          article.getSummary(),
           article.getCoverUrl(),
           parseTags(article.getTags()),
           article.getSeries(),
           article.getSeriesOrder(),
+          article.getDirectory(),
+          article.getSortOrder(),
           article.getPublishedAt(),
           article.getUpdatedAt(),
           article.getContentFormat().name(),

@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
@@ -49,9 +50,11 @@ public class NotesAdminController {
    * @throws AccessDeniedException when the session is not administrative.
    */
   @GetMapping
-  public List<AdminNoteSummary> list(HttpSession session) {
+  public List<AdminNoteListItem> list(HttpSession session) {
     access.requireAdmin(session);
-    return articles.findAllByOrderByUpdatedAtDesc().stream().map(AdminNoteSummary::from).toList();
+    return articles.findAllByOrderByDirectoryAscSortOrderAscTitleAsc().stream()
+        .map(AdminNoteListItem::from)
+        .toList();
   }
 
   /**
@@ -137,11 +140,12 @@ public class NotesAdminController {
     article.update(
         input.slug(),
         input.title(),
-        input.summary(),
         blankToNull(input.coverUrl()),
         input.tags(),
         blankToNull(input.series()),
         input.seriesOrder(),
+        input.directory(),
+        input.sortOrder(),
         input.status(),
         input.contentFormat(),
         input.content(),
@@ -163,11 +167,14 @@ public class NotesAdminController {
   public record ArticleInput(
       @NotBlank @Size(max = 160) @Pattern(regexp = "[a-z0-9]+(?:-[a-z0-9]+)*") String slug,
       @NotBlank @Size(max = 240) String title,
-      @NotBlank String summary,
       @Size(max = 1000) String coverUrl,
       @NotNull @Size(max = 1000) String tags,
       @Size(max = 240) String series,
       @Positive Integer seriesOrder,
+      @NotNull @Size(max = 1000)
+      @Pattern(regexp = "(?:[a-z0-9]+(?:-[a-z0-9]+)*(?:/[a-z0-9]+(?:-[a-z0-9]+)*)*)?")
+      String directory,
+      @NotNull @PositiveOrZero Integer sortOrder,
       @NotNull ArticleStatus status,
       @NotNull ArticleContentFormat contentFormat,
       @NotBlank String content,
@@ -175,20 +182,24 @@ public class NotesAdminController {
   }
 
   /** @description Sidebar representation of one editable article. */
-  public record AdminNoteSummary(
+  public record AdminNoteListItem(
       Long id,
       String slug,
       String title,
       ArticleStatus status,
       String series,
+      String directory,
+      Integer sortOrder,
       Instant updatedAt) {
-    static AdminNoteSummary from(NoteArticle article) {
-      return new AdminNoteSummary(
+    static AdminNoteListItem from(NoteArticle article) {
+      return new AdminNoteListItem(
           article.getId(),
           article.getSlug(),
           article.getTitle(),
           article.getStatus(),
           article.getSeries(),
+          article.getDirectory(),
+          article.getSortOrder(),
           article.getUpdatedAt());
     }
   }

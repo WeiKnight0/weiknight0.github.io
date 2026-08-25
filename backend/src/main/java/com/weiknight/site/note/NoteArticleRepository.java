@@ -8,14 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @description Provides publication-aware and administrator access to note articles.
  */
 public interface NoteArticleRepository extends JpaRepository<NoteArticle, Long> {
-  /** @description Returns every article with the most recently edited first. */
-  List<NoteArticle> findAllByOrderByUpdatedAtDesc();
+  /** @description Returns every article in stable directory-tree order. */
+  List<NoteArticle> findAllByOrderByDirectoryAscSortOrderAscTitleAsc();
 
   /**
    * @description Returns published articles ordered from newest to oldest.
    * @param status Required lifecycle state.
    */
-  List<NoteArticle> findAllByStatusOrderByPublishedAtDesc(ArticleStatus status);
+  List<NoteArticle> findAllByStatusOrderByDirectoryAscSortOrderAscTitleAsc(ArticleStatus status);
 
   /**
    * @description Locates one article by its stable public URL and lifecycle state.

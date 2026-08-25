@@ -8,10 +8,12 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,8 @@ public class LegacyNoteImporter implements ApplicationRunner {
       Pattern.DOTALL);
   private static final Pattern IMAGE = Pattern.compile("(!\\[[^]]*]\\()([^\\s)]+)([^)]*\\))");
   private static final Pattern LINK = Pattern.compile("(?<!!)(\\[[^]]*]\\()([^\\s)]+)([^)]*\\))");
+  private static final Pattern LEADING_NUMBER = Pattern.compile("^(\\d+)(?:[-_.].*)?$");
+  private static final Set<String> EXTRA_PAGES = Set.of("about.md", "privacy.md");
   private final NoteArticleRepository articles;
   private final Path root;
 
@@ -68,8 +72,15 @@ public class LegacyNoteImporter implements ApplicationRunner {
   }
 
   private void importFile(Path path) throws IOException {
+    if (EXTRA_PAGES.contains(root.relativize(path).toString().replace('\\', '/'))) {
+      return;
+    }
     String slug = slug(path);
-    if (articles.findBySlug(slug).isPresent()) {
+    Optional<NoteArticle> existing = articles.findBySlug(slug);
+    if (existing.isPresent()) {
+      if (existing.get().initializeLocation(directory(path), sortOrder(path))) {
+        articles.save(existing.get());
+      }
       return;
     }
     String source = Files.readString(path);
@@ -80,11 +91,12 @@ public class LegacyNoteImporter implements ApplicationRunner {
     article.update(
         slug,
         field(metadata, "title").orElseGet(() -> humanize(fileStem(path))),
-        field(metadata, "description").orElseGet(() -> summary(body)),
         null,
         field(metadata, "tags").map(this::normalizeTags).orElse(""),
         series(path),
         null,
+        directory(path),
+        sortOrder(path),
         ArticleStatus.PUBLISHED,
         ArticleContentFormat.MARKDOWN,
         rewriteLinks(path, rewriteImages(path, body)),
@@ -169,18 +181,30 @@ public class LegacyNoteImporter implements ApplicationRunner {
     return relative.getNameCount() > 1 ? humanize(relative.getName(0).toString()) : null;
   }
 
-  private String summary(String markdown) {
-    String text = markdown
-        .replaceAll("(?s)```.*?```", " ")
-        .replaceAll("!\\[[^]]*]\\([^)]*\\)", " ")
-        .replaceAll("\\[([^]]+)]\\([^)]*\\)", "$1")
-        .replaceAll("[#>*_`~-]", " ")
-        .replaceAll("\\s+", " ")
-        .trim();
-    if (text.isEmpty()) {
-      return "Imported study note.";
+  private String directory(Path path) {
+    Path relative = root.relativize(path.getParent());
+    if (relative.toString().isBlank()) {
+      return "";
     }
-    return text.length() > 240 ? text.substring(0, 237) + "..." : text;
+    return StreamSupport.stream(relative.spliterator(), false)
+        .map(Path::toString)
+        .map(this::pathSegment)
+        .reduce((left, right) -> left + "/" + right)
+        .orElse("");
+  }
+
+  private int sortOrder(Path path) {
+    if ("index".equalsIgnoreCase(fileStem(path))) {
+      return 0;
+    }
+    Matcher matcher = LEADING_NUMBER.matcher(fileStem(path));
+    return matcher.matches() ? Integer.parseInt(matcher.group(1)) : 1000;
+  }
+
+  private String pathSegment(String value) {
+    return value.toLowerCase(Locale.ROOT)
+        .replaceAll("[^a-z0-9]+", "-")
+        .replaceAll("^-+|-+$", "");
   }
 
   private String fileStem(Path path) {

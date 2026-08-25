@@ -75,6 +75,37 @@ const dropdownScript = `
 
   setupAccountNavigation();
   document.addEventListener('astro:page-load', setupAccountNavigation);
+
+  const setupThemeControls = () => {
+    const root = document.documentElement;
+    const buttons = document.querySelectorAll('[data-theme-toggle]');
+    const syncButtons = () => {
+      const isDark = root.dataset.colorTheme === 'dark';
+      buttons.forEach((button) => {
+        button.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+        button.setAttribute('title', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+        const icon = button.querySelector('[data-theme-icon]');
+        const label = button.querySelector('[data-theme-label]');
+        if (icon) icon.textContent = isDark ? '☀' : '☾';
+        if (label) label.textContent = isDark ? 'Light theme' : 'Dark theme';
+      });
+    };
+    buttons.forEach((button) => {
+      if (button.dataset.themeReady === 'true') return;
+      button.dataset.themeReady = 'true';
+      button.addEventListener('click', () => {
+        const theme = root.dataset.colorTheme === 'dark' ? 'light' : 'dark';
+        root.dataset.colorTheme = theme;
+        root.style.colorScheme = theme;
+        localStorage.setItem('wkn-color-theme', theme);
+        syncButtons();
+      });
+    });
+    syncButtons();
+  };
+
+  setupThemeControls();
+  document.addEventListener('astro:page-load', setupThemeControls);
 })();
 `;
 
@@ -100,7 +131,7 @@ const LinkGroup = ({
         ⌄
       </span>
     </summary>
-    <div className="nav-dropdown-panel absolute left-0 top-full mt-2 z-30 grid w-48 gap-1 border border-white/10 bg-black/90 p-2 shadow-2xl backdrop-blur-md">
+    <div className="site-popover nav-dropdown-panel absolute left-0 top-full mt-2 z-30 grid w-48 gap-1 border p-2 shadow-2xl backdrop-blur-md">
       {links.map((link) => (
         <a
           key={link.href}
@@ -137,7 +168,7 @@ const LanguageGroup = ({
         ▼
       </span>
     </summary>
-    <div className="nav-dropdown-panel absolute right-0 top-full mt-2 z-30 grid w-32 gap-1 border border-white/10 bg-black/95 p-2 shadow-2xl backdrop-blur-md">
+    <div className="site-popover nav-dropdown-panel absolute right-0 top-full mt-2 z-30 grid w-32 gap-1 border p-2 shadow-2xl backdrop-blur-md">
       {locales.map((targetLocale) => (
         <a
           key={targetLocale}
@@ -170,7 +201,7 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
   const isFiction = pathname.includes('/fiction');
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-black/80 backdrop-blur-lg">
+    <header className="site-header sticky top-0 z-40 border-b backdrop-blur-lg">
       <nav
         className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3"
         aria-label="Primary navigation"
@@ -226,6 +257,9 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
           <a href="/profile/" data-account-profile hidden className="rounded-full transition hover:ring-2 hover:ring-real-accent" aria-label="Personal center">
             <img src={Profile.avatar} alt="Personal center" className="h-9 w-9 rounded-full border border-real-accent/60 object-cover" />
           </a>
+          <button type="button" data-theme-toggle className="flex h-9 w-9 items-center justify-center border border-white/10 text-base text-white/70 transition hover:border-real-accent/50 hover:text-real-accent" aria-label="Switch color theme">
+            <span data-theme-icon aria-hidden="true">☀</span>
+          </button>
           <LanguageGroup
             label={text.language}
             labelKey="nav.language"
@@ -240,7 +274,7 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
             Menu
           </summary>
           <div
-            className="absolute left-0 right-0 top-full mt-1 border-b border-white/10 bg-black/95 p-4 shadow-2xl backdrop-blur-xl"
+            className="site-popover absolute left-0 right-0 top-full mt-1 border-b p-4 shadow-2xl backdrop-blur-xl"
             data-dropdown-scope
           >
             <div className="grid gap-4">
@@ -255,6 +289,9 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
               </div>
               <a href="/login/" data-account-login className="border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-center text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent">Login</a>
               <a href="/profile/" data-account-profile hidden className="flex items-center justify-center gap-3 border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent"><img src={Profile.avatar} alt="" className="h-7 w-7 rounded-full border border-real-accent/60 object-cover" />Personal center</a>
+              <button type="button" data-theme-toggle className="flex items-center justify-center gap-2 border border-white/10 px-4 py-3 text-xs font-bold uppercase tracking-widest text-white/70">
+                <span data-theme-icon aria-hidden="true">☀</span><span data-theme-label>Light theme</span>
+              </button>
             </div>
           </div>
         </details>
