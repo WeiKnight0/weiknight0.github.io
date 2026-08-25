@@ -2,20 +2,112 @@
 import Base from '@/templates/Base.astro';
 ---
 
-<Base head={{ title: 'Admin | WeiKnight', description: 'Content administration' }} theme='real'>
-  <main class='mx-auto w-full max-w-6xl px-5 py-16 font-real-mono text-real-text'>
+<Base head={{ title: 'Blog Admin | WeiKnight', description: 'Blog administration' }} theme='real'>
+  <main class='mx-auto w-full max-w-[96rem] px-4 py-10 font-real-mono text-real-text sm:px-6 lg:px-8'>
     <section id='admin-panel'>
-      <div class='mb-10 flex items-center justify-between border-b border-real-accent/30 pb-6'>
-        <div><p class='text-xs uppercase tracking-[0.25em] text-real-accent'>Content control</p><h1 class='mt-2 text-4xl font-black'>Admin</h1></div>
-        <button id='logout' class='border border-white/20 px-4 py-2 text-sm'>Sign out</button>
-      </div>
-      <a href='/admin/notes/' class='mb-8 inline-block border border-real-accent/40 bg-real-accent/10 px-5 py-3 text-real-accent'>Manage Notes →</a>
-      <div class='grid gap-10 lg:grid-cols-2'>
-        <section><h2 class='text-2xl font-bold'>Projects</h2><form id='project-form' class='mt-5 grid gap-3 border border-white/10 bg-black/20 p-5'><input type='hidden' name='id' /><input name='slug' required placeholder='Slug' class='input' /><input name='title' required placeholder='Title' class='input' /><textarea name='description' required placeholder='Description' class='input min-h-24'></textarea><input name='displayOrder' required type='number' value='1' placeholder='Display order' class='input' /><input name='tags' placeholder='Tags, separated by commas' class='input' /><input name='repoUrl' placeholder='Repository URL (optional)' class='input' /><button class='bg-real-accent p-3 font-bold text-black'>Save project</button><button type='button' data-reset='project-form' class='text-sm text-white/60'>Clear</button></form><div id='projects-list' class='mt-5 grid gap-3'></div></section>
-        <section><h2 class='text-2xl font-bold'>Posts</h2><form id='post-form' class='mt-5 grid gap-3 border border-white/10 bg-black/20 p-5'><input type='hidden' name='id' /><input name='slug' required placeholder='Slug' class='input' /><input name='title' required placeholder='Title' class='input' /><textarea name='description' required placeholder='Description' class='input min-h-24'></textarea><input name='publishedAt' required type='datetime-local' class='input' /><input name='tags' placeholder='Tags, separated by commas' class='input' /><button class='bg-real-accent p-3 font-bold text-black'>Save post</button><button type='button' data-reset='post-form' class='text-sm text-white/60'>Clear</button></form><div id='posts-list' class='mt-5 grid gap-3'></div></section>
+      <header class='mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-real-accent/30 pb-6'>
+        <div>
+          <p class='text-xs font-bold uppercase tracking-[0.25em] text-real-accent'>Content control</p>
+          <h1 class='mt-2 text-3xl font-black sm:text-4xl'>Blog editor</h1>
+        </div>
+        <nav class='flex flex-wrap items-center gap-3 text-sm'>
+          <a href='/real/blog/' target='_blank' class='border border-white/20 px-4 py-2 text-white/70 transition hover:border-real-accent/50 hover:text-real-accent'>View blog ↗</a>
+          <a href='/admin/users/' class='border border-white/20 px-4 py-2 text-white/70 transition hover:border-real-accent/50 hover:text-real-accent'>Manage users</a>
+          <a href='/admin/notes/' class='border border-real-accent/40 bg-real-accent/10 px-4 py-2 text-real-accent transition hover:bg-real-accent hover:text-black'>Manage notes</a>
+          <button id='logout' type='button' class='border border-white/20 px-4 py-2 text-white/70 transition hover:border-red-300/60 hover:text-red-200'>Sign out</button>
+        </nav>
+      </header>
+
+      <div id='notice' class='mb-5 hidden border px-4 py-3 text-sm' role='status' aria-live='polite'></div>
+
+      <div class='grid min-h-[46rem] overflow-hidden border border-white/10 bg-black/20 lg:grid-cols-[21rem_minmax(0,1fr)]'>
+        <aside class='flex min-h-0 flex-col border-b border-white/10 bg-black/25 lg:border-b-0 lg:border-r'>
+          <div class='border-b border-white/10 p-4'>
+            <div class='flex items-center justify-between gap-3'>
+              <div>
+                <h2 class='font-bold text-white'>Blogs</h2>
+                <p id='post-count' class='mt-1 text-xs text-white/40'>Loading…</p>
+              </div>
+              <button id='new-post' type='button' class='bg-real-accent px-3 py-2 text-sm font-black text-black transition hover:bg-white'>+ New</button>
+            </div>
+            <label class='mt-4 block'>
+              <span class='sr-only'>Search blogs</span>
+              <input id='post-search' type='search' placeholder='Search title or slug…' autocomplete='off' class='input w-full text-sm' />
+            </label>
+          </div>
+          <div id='posts-list' class='max-h-[25rem] min-h-48 overflow-y-auto p-2 lg:max-h-[calc(100vh-16rem)] lg:flex-1' aria-label='Blog list'></div>
+        </aside>
+
+        <section class='min-w-0'>
+          <div id='empty-editor' class='flex min-h-[34rem] items-center justify-center p-8 text-center'>
+            <div>
+              <p class='text-5xl text-real-accent/40'>✎</p>
+              <h2 class='mt-5 text-xl font-bold text-white'>Select a blog to edit</h2>
+              <p class='mt-2 text-sm text-white/45'>Or create a new blog from the left panel.</p>
+            </div>
+          </div>
+
+          <form id='post-form' class='hidden' novalidate>
+            <input type='hidden' name='id' />
+            <div class='sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-real-bg/95 px-5 py-4 backdrop-blur sm:px-7'>
+              <div class='min-w-0'>
+                <p id='editor-mode' class='text-xs font-bold uppercase tracking-[0.2em] text-real-accent'>Editing blog</p>
+                <p id='save-state' class='mt-1 truncate text-xs text-white/45'>No unsaved changes</p>
+              </div>
+              <div class='flex flex-wrap items-center gap-2'>
+                <a id='preview-post' href='#' target='_blank' class='hidden border border-white/20 px-4 py-2 text-sm text-white/70 transition hover:border-real-accent/50 hover:text-real-accent'>Preview ↗</a>
+                <button id='delete-post' type='button' class='hidden border border-red-300/25 px-4 py-2 text-sm text-red-200 transition hover:bg-red-300/10'>Delete</button>
+                <button id='save-post' type='submit' class='bg-real-accent px-5 py-2 text-sm font-black text-black transition hover:bg-white disabled:cursor-wait disabled:opacity-50'>Save blog</button>
+              </div>
+            </div>
+
+            <div class='grid gap-5 p-5 sm:p-7'>
+              <div class='grid gap-5 xl:grid-cols-2'>
+                <label class='grid gap-2'>
+                  <span class='field-label'>Title</span>
+                  <input name='title' required maxlength='200' placeholder='Blog title' class='input' />
+                </label>
+                <label class='grid gap-2'>
+                  <span class='field-label'>URL slug</span>
+                  <input name='slug' required maxlength='120' pattern='[a-z0-9]+(?:-[a-z0-9]+)*' placeholder='my-blog-post' class='input' />
+                  <span class='text-xs text-white/35'>Lowercase letters, numbers and hyphens only.</span>
+                </label>
+              </div>
+
+              <label class='grid gap-2'>
+                <span class='field-label'>Summary</span>
+                <textarea name='description' required maxlength='2000' placeholder='A short description shown in the blog list.' class='input min-h-24 resize-y'></textarea>
+              </label>
+
+              <div class='grid gap-5 xl:grid-cols-2'>
+                <label class='grid gap-2'>
+                  <span class='field-label'>Publish date</span>
+                  <input name='publishedAt' required type='datetime-local' class='input' />
+                </label>
+                <label class='grid gap-2'>
+                  <span class='field-label'>Tags</span>
+                  <input name='tags' placeholder='linux, docker, tutorial' class='input' />
+                  <span class='text-xs text-white/35'>Separate multiple tags with commas.</span>
+                </label>
+              </div>
+
+              <label class='grid gap-2'>
+                <span class='flex flex-wrap items-end justify-between gap-2'>
+                  <span class='field-label'>Markdown content</span>
+                  <span id='content-count' class='text-xs font-normal normal-case tracking-normal text-white/35'>0 characters</span>
+                </span>
+                <textarea name='content' required spellcheck='true' placeholder='# Start writing…' class='input min-h-[32rem] resize-y font-mono text-sm leading-7 [tab-size:2]'></textarea>
+              </label>
+            </div>
+          </form>
+        </section>
       </div>
     </section>
   </main>
+  <script is:inline src='/js/api.js'></script>
   <script is:inline src='/js/admin.js'></script>
-  <style is:global>.input { @apply border border-white/20 bg-black/30 p-3 text-white placeholder:text-white placeholder:opacity-40; }</style>
+  <style is:global>
+    .input { @apply border border-white/20 bg-black/30 p-3 text-white outline-none transition placeholder:text-white placeholder:opacity-30 focus:border-real-accent; }
+    .field-label { @apply text-xs font-bold uppercase tracking-[0.16em] text-white/60; }
+  </style>
 </Base>

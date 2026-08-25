@@ -19,11 +19,11 @@ docker compose up -d --build
 
 默认通过 `http://localhost` 访问网站；`http://localhost/api/health` 可验证 Nginx 到 Spring Boot 的路由。使用 `HTTP_PORT=8088 docker compose up -d --build` 可变更对外端口。
 
-运行时包含两个轻量服务：Nginx（`nginx:1.27-alpine`，上限 128MB）与后端（`eclipse-temurin:17-jre-alpine`，上限 512MB）。Node 和 Maven 仅用于镜像构建，不会驻留在服务器内存中，适合 2GB 服务器。
+运行时包含 Nginx（上限 128MB）、Spring Boot 后端（上限 512MB）、PostgreSQL（上限 256MB）和按发布标记构建文档的 MkDocs（上限 128MB）。Node 和 Maven 仅用于镜像构建，不会驻留在服务器内存中，适合 2GB 服务器。
 
 首次启动会自动创建 PostgreSQL 数据表并导入现有项目和博客列表。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
 
-将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。管理员先请求 `POST /api/v1/auth/login` 建立 Session，随后可使用受保护的 `/api/v1/admin/projects` 与 `/api/v1/admin/posts` 执行 CRUD。
+将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。登录后可从 `/admin/` 管理博客、从 `/admin/users/` 管理用户、从 `/admin/notes/` 编辑 Markdown 并管理 PNG、JPEG、GIF 或 WebP 图片。公开注册入口不存在。
 
 停止服务：
 

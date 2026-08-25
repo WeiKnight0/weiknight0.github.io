@@ -1,0 +1,20 @@
+---
+import BlogPostClient from '@/partials/BlogPostClient.astro';
+import RealPage from '@/templates/RealPage.astro';
+import '@/styles/blog-article.css';
+---
+
+<RealPage title='Blog | My Homepage' description='Blog post'>
+  <article id='blog-article' data-has-initial='false' class='mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8'>
+    <a href='/real/blog/' class='text-base font-bold text-cyan-300 transition hover:text-cyan-200'>← Back to blogs</a>
+    <p class='mt-10 text-base font-black uppercase tracking-[0.28em] text-cyan-300 md:text-lg'>Blogs</p>
+    <h1 id='blog-title' class='mt-6 text-3xl font-black leading-tight tracking-[-0.035em] text-white md:text-5xl'>Loading blog…</h1>
+    <p id='blog-description' class='mt-6 text-lg leading-8 text-slate-300'></p>
+    <div class='mt-8 flex flex-wrap items-center gap-3 text-base text-slate-400'>
+      <time id='blog-date'></time>
+      <span id='blog-tags' class='contents'></span>
+    </div>
+    <div id='blog-content' class='blog-prose prose prose-base prose-invert prose-slate mt-14 max-w-none prose-headings:font-black prose-a:text-cyan-300 prose-strong:text-white md:prose-lg'></div>
+  </article>
+  <BlogPostClient />
+</RealPage>

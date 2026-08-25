@@ -1,0 +1,116 @@
+<script>
+  import { micromark } from 'micromark';
+  import { gfm, gfmHtml } from 'micromark-extension-gfm';
+
+  const select = <ElementType extends Element>(selector: string, root: ParentNode = document) => {
+    const element = root.querySelector<ElementType>(selector);
+    if (!element) {
+      throw new Error(`Required blog element is missing: ${selector}`);
+    }
+    return element;
+  };
+
+  const article = select<HTMLElement>('#blog-article');
+  const title = select<HTMLElement>('#blog-title');
+  const description = select<HTMLElement>('#blog-description');
+  const date = select<HTMLTimeElement>('#blog-date');
+  const tags = select<HTMLElement>('#blog-tags');
+  const content = select<HTMLElement>('#blog-content');
+  const slug = decodeURIComponent(location.pathname.split('/').filter(Boolean).at(-1) || '');
+  if (!slug) {
+    throw new Error('Blog slug is missing from the current URL');
+  }
+
+  const setupCodeBlocks = () => {
+    content.querySelectorAll('pre').forEach((pre) => {
+      if (pre.dataset.blogCodeReady === 'true') {
+        return;
+      }
+      pre.dataset.blogCodeReady = 'true';
+      const code = select<HTMLElement>('code', pre);
+      const language = [...code.classList]
+        .find((name) => name.startsWith('language-'))
+        ?.slice(9) || 'plaintext';
+      const languageLabel = document.createElement('span');
+      languageLabel.className = 'blog-code-language';
+      languageLabel.textContent = language;
+      pre.append(languageLabel);
+      const copyButton = document.createElement('button');
+      copyButton.className = 'blog-copy-button';
+      copyButton.type = 'button';
+      copyButton.textContent = 'Copy';
+      copyButton.addEventListener('click', () => {
+        navigator.clipboard.writeText(code.textContent || '').then(() => {
+          copyButton.textContent = 'Copied';
+        }).catch(() => {
+          copyButton.textContent = 'Failed';
+        }).finally(() => {
+          window.setTimeout(() => { copyButton.textContent = 'Copy'; }, 1200);
+        });
+      });
+      pre.append(copyButton);
+    });
+  };
+
+  const renderTags = (values: string[]) => {
+    tags.replaceChildren(...values.map((value) => {
+      const link = document.createElement('a');
+      link.href = `/real/blog/tags/${encodeURIComponent(value)}/`;
+      link.className = 'rounded-full border border-cyan-300/20 px-3 py-1 text-sm font-bold text-cyan-200 transition hover:bg-cyan-300/10';
+      link.textContent = value;
+      return link;
+    }));
+  };
+
+  const renderMarkdown = (markdown: string) => {
+    content.innerHTML = micromark(markdown, {
+      allowDangerousHtml: false,
+      extensions: [gfm()],
+      htmlExtensions: [gfmHtml()],
+    });
+    setupCodeBlocks();
+  };
+
+  const loadLegacyMarkdown = async () => {
+    const response = await fetch('/blog-sources.json');
+    if (!response.ok) {
+      throw new Error(`Legacy blog source loading failed (${response.status})`);
+    }
+    const sources = await response.json();
+    return sources.find((item: { slug: string }) => item.slug.toLowerCase() === slug.toLowerCase())?.content || '';
+  };
+
+  const load = async () => {
+    setupCodeBlocks();
+    try {
+      const response = await fetch(`/api/v1/posts/${encodeURIComponent(slug)}`);
+      if (!response.ok) {
+        throw new Error(`Blog loading failed (${response.status})`);
+      }
+      const post = await response.json();
+      title.textContent = post.title;
+      description.textContent = post.description;
+      date.dateTime = post.publishedAt;
+      date.textContent = new Intl.DateTimeFormat('en', { dateStyle: 'long' }).format(new Date(post.publishedAt));
+      renderTags(post.tags || []);
+      document.title = `${post.title} | Blogs | My Homepage`;
+      if (post.content?.trim()) {
+        renderMarkdown(post.content);
+        return;
+      }
+      if (article.dataset.hasInitial === 'true') {
+        return;
+      }
+      renderMarkdown(await loadLegacyMarkdown() || 'This blog does not have any content yet.');
+    } catch {
+      if (article.dataset.hasInitial === 'true') {
+        return;
+      }
+      title.textContent = 'Blog unavailable';
+      description.textContent = 'This blog does not exist or is temporarily unavailable.';
+      content.innerHTML = '<p><a href="/real/blog/">Return to the blog list</a></p>';
+    }
+  };
+
+  load();
+</script>

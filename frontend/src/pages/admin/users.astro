@@ -1,0 +1,54 @@
+---
+import Base from '@/templates/Base.astro';
+---
+
+<Base head={{ title: 'User Admin | WeiKnight', description: 'User administration' }} theme='real'>
+  <main class='mx-auto max-w-6xl px-5 py-12 font-real-mono text-real-text'>
+    <header class='mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-real-accent/30 pb-5'>
+      <div>
+        <p class='text-xs font-bold uppercase tracking-[0.25em] text-real-accent'>Access control</p>
+        <h1 class='mt-2 text-3xl font-black'>User management</h1>
+        <p class='mt-2 text-sm text-white/45'>Only administrators can create or revoke accounts. Public registration remains disabled.</p>
+      </div>
+      <nav class='flex flex-wrap gap-3 text-sm'>
+        <a href='/admin/' class='border border-white/20 px-4 py-2 text-white/70'>Blog editor</a>
+        <a href='/admin/notes/' class='border border-white/20 px-4 py-2 text-white/70'>Manage notes</a>
+        <button id='logout' type='button' class='border border-red-300/25 px-4 py-2 text-red-200'>Sign out</button>
+      </nav>
+    </header>
+
+    <div id='notice' class='mb-5 hidden border px-4 py-3 text-sm' role='status' aria-live='polite'></div>
+
+    <div class='grid gap-6 lg:grid-cols-[22rem_1fr]'>
+      <section class='border border-white/10 bg-real-surface p-5'>
+        <h2 class='text-lg font-bold text-white'>Add user</h2>
+        <form id='user-form' class='mt-5 grid gap-4'>
+          <label class='grid gap-2'>
+            <span class='field-label'>Username</span>
+            <input name='username' required minlength='3' maxlength='100' autocomplete='off' class='input' />
+          </label>
+          <label class='grid gap-2'>
+            <span class='field-label'>Initial password</span>
+            <input name='password' required minlength='8' maxlength='200' type='password' autocomplete='new-password' class='input' />
+            <span class='text-xs text-white/35'>At least 8 characters. The password is stored as a BCrypt hash.</span>
+          </label>
+          <button id='create-user' type='submit' class='bg-real-accent px-4 py-3 font-black text-black disabled:cursor-wait disabled:opacity-50'>Create user</button>
+        </form>
+      </section>
+
+      <section class='border border-white/10 bg-real-surface'>
+        <div class='flex items-center justify-between border-b border-white/10 p-5'>
+          <h2 class='text-lg font-bold text-white'>Login accounts</h2>
+          <p id='user-count' class='text-xs text-white/40'>Loading…</p>
+        </div>
+        <div id='users-list' class='divide-y divide-white/10'></div>
+      </section>
+    </div>
+  </main>
+  <script is:inline src='/js/api.js'></script>
+  <script is:inline src='/js/users-admin.js'></script>
+  <style is:global>
+    .input { @apply border border-white/20 bg-black/30 p-3 text-white outline-none transition focus:border-real-accent; }
+    .field-label { @apply text-xs font-bold uppercase tracking-[0.16em] text-white/60; }
+  </style>
+</Base>

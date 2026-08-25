@@ -4,6 +4,17 @@ module.exports = {
     './src/**/*.{astro,html,js,jsx,svelte,ts,tsx,vue}',
     './node_modules/astro-boilerplate-components/**/*.{js,ts,jsx,tsx}',
   ],
+  // These states are applied by the static admin script at runtime.
+  safelist: [
+    'text-amber-200',
+    'border-red-300/40',
+    'bg-red-300/10',
+    'text-red-100',
+    'border-transparent',
+    'hover:border-white/30',
+    'hover:bg-white/5',
+    'text-white/85',
+  ],
   theme: {
     extend: {
       fontFamily: {

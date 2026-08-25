@@ -5,6 +5,10 @@ server:
 spring:
   application:
     name: wkn-personal-site-backend
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/wkn_site}
     username: ${DATABASE_USERNAME:wkn}

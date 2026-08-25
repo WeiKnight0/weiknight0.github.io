@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', function handleNoteReady() {
-  // 暗黑模式切换
   const toggleDarkBtn = document.getElementById('toggle-dark');
   const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-  // 检查本地存储或系统偏好
   const currentTheme =
     localStorage.getItem('theme') ||
     (prefersDarkScheme.matches ? 'dark' : 'light');
@@ -30,14 +28,12 @@ document.addEventListener('DOMContentLoaded', function handleNoteReady() {
     localStorage.setItem('theme', theme);
   });
 
-  // 打印功能
   document
     .getElementById('print-note')
     .addEventListener('click', function handlePrint() {
-      window.print(); // 触发浏览器打印对话框
+      window.print();
     });
 
-  // 图片点击放大
   const images = document.querySelectorAll('.chapter-content img');
   images.forEach((img) => {
     const image = img;

@@ -1,0 +1,21 @@
+.blog-prose pre {
+  border: 1px solid rgb(51 65 85 / 0.9);
+  border-radius: 1rem;
+  background: #111827 !important;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 0.24);
+  color: #e5e7eb !important;
+  overflow-x: auto;
+  padding: 3rem 1.25rem 1.25rem;
+  position: relative;
+}
+
+.blog-prose pre * { color: #e5e7eb !important; text-shadow: none !important; }
+.blog-prose pre code { background: transparent !important; color: inherit !important; padding: 0; font-size: 0.95rem; line-height: 1.7; }
+.blog-prose :not(pre) > code { border: 1px solid rgb(34 211 238 / 0.18); border-radius: 0.45rem; background: rgb(8 47 73 / 0.42); color: #bae6fd; padding: 0.12rem 0.38rem; }
+.blog-prose table { display: block; max-width: 100%; overflow-x: auto; border-radius: 0.9rem; border: 1px solid rgb(51 65 85 / 0.9); }
+.blog-prose blockquote { border-left-color: rgb(34 211 238 / 0.65); background: rgb(15 23 42 / 0.55); border-radius: 0 0.9rem 0.9rem 0; padding: 0.5rem 1rem; }
+.blog-prose .blog-code-language,
+.blog-prose .blog-copy-button { position: absolute; top: 0.75rem; z-index: 1; border: 1px solid rgb(103 232 249 / 0.18); border-radius: 999px; background: rgb(15 23 42 / 0.92); color: #bae6fd; font-family: Consolas, 'Courier New', monospace; font-size: 0.72rem; font-weight: 800; line-height: 1; padding: 0.42rem 0.7rem; }
+.blog-prose .blog-code-language { left: 0.9rem; text-transform: uppercase; }
+.blog-prose .blog-copy-button { right: 0.9rem; cursor: pointer; transition: background 160ms ease, color 160ms ease, border-color 160ms ease; }
+.blog-prose .blog-copy-button:hover { border-color: rgb(103 232 249 / 0.45); background: rgb(8 47 73 / 0.95); color: white; }
