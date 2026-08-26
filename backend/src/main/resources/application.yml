@@ -22,4 +22,5 @@ spring:
 
 site:
   note-assets-root: ${NOTE_ASSETS_ROOT:/data/note-assets}
+  user-avatars-root: ${USER_AVATARS_ROOT:/data/user-avatars}
   legacy-notes-root: ${LEGACY_NOTES_ROOT:/data/legacy-notes}

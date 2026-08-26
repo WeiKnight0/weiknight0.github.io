@@ -1,0 +1,5 @@
+ALTER TABLE site_users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'USER';
+ALTER TABLE site_users ADD COLUMN bio VARCHAR(500) NOT NULL DEFAULT '';
+
+ALTER TABLE site_users
+  ADD CONSTRAINT site_users_role_check CHECK (role IN ('ADMIN', 'USER'));

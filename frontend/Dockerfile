@@ -18,7 +18,14 @@ RUN npm run build
 # Nginx is the only frontend runtime process.
 FROM nginx:1.27-alpine
 
-COPY nginx/wkn-personal-site.conf /etc/nginx/conf.d/default.conf
-COPY --from=frontend-builder /app/dist /usr/share/nginx/html
+RUN sed -i 's/^nginx:x:101:101:/nginx:x:1000:1000:/' /etc/passwd \
+    && sed -i 's/^nginx:x:101:/nginx:x:1000:/' /etc/group \
+    && mkdir -p /tmp/nginx \
+    && chown -R 1000:1000 /tmp/nginx /var/cache/nginx /var/log/nginx /usr/share/nginx/html
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY --chown=1000:1000 nginx/wkn-personal-site.conf /etc/nginx/conf.d/default.conf
+COPY --chown=1000:1000 --from=frontend-builder /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+USER 1000:1000
+
+EXPOSE 8080

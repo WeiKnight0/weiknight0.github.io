@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.net.URI;
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,20 +31,14 @@ public class AuthController {
   private final SiteUserRepository users;
   private final PasswordEncoder passwordEncoder;
   private final SessionAccess access;
-  private final String adminUsername;
-  private final String adminPassword;
 
   AuthController(
       SiteUserRepository users,
       PasswordEncoder passwordEncoder,
-      SessionAccess access,
-      @Value("${ADMIN_USERNAME:admin}") String adminUsername,
-      @Value("${ADMIN_PASSWORD}") String adminPassword) {
+      SessionAccess access) {
     this.users = users;
     this.passwordEncoder = passwordEncoder;
     this.access = access;
-    this.adminUsername = adminUsername;
-    this.adminPassword = adminPassword;
   }
 
   /**
@@ -75,7 +69,7 @@ public class AuthController {
       LoginResponse response = authenticate(new LoginInput(username, password), request.getSession());
       request.changeSessionId();
       log.info("FORM_LOGIN_SUCCESS user={} role={} session={}", username, response.role(), request.getSession().getId());
-      return redirect("admin".equals(response.role()) ? "/admin/" : "/");
+      return redirect("admin".equals(response.role()) ? "/admin/blogs/" : "/");
     } catch (AccessDeniedException exception) {
       log.warn("FORM_LOGIN_FAILURE user={}", username);
       return redirect("/login/?error=1");
@@ -99,24 +93,19 @@ public class AuthController {
    */
   @GetMapping("/me")
   public AccountResponse me(HttpSession session) {
-    if (access.isAdmin(session)) {
-      return new AccountResponse("admin", adminUsername);
-    }
-    return users.findById(access.requireUserId(session))
-        .map(user -> new AccountResponse("user", user.getUsername()))
+    access.requireMember(session);
+    return users.findByIdAndEnabledTrue(access.requireUserId(session))
+        .map(AccountResponse::from)
         .orElseThrow(AccessDeniedException::new);
   }
 
   private LoginResponse authenticate(LoginInput input, HttpSession session) {
-    if (adminUsername.equals(input.username()) && adminPassword.equals(input.password())) {
-      access.signInAdmin(session);
-      return new LoginResponse("admin");
-    }
-    return users.findByUsername(input.username())
+    return users.findByUsernameIgnoreCase(input.username())
+        .filter(com.weiknight.site.user.SiteUser::isEnabled)
         .filter(user -> passwordEncoder.matches(input.password(), user.passwordHash()))
         .map(user -> {
-          access.signInUser(session, user.getId());
-          return new LoginResponse("user");
+          access.signIn(session, user.getId(), user.isAdmin());
+          return new LoginResponse(user.isAdmin() ? "admin" : "user");
         })
         .orElseThrow(AccessDeniedException::new);
   }
@@ -134,6 +123,23 @@ public class AuthController {
   }
 
   /** @description Public identity of the current authenticated session. */
-  public record AccountResponse(String role, String username) {
+  public record AccountResponse(
+      String role,
+      String username,
+      String displayName,
+      String bio,
+      String avatarUrl,
+      Instant createdAt,
+      Instant updatedAt) {
+    static AccountResponse from(com.weiknight.site.user.SiteUser user) {
+      return new AccountResponse(
+          user.isAdmin() ? "admin" : "user",
+          user.getUsername(),
+          user.getDisplayName(),
+          user.getBio(),
+          user.hasAvatar() ? "/api/v1/user-avatars/" + user.getId() + "?v=" + user.getUpdatedAt().toEpochMilli() : null,
+          user.getCreatedAt(),
+          user.getUpdatedAt());
+    }
   }
 }

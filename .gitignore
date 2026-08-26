@@ -22,6 +22,7 @@ node_modules/
 backend/target/
 data/postgres/
 data/note-assets/
+data/user-avatars/
 notes/site/
 notes/.publish
 

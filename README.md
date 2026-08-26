@@ -10,6 +10,7 @@
 - `backend/`：Spring Boot API 服务。
 - `data/postgres/`：PostgreSQL 持久化数据（已忽略，不提交 Git）。
 - `data/note-assets/`：文章图片持久化目录（已忽略，不提交 Git）。
+- `data/user-avatars/`：用户头像持久化目录（已忽略，不提交 Git）。
 - `notes/docs/`：仅供首次导入的旧 Markdown 与图片，不再参与网站构建。
 - `nginx/wkn-personal-site.conf`：生产 Nginx 示例配置。
 
@@ -18,16 +19,20 @@
 服务器仅需 Docker 与 Docker Compose 插件，无需安装 Node.js、Java、Maven 或 Nginx。
 
 ```bash
+mkdir -p data/postgres data/note-assets data/user-avatars
+sudo chown -R 1000:1000 data/postgres data/note-assets data/user-avatars
 docker compose up -d --build
 ```
 
 默认通过 `http://localhost` 访问网站；`http://localhost/api/health` 可验证 Nginx 到 Spring Boot 的路由。使用 `HTTP_PORT=8088 docker compose up -d --build` 可变更对外端口。
 
+Nginx、Spring Boot 和 PostgreSQL 的运行进程均固定使用 UID/GID `1000:1000`。持久化目录必须属于该用户；已有数据升级时也需要先停止服务并执行上面的 `chown`。Nginx 在容器内监听非特权端口 8080，对外端口仍默认为 80。
+
 运行时仅包含 Nginx（上限 128MB）、Spring Boot 后端（上限 512MB）和 PostgreSQL（上限 256MB）。Node 和 Maven 仅用于镜像构建，不会驻留在服务器内存中，适合 2GB 服务器。
 
 首次启动会自动创建 PostgreSQL 数据表、导入现有项目和博客列表，并将 `notes/docs/` 中尚未导入的 Markdown 转为带目录层级的文章。About 与 Privacy 是 `/about/`、`/privacy/` 独立静态页面，不属于笔记数据。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
 
-将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。登录后可从 `/admin/` 管理博客、从 `/admin/users/` 管理用户、从 `/admin/notes/` 在目录树中创建、移动和排序笔记，也可使用文章编辑器、上传图片并发布文章。公开注册入口不存在。
+将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。后两个变量只在数据库中尚无该用户名时初始化管理员；管理员随后在个人中心修改的资料、头像和密码都会持久化，不会在重启时被环境变量覆盖。登录后可从 `/admin/blogs/` 管理博客、从 `/admin/users/` 创建、编辑、禁用普通用户以及管理头像和密码、从 `/admin/notes/` 在目录树中创建、移动和排序笔记。所有用户都可在 `/profile/` 修改显示名称、个人简介、头像和密码；公开注册入口不存在。
 
 停止服务：
 

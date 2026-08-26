@@ -6,7 +6,14 @@ import Base from '@/templates/Base.astro';
 
 <Base head={{ title: 'Notes Admin | WeiKnight', description: 'Article administration' }} theme='real'>
   <main class='mx-auto w-full max-w-[110rem] px-4 py-10 font-formal-sans text-real-text sm:px-6 lg:px-8'>
-    <AdminHeader eyebrow='Content control' title='Notes studio' description='Draft, edit, preview, and publish without rebuilding the site.' active='notes' viewHref='/real/notes/' viewLabel='View notes' />
+    <AdminHeader eyebrow='Content control' title='Notes studio' description='Draft, edit, preview, and publish without rebuilding the site.' active='notes' viewHref='/real/notes/' viewLabel='View notes' showLogout />
     <NotesAdmin client:load />
   </main>
+  <script is:inline src='/js/api.js'></script>
+  <script is:inline>
+    document.querySelector('#logout').addEventListener('click', async () => {
+      await window.siteApi('/auth/logout', { method: 'POST' });
+      location.replace('/login/');
+    });
+  </script>
 </Base>

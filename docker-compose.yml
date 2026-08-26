@@ -1,6 +1,9 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: wkn-personal-site-postgres
+    build:
+      context: ./postgres
+    user: "1000:1000"
     restart: unless-stopped
     environment:
       POSTGRES_DB: wkn_site
@@ -15,6 +18,7 @@ services:
     build:
       context: ./backend
     restart: unless-stopped
+    user: "1000:1000"
     environment:
       SERVER_PORT: "8080"
       DATABASE_URL: jdbc:postgresql://postgres:5432/wkn_site
@@ -29,6 +33,7 @@ services:
       - postgres
     volumes:
       - ./data/note-assets:/data/note-assets
+      - ./data/user-avatars:/data/user-avatars
       - ./notes/docs:/data/legacy-notes:ro
 
   nginx:
@@ -38,9 +43,10 @@ services:
       args:
         SITE_URL: ${SITE_URL:-http://localhost}
     restart: unless-stopped
+    user: "1000:1000"
     depends_on:
       - backend
     ports:
-      - "${HTTP_PORT:-80}:80"
+      - "${HTTP_PORT:-80}:8080"
     mem_limit: 128m
     cpus: 0.5

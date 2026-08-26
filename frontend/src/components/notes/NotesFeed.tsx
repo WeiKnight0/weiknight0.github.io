@@ -70,26 +70,35 @@ export default function NotesFeed() {
         {query.trim() ? <section>
           <p className="text-xs font-bold uppercase tracking-[.2em] text-real-accent">Search results</p>
           <h2 className="mt-2 text-3xl font-black text-white">{visible.length} notes found</h2>
-          <div className="mt-6 divide-y divide-white/10 border-y border-white/10">
-            {visible.map((note) => <a key={note.slug} href={`/real/notes/${note.slug}/`} className="block px-2 py-5 transition hover:bg-white/5 sm:px-4">
-              <p className="text-xs text-real-accent">{note.directory?.split('/').map(directoryLabel).join(' / ') || 'Root'}</p>
-              <h3 className="mt-1 text-lg font-bold text-white">{note.title}</h3>
+          <div className="mt-6 space-y-1">
+            {visible.map((note) => <a key={note.slug} href={`/real/notes/${note.slug}/`} className="group flex items-center gap-4 px-2 py-4 transition hover:bg-white/5 sm:px-4">
+              <span aria-hidden="true" className="text-sm text-white/25">—</span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs text-real-accent">{note.directory?.split('/').map(directoryLabel).join(' / ') || 'Root'}</span>
+                <span className="mt-1 block text-lg font-bold text-white">{note.title}</span>
+              </span>
+              <span aria-hidden="true" className="text-real-accent transition group-hover:translate-x-1">→</span>
             </a>)}
           </div>
         </section> : currentDirectory ? <section className="pt-8">
           <p className="text-xs font-bold uppercase tracking-[.2em] text-real-accent">{currentPath ? 'Directory' : 'Index'}</p>
           <h2 className="mt-2 text-3xl font-black text-white">{segments.length ? directoryLabel(segments.at(-1)!) : 'Browse the archive'}</h2>
-          <div className="mt-7 grid gap-4 sm:grid-cols-2">
-            {currentDirectory.directories.map((directory) => <a key={directory.path} href={noteDirectoryHref(directory.path)} className="group border border-white/10 bg-black/20 p-5 transition hover:border-real-accent/45 hover:bg-real-accent/5">
-              <p className="text-xs text-real-accent">Directory</p>
-              <h3 className="mt-2 flex items-center justify-between gap-4 text-xl font-black text-white"><span>{directoryLabel(directory.name)}</span><span className="text-real-accent transition group-hover:translate-x-1">→</span></h3>
-              <p className="mt-3 text-sm leading-6 text-white/40">{directoryNoteCount(directory)} notes · {directory.directories.length} subdirectories</p>
+          <div className="mt-7 space-y-1">
+            {currentDirectory.directories.map((directory) => <a key={directory.path} href={noteDirectoryHref(directory.path)} className="group flex w-full items-center gap-4 px-2 py-4 transition hover:bg-real-accent/5 sm:px-4">
+              <span aria-hidden="true" className="text-sm text-real-accent">▸</span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xl font-black text-white">{directoryLabel(directory.name)}</span>
+                <span className="mt-1 block text-sm leading-6 text-white/40">{directoryNoteCount(directory)} notes · {directory.directories.length} subdirectories</span>
+              </span>
+              <span aria-hidden="true" className="text-real-accent transition group-hover:translate-x-1">→</span>
             </a>)}
           </div>
-          {currentDirectory.notes.length > 0 && <div className="mt-8 border-t border-white/10 pt-7">
+          {currentDirectory.notes.length > 0 && <div className="mt-8 pt-7">
             <h3 className="text-sm font-bold uppercase tracking-[.16em] text-white/45">Notes in this directory</h3>
-            <div className="mt-3 divide-y divide-white/10 border-y border-white/10">{currentDirectory.notes.map((note) => <a key={note.slug} href={`/real/notes/${note.slug}/`} className="block px-2 py-5 transition hover:bg-white/5 sm:px-4">
-              <h4 className="text-lg font-bold text-white">{note.title}</h4>
+            <div className="mt-3 space-y-1">{currentDirectory.notes.map((note) => <a key={note.slug} href={`/real/notes/${note.slug}/`} className="group flex items-center gap-4 px-2 py-4 transition hover:bg-white/5 sm:px-4">
+              <span aria-hidden="true" className="text-sm text-white/25">—</span>
+              <h4 className="min-w-0 flex-1 text-lg font-bold text-white">{note.title}</h4>
+              <span aria-hidden="true" className="text-real-accent transition group-hover:translate-x-1">→</span>
             </a>)}</div>
           </div>}
         </section> : <section className="mt-8 border border-red-300/30 bg-red-300/10 p-5 text-red-100">

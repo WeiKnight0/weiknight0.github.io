@@ -24,13 +24,18 @@ class AuthControllerTest {
   void setUp() {
     users = mock(SiteUserRepository.class);
     passwordEncoder = mock(PasswordEncoder.class);
-    access = new SessionAccess();
-    controller = new AuthController(users, passwordEncoder, access, "admin", "secret-password");
+    access = new SessionAccess(users);
+    controller = new AuthController(users, passwordEncoder, access);
   }
 
   @Test
   void signsInAdministratorAndRotatesSessionIdentifier() {
     MockHttpServletRequest request = new MockHttpServletRequest();
+    SiteUser user = account(1L, "admin", "Administrator", true);
+    when(users.findByUsernameIgnoreCase("admin")).thenReturn(Optional.of(user));
+    when(users.findByIdAndEnabledTrue(1L)).thenReturn(Optional.of(user));
+    when(users.existsByIdAndEnabledTrue(1L)).thenReturn(true);
+    when(passwordEncoder.matches("secret-password", "hash")).thenReturn(true);
     String originalSessionId = request.getSession().getId();
 
     assertEquals(
@@ -43,12 +48,10 @@ class AuthControllerTest {
   @Test
   void signsInProvisionedMember() {
     MockHttpServletRequest request = new MockHttpServletRequest();
-    SiteUser user = mock(SiteUser.class);
-    when(user.getId()).thenReturn(7L);
-    when(user.getUsername()).thenReturn("member");
-    when(user.passwordHash()).thenReturn("hash");
-    when(users.findByUsername("member")).thenReturn(Optional.of(user));
-    when(users.findById(7L)).thenReturn(Optional.of(user));
+    SiteUser user = account(7L, "member", "Member", false);
+    when(users.findByUsernameIgnoreCase("member")).thenReturn(Optional.of(user));
+    when(users.findByIdAndEnabledTrue(7L)).thenReturn(Optional.of(user));
+    when(users.existsByIdAndEnabledTrue(7L)).thenReturn(true);
     when(passwordEncoder.matches("member-password", "hash")).thenReturn(true);
 
     assertEquals(
@@ -60,10 +63,34 @@ class AuthControllerTest {
   @Test
   void rejectsInvalidCredentials() {
     MockHttpServletRequest request = new MockHttpServletRequest();
-    when(users.findByUsername("unknown")).thenReturn(Optional.empty());
+    when(users.findByUsernameIgnoreCase("unknown")).thenReturn(Optional.empty());
 
     assertThrows(
         AccessDeniedException.class,
         () -> controller.login(new AuthController.LoginInput("unknown", "wrong-password"), request));
+  }
+
+  @Test
+  void rejectsDisabledMemberCredentials() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    SiteUser user = mock(SiteUser.class);
+    when(user.isEnabled()).thenReturn(false);
+    when(users.findByUsernameIgnoreCase("disabled")).thenReturn(Optional.of(user));
+
+    assertThrows(
+        AccessDeniedException.class,
+        () -> controller.login(new AuthController.LoginInput("disabled", "member-password"), request));
+  }
+
+  private SiteUser account(long id, String username, String displayName, boolean administrator) {
+    SiteUser user = mock(SiteUser.class);
+    when(user.getId()).thenReturn(id);
+    when(user.getUsername()).thenReturn(username);
+    when(user.getDisplayName()).thenReturn(displayName);
+    when(user.getBio()).thenReturn("");
+    when(user.isEnabled()).thenReturn(true);
+    when(user.isAdmin()).thenReturn(administrator);
+    when(user.passwordHash()).thenReturn("hash");
+    return user;
   }
 }

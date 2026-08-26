@@ -1,5 +1,7 @@
 package com.weiknight.site.api;
 
+import com.weiknight.site.user.SiteUserRepository;
+import com.weiknight.site.user.UserRole;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 
@@ -7,9 +9,16 @@ import org.springframework.stereotype.Component;
 final class SessionAccess {
   private static final String ADMIN_ATTRIBUTE = "admin";
   private static final String USER_ID_ATTRIBUTE = "userId";
+  private final SiteUserRepository users;
+
+  SessionAccess(SiteUserRepository users) {
+    this.users = users;
+  }
 
   boolean isAdmin(HttpSession session) {
-    return Boolean.TRUE.equals(session.getAttribute(ADMIN_ATTRIBUTE));
+    return Boolean.TRUE.equals(session.getAttribute(ADMIN_ATTRIBUTE))
+        && session.getAttribute(USER_ID_ATTRIBUTE) instanceof Long userId
+        && users.existsByIdAndEnabledTrueAndRole(userId, UserRole.ADMIN);
   }
 
   void requireAdmin(HttpSession session) {
@@ -20,7 +29,8 @@ final class SessionAccess {
   }
 
   void requireMember(HttpSession session) {
-    if (isAdmin(session) || session.getAttribute(USER_ID_ATTRIBUTE) instanceof Long) {
+    if (session.getAttribute(USER_ID_ATTRIBUTE) instanceof Long userId
+        && users.existsByIdAndEnabledTrue(userId)) {
       return;
     }
     throw new AccessDeniedException();
@@ -33,13 +43,8 @@ final class SessionAccess {
     throw new AccessDeniedException();
   }
 
-  void signInAdmin(HttpSession session) {
-    session.removeAttribute(USER_ID_ATTRIBUTE);
-    session.setAttribute(ADMIN_ATTRIBUTE, true);
-  }
-
-  void signInUser(HttpSession session, long userId) {
-    session.removeAttribute(ADMIN_ATTRIBUTE);
+  void signIn(HttpSession session, long userId, boolean administrator) {
     session.setAttribute(USER_ID_ATTRIBUTE, userId);
+    session.setAttribute(ADMIN_ATTRIBUTE, administrator);
   }
 }

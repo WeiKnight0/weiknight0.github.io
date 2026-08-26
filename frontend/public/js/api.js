@@ -7,8 +7,8 @@
   ]);
 
   class ApiError extends Error {
-    constructor(status) {
-      super(messages.get(status) || `Request failed (${status}).`);
+    constructor(status, message) {
+      super(message || messages.get(status) || `Request failed (${status}).`);
       this.name = 'ApiError';
       this.status = status;
     }
@@ -30,7 +30,9 @@
         : options.headers,
     });
     if (!response.ok) {
-      throw new ApiError(response.status);
+      const contentType = response.headers.get('Content-Type') || '';
+      const payload = contentType.includes('application/json') ? await response.json() : undefined;
+      throw new ApiError(response.status, payload?.message);
     }
     if (response.status === 204) {
       return undefined;

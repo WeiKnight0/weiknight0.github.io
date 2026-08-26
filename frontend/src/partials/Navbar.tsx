@@ -62,11 +62,18 @@ const dropdownScript = `
       const response = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
       if (!response.ok) return;
       const account = await response.json();
+      const accountName = account.displayName || account.username;
       logins.forEach((element) => { element.hidden = true; });
       profiles.forEach((element) => {
         element.hidden = false;
-        element.setAttribute('title', account.username + ' — Personal center');
-        element.setAttribute('aria-label', account.username + ' — Personal center');
+        element.setAttribute('title', accountName + ' — Personal center');
+        element.setAttribute('aria-label', accountName + ' — Personal center');
+        const image = element.querySelector('[data-account-avatar-image]');
+        const fallback = element.querySelector('[data-account-avatar-fallback]');
+        fallback.textContent = accountName.trim().charAt(0).toUpperCase();
+        image.hidden = !account.avatarUrl;
+        fallback.hidden = Boolean(account.avatarUrl);
+        if (account.avatarUrl) image.src = account.avatarUrl;
       });
     } catch (_) {
       // Visitors remain in the signed-out navigation state.
@@ -75,6 +82,7 @@ const dropdownScript = `
 
   setupAccountNavigation();
   document.addEventListener('astro:page-load', setupAccountNavigation);
+  window.addEventListener('account-profile-change', setupAccountNavigation);
 
   const setupThemeControls = () => {
     const root = document.documentElement;
@@ -197,9 +205,6 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
   }));
   const homeHref = getLocalizedPath('/', locale);
 
-  const isReal = pathname.includes('/real');
-  const isFiction = pathname.includes('/fiction');
-
   return (
     <header className="site-header sticky top-0 z-40 border-b backdrop-blur-lg">
       <nav
@@ -218,7 +223,7 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
               WeiKnight
             </span>
             <span className="text-[10px] text-white/40 tracking-widest uppercase font-real-mono">
-              {isReal ? 'System' : isFiction ? 'Archive' : 'Nexus'}
+              Personal Site
             </span>
           </div>
         </a>
@@ -255,7 +260,10 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
             Login
           </a>
           <a href="/profile/" data-account-profile hidden className="rounded-full transition hover:ring-2 hover:ring-real-accent" aria-label="Personal center">
-            <img src={Profile.avatar} alt="Personal center" className="h-9 w-9 rounded-full border border-real-accent/60 object-cover" />
+            <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full border border-real-accent/60 bg-real-accent/10 text-sm font-black text-real-accent">
+              <img data-account-avatar-image hidden alt="" className="h-full w-full object-cover" />
+              <span data-account-avatar-fallback>?</span>
+            </span>
           </a>
           <button type="button" data-theme-toggle className="flex h-9 w-9 items-center justify-center border border-white/10 text-base text-white/70 transition hover:border-real-accent/50 hover:text-real-accent" aria-label="Switch color theme">
             <span data-theme-icon aria-hidden="true">☀</span>
@@ -288,7 +296,7 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
                  {localizedFictionLinks.map(l => <a key={l.href} href={l.href} className="text-white/60 text-sm font-fiction-serif py-1">{l.label}</a>)}
               </div>
               <a href="/login/" data-account-login className="border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-center text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent">Login</a>
-              <a href="/profile/" data-account-profile hidden className="flex items-center justify-center gap-3 border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent"><img src={Profile.avatar} alt="" className="h-7 w-7 rounded-full border border-real-accent/60 object-cover" />Personal center</a>
+              <a href="/profile/" data-account-profile hidden className="flex items-center justify-center gap-3 border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent"><span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full border border-real-accent/60 bg-real-accent/10"><img data-account-avatar-image hidden alt="" className="h-full w-full object-cover" /><span data-account-avatar-fallback>?</span></span>Personal center</a>
               <button type="button" data-theme-toggle className="flex items-center justify-center gap-2 border border-white/10 px-4 py-3 text-xs font-bold uppercase tracking-widest text-white/70">
                 <span data-theme-icon aria-hidden="true">☀</span><span data-theme-label>Light theme</span>
               </button>
