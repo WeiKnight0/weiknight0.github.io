@@ -13,6 +13,29 @@ import remarkNoteLinks from './remark-note-links.mjs';
 
 const NOTE_ROUTE = /^\/real\/notes(?:\/(.*?))?\/?$/;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
+const CODE_LANGUAGE_LABELS = {
+  asm: 'Assembly',
+  bash: 'Shell',
+  c: 'C',
+  cpp: 'C++',
+  css: 'CSS',
+  html: 'HTML',
+  java: 'Java',
+  javascript: 'JavaScript',
+  js: 'JavaScript',
+  json: 'JSON',
+  markdown: 'Markdown',
+  md: 'Markdown',
+  python: 'Python',
+  plaintext: 'Plain text',
+  sh: 'Shell',
+  shell: 'Shell',
+  text: 'Plain text',
+  ts: 'TypeScript',
+  typescript: 'TypeScript',
+  yaml: 'YAML',
+  yml: 'YAML',
+};
 
 function element(selector) {
   return document.querySelector(selector);
@@ -79,6 +102,10 @@ function languageLabel(lang) {
   }[lang] ?? 'Language: Other Language';
 }
 
+function codeLanguageLabel(language) {
+  return CODE_LANGUAGE_LABELS[language.toLowerCase()] ?? language.toUpperCase();
+}
+
 function renderMetadata(note, path) {
   document.title = `${note.title} | Notes | My Homepage`;
   element('#note-title').textContent = note.title;
@@ -102,6 +129,7 @@ function renderMetadata(note, path) {
 function prepareCodeBlock(pre) {
   const code = pre.querySelector('code');
   const source = code.textContent;
+  const lines = source.endsWith('\n') ? source.slice(0, -1).split('\n') : source.split('\n');
   const marker = pre.previousElementSibling?.classList.contains('note-code-language')
     ? pre.previousElementSibling
     : null;
@@ -110,32 +138,47 @@ function prepareCodeBlock(pre) {
     ?? 'code';
   marker?.remove();
   pre.classList.add('astro-code');
-  code.replaceChildren(...source.split('\n').flatMap((line, index, lines) => {
+  code.replaceChildren(...lines.map((line, index) => {
     const row = document.createElement('span');
     const number = document.createElement('span');
     row.className = 'line';
     number.className = 'line-number';
     number.textContent = String(index + 1);
     row.append(number, document.createTextNode(line));
-    return index === lines.length - 1 ? [row] : [row, document.createTextNode('\n')];
+    return row;
   }));
-  const label = document.createElement('div');
+  const toolbar = document.createElement('span');
+  toolbar.className = 'code-toolbar';
+  const label = document.createElement('span');
   label.className = 'code-lang-label';
-  label.textContent = language;
+  label.textContent = codeLanguageLabel(language);
   const copy = document.createElement('button');
   copy.className = 'copy-code-btn';
   copy.type = 'button';
-  copy.textContent = 'Copy';
+  copy.dataset.state = 'idle';
+  copy.innerHTML = '<i class="far fa-copy" aria-hidden="true"></i><span>Copy</span>';
+  copy.setAttribute('aria-label', 'Copy code');
   copy.addEventListener('click', async () => {
+    const icon = copy.querySelector('i');
+    const text = copy.querySelector('span');
     try {
       await navigator.clipboard.writeText(source);
-      copy.textContent = 'Copied';
+      copy.dataset.state = 'copied';
+      icon.className = 'fas fa-check';
+      text.textContent = 'Copied';
     } catch {
-      copy.textContent = 'Failed';
+      copy.dataset.state = 'failed';
+      icon.className = 'fas fa-xmark';
+      text.textContent = 'Failed';
     }
-    window.setTimeout(() => { copy.textContent = 'Copy'; }, 1200);
+    window.setTimeout(() => {
+      copy.dataset.state = 'idle';
+      icon.className = 'far fa-copy';
+      text.textContent = 'Copy';
+    }, 1200);
   });
-  pre.prepend(label, copy);
+  toolbar.append(label, copy);
+  pre.prepend(toolbar);
 }
 
 function initializeTools() {

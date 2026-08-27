@@ -15,6 +15,13 @@
     --code-border: #444c56;
     --code-line-number: #768390;
     --code-line-highlight: rgba(99, 110, 123, 0.4);
+    --code-toolbar-bg: #edf3f8;
+    --code-toolbar-border: #d8e1ec;
+    --code-toolbar-text: #42546a;
+    --code-control-bg: #ffffff;
+    --code-control-hover: #dfe9f5;
+    --code-control-success: #287a52;
+    --code-control-error: #b42318;
 
     /* 语法高亮颜色 */
     --code-keyword: #0077aa;
@@ -49,6 +56,13 @@
     --code-border: #444c56;
     --code-line-number: #768390;
     --code-line-highlight: rgba(99, 110, 123, 0.4);
+    --code-toolbar-bg: #20252d;
+    --code-toolbar-border: #3b424d;
+    --code-toolbar-text: #b8c2cf;
+    --code-control-bg: #2d333d;
+    --code-control-hover: #39414d;
+    --code-control-success: #75c69b;
+    --code-control-error: #ff8d85;
 
     /* 语法高亮颜色 */
     --code-keyword: #c678dd;
@@ -397,7 +411,7 @@ figure.highlight {
     transition: var(--transition);
     margin: 1em 0;
     max-width: 100%;
-    overflow-x: auto;
+    overflow: visible;
 }
 
 /* figure.highlight::before {
@@ -507,9 +521,11 @@ figure.highlight .gutter {
 figure.highlight .code {
     padding: 0.75em 1em;
     vertical-align: top;
-    overflow-x: auto;
+    overflow: visible;
     max-width: 100%;
-    white-space: pre;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 figure.highlight br {
@@ -561,7 +577,8 @@ figure.highlight td.code {
 
 figure.highlight pre {
     margin: 0;
-    overflow: auto;
+    max-height: none;
+    overflow: visible;
 }
 
 /* 行高亮样式 */
@@ -693,20 +710,6 @@ figure.highlight figcaption a {
 
 figure.highlight figcaption a:hover {
     text-decoration: underline;
-}
-
-/* ===== 滚动条样式 ===== */
-figure.highlight pre::-webkit-scrollbar {
-    height: 6px;
-}
-
-figure.highlight pre::-webkit-scrollbar-thumb {
-    background-color: var(--code-line-number);
-    border-radius: 3px;
-}
-
-figure.highlight pre::-webkit-scrollbar-track {
-    background-color: var(--code-border);
 }
 
 /* ===== 响应式优化 ===== */
@@ -852,44 +855,78 @@ figure.highlight pre::-webkit-scrollbar-track {
 .chapter-content pre.astro-code {
     background: var(--code-bg) !important;
     color: var(--code-text) !important;
+    border: 1px solid var(--code-toolbar-border);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     margin: 1.5em 0;
     max-width: 100%;
-    overflow-x: auto;
-    padding: 2rem 1em 0.75em 3.9em;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
     position: relative;
     transition: var(--transition);
 }
 
-.chapter-content pre.astro-code .code-lang-label,
-.chapter-content pre.astro-code .copy-code-btn {
-    position: absolute;
-    top: 0;
-    padding: 0.2em 0.5em;
-    background: #eee;
-    color: #333;
-    font-family: var(--code-font);
-    font-size: 0.8em;
-    line-height: 1.4;
+.chapter-content pre.astro-code .code-toolbar {
+    align-items: center;
+    background: var(--code-toolbar-bg);
+    border-bottom: 1px solid var(--code-toolbar-border);
+    border-radius: calc(var(--border-radius) - 1px) calc(var(--border-radius) - 1px) 0 0;
+    display: flex;
+    justify-content: space-between;
+    min-height: 2.5rem;
+    padding: 0.4rem 0.55rem 0.4rem 0.85rem;
+    white-space: normal;
 }
 
 .chapter-content pre.astro-code .code-lang-label {
-    right: 0;
-    border-radius: 0 4px 0 4px;
-    text-transform: lowercase;
+    align-items: center;
+    color: var(--code-toolbar-text);
+    display: inline-flex;
+    font-family: var(--code-font);
+    font-size: 0.78rem;
+    font-weight: 600;
+    gap: 0.5rem;
+    letter-spacing: 0.04em;
+}
+
+.chapter-content pre.astro-code .code-lang-label::before {
+    background: var(--primary-color);
+    border-radius: 50%;
+    content: '';
+    height: 0.5rem;
+    width: 0.5rem;
 }
 
 .chapter-content pre.astro-code .copy-code-btn {
-    right: 4.2rem;
-    border: 0;
-    border-radius: 0 0 4px 4px;
+    align-items: center;
+    background: var(--code-control-bg);
+    border: 1px solid var(--code-toolbar-border);
+    border-radius: 6px;
+    color: var(--code-toolbar-text);
     cursor: pointer;
-    transition: var(--transition);
+    display: inline-flex;
+    font-family: Arial, 'Microsoft YaHei', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    gap: 0.4rem;
+    line-height: 1;
+    padding: 0.45rem 0.65rem;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .chapter-content pre.astro-code .copy-code-btn:hover {
+    background: var(--code-control-hover);
+    border-color: var(--primary-color);
     color: var(--primary-color);
+}
+
+.chapter-content pre.astro-code .copy-code-btn[data-state="copied"] {
+    color: var(--code-control-success);
+}
+
+.chapter-content pre.astro-code .copy-code-btn[data-state="failed"] {
+    color: var(--code-control-error);
 }
 
 .chapter-content pre.astro-code code,
@@ -902,14 +939,18 @@ figure.highlight pre::-webkit-scrollbar-track {
     font-size: 14px;
     line-height: 1.6em;
     margin: 0;
-    padding: 0;
-    white-space: pre;
+    overflow: visible;
+    padding: 1rem 1.1rem 1.1rem 3.9rem;
+    white-space: normal;
 }
 
 .chapter-content pre.astro-code .line {
-    display: inline;
-    min-height: 0;
+    display: block;
+    min-height: 1.6em;
+    overflow-wrap: anywhere;
     position: relative;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .chapter-content pre.astro-code .line-number {
@@ -922,28 +963,9 @@ figure.highlight pre::-webkit-scrollbar-track {
     user-select: none;
 }
 
-.chapter-content pre.astro-code::-webkit-scrollbar {
-    height: 6px;
-}
-
-.chapter-content pre.astro-code::-webkit-scrollbar-thumb {
-    background-color: var(--code-line-number);
-    border-radius: 3px;
-}
-
-.chapter-content pre.astro-code::-webkit-scrollbar-track {
-    background-color: var(--code-border);
-}
-
 [data-theme="dark"] .chapter-content pre.astro-code {
     background: var(--code-bg) !important;
     color: var(--code-text) !important;
-}
-
-[data-theme="dark"] .chapter-content pre.astro-code .code-lang-label,
-[data-theme="dark"] .chapter-content pre.astro-code .copy-code-btn {
-    background: #444;
-    color: #ddd;
 }
 
 .chapter-content .katex-display {
@@ -951,25 +973,6 @@ figure.highlight pre::-webkit-scrollbar-track {
     padding: 0.5em 0;
 }
 
-.code-lang-label {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 0.2em 0.5em;
-    border-radius: 0 4px 0 4px;
-    background: #eee;
-    color: #333;
-    font-family: var(--code-font);
-    font-size: 0.8em;
-    line-height: 1.4;
-    z-index: 1;
-}
-
 .note-code-language {
     display: none !important;
-}
-
-[data-theme="dark"] .code-lang-label {
-    background: #444;
-    color: #ddd;
 }

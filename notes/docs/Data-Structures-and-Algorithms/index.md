@@ -6,17 +6,30 @@ lang: zh-cn
 
 # Data Structures and Algorithms 数据结构与算法
 
-这组笔记按学习路径整理：先补基础与常用数据结构，再学习高频算法技巧，之后进入图论、回溯、动态规划、字符串、数学和高级数据结构。
+## 一、数据结构
 
-- [Algorithm Templates 算法模板速查](/real/notes/algorithm-templates/)
-- [Roadmap 学习路线](./roadmap/index.md)
-- [Basics 基础](./basics/index.md)
-- [Data Structures 数据结构](./data-structures/index.md)
-- [Techniques 算法技巧](./techniques/index.md)
-- [Sorting 排序](./sorting/index.md)
-- [Graph 图论](./graph/index.md)
-- [Backtracking 回溯算法](./backtracking/index.md)
-- [Dynamic Programming 动态规划](./dp/index.md)
-- [String 字符串](./string/index.md)
-- [Math 数学](./math/index.md)
-- [Advanced Data Structures 高级数据结构](./advanced-data-structures/index.md)
+- [绪论](./data-structures/introduction/index.md)
+- [线性表](./data-structures/linear-list/index.md)
+- [栈、队列和数组](./data-structures/stack-queue-array/index.md)
+- [串](./data-structures/string/index.md)
+- [树与二叉树](./data-structures/tree/index.md)
+- [图](./data-structures/graph/index.md)
+- [查找](./data-structures/searching/index.md)
+- [排序](./data-structures/sorting/index.md)
+
+## 二、算法基础
+
+- [算法与复杂度](./algorithms/foundations/index.md)
+- [基础算法技巧](./algorithms/techniques/index.md)
+- [排序](./algorithms/sorting/index.md)
+- [搜索与回溯](./algorithms/search-and-backtracking/index.md)
+- [图论算法](./algorithms/graph/index.md)
+- [动态规划](./algorithms/dynamic-programming/index.md)
+- [字符串算法](./algorithms/string/index.md)
+- [数学基础](./algorithms/math/index.md)
+- [高级数据结构](./algorithms/advanced-data-structures/index.md)
+
+## 附录
+
+- [参考资料](./reference/index.md)
+- [算法模板速查](/real/notes/algorithm-templates/)

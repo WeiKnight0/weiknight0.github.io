@@ -6,11 +6,11 @@ lang: zh-cn
 
 # Data Structures 数据结构
 
-- [Array and List 数组与列表](./array-list.md)
-- [Linked List 链表](./linked-list.md)
-- [Stack, Queue, Deque 栈、队列、双端队列](./stack-queue-deque.md)
-- [Hash Table 哈希表](./hash-table.md)
-- [Heap 堆](./heap.md)
-- [DSU 并查集](./dsu.md)
-- [Monotonic Stack 单调栈](./monotonic-stack.md)
-- [Trie 字典树](./trie.md)
+- [绪论](./introduction/index.md)
+- [线性表](./linear-list/index.md)
+- [栈、队列和数组](./stack-queue-array/index.md)
+- [串](./string/index.md)
+- [树与二叉树](./tree/index.md)
+- [图](./graph/index.md)
+- [查找](./searching/index.md)
+- [排序](./sorting/index.md)
