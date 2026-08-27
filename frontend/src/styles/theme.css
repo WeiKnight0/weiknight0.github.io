@@ -229,6 +229,26 @@ html[data-color-theme='light'] .prose-invert {
   --tw-prose-td-borders: #cbd5e1;
 }
 
+html[data-color-theme='light'] .fiction-theme .prose-invert {
+  --tw-prose-body: rgb(var(--fiction-text) / 0.86);
+  --tw-prose-headings: rgb(var(--fiction-text));
+  --tw-prose-lead: rgb(var(--fiction-muted));
+  --tw-prose-links: rgb(var(--fiction-accent));
+  --tw-prose-bold: rgb(var(--fiction-text));
+  --tw-prose-counters: rgb(var(--fiction-muted));
+  --tw-prose-bullets: rgb(var(--fiction-border));
+  --tw-prose-quotes: rgb(var(--fiction-text));
+  --tw-prose-code: rgb(var(--fiction-text));
+}
+
+html[data-color-theme='light'] .world-prose .env {
+  background: rgb(var(--fiction-surface) / 0.92) !important;
+}
+
+html[data-color-theme='light'] .world-prose .env .env-title {
+  color: rgb(var(--fiction-text)) !important;
+}
+
 html[data-color-theme='light'] .prose-strong\:text-white strong {
   color: rgb(var(--page-text)) !important;
 }

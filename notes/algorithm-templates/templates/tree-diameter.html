@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>树的直径：两次 BFS | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">二叉树</p><h1>树的直径：两次 BFS</h1><div class="tag-row"><span class="tag category">一般树</span><span class="tag">直径</span><span class="tag">BFS</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">pair<int, int> farthest(vector<vector<int>>& g, int start) {
+    vector<int> dist(g.size(), -1);
+    queue<int> q;
+    dist[start] = 0;
+    q.push(start);
+    int best = start;
+    while (!q.empty()) {
+        int x = q.front();
+        q.pop();
+        if (dist[x] &gt; dist[best]) best = x;
+        for (int y : g[x]) if (dist[y] &lt; 0) {
+            dist[y] = dist[x] + 1;
+            q.push(y);
+        }
+    }
+    return {best, dist[best]};
+}
+
+int treeDiameter(vector<vector<int>>& g) {
+    auto [a, da] = farthest(g, 0);
+    auto [b, diameter] = farthest(g, a);
+    return diameter;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

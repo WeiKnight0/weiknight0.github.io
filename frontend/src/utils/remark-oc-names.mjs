@@ -42,6 +42,9 @@ function visit(node) {
   }
 }
 
+/**
+ * @description Replaces stable OC name macros while rendering fictional content.
+ */
 export default function remarkOcNames() {
   return (tree) => {
     visit(tree);

@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>0-1 背包：选或不选 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">动态规划</p><h1>0-1 背包：选或不选</h1><div class="tag-row"><span class="tag category">灵神风格</span><span class="tag">倒序</span><span class="tag">每个物品选一次</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">// 最大价值：每个物品至多选一次，容量为 target
+int zeroOneKnapsack(vector<int>& weight, vector<int>& value, int target) {
+    vector<int> f(target + 1);
+    for (int i = 0; i &lt; weight.size(); i++) {
+        int w = weight[i], v = value[i];
+        for (int c = target; c &gt;= w; c--) { // 0-1 背包必须倒序
+            f[c] = max(f[c], f[c - w] + v);
+        }
+    }
+    return f[target];
+}
+
+// 方案数：从 nums 中选若干数，和恰好等于 target
+long long countSubsetSum(vector<int>& nums, int target) {
+    vector<long long> f(target + 1);
+    f[0] = 1;
+    for (int x : nums) {
+        for (int c = target; c &gt;= x; c--) {
+            f[c] += f[c - x];
+        }
+    }
+    return f[target];
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

@@ -1,0 +1,24 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>KMP：前缀函数匹配 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">字符串</p><h1>KMP：前缀函数匹配</h1><div class="tag-row"><span class="tag category">KMP</span><span class="tag">前缀函数</span><span class="tag">字符串匹配</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">vector<int> buildPi(const string& p) {
+    vector<int> pi(p.size(), 0);
+    for (int i = 1; i < (int)p.size(); i++) {
+        int j = pi[i - 1];
+        while (j > 0 && p[i] != p[j]) j = pi[j - 1];
+        if (p[i] == p[j]) j++;
+        pi[i] = j;
+    }
+    return pi;
+}
+
+int strStr(string s, string p) {
+    if (p.empty()) return 0;
+    vector<int> pi = buildPi(p);
+    int j = 0;
+
+    for (int i = 0; i < (int)s.size(); i++) {
+        while (j > 0 && s[i] != p[j]) j = pi[j - 1];
+        if (s[i] == p[j]) j++;
+        if (j == (int)p.size()) return i - j + 1;
+    }
+
+    return -1;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

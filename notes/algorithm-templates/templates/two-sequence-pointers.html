@@ -1,0 +1,12 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>双序列双指针：合并有序数组 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">双指针</p><h1>双序列双指针：合并有序数组</h1><div class="tag-row"><span class="tag category">双序列</span><span class="tag">merge</span><span class="tag">O(n+m)</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">vector<int> mergeSorted(vector<int>& a, vector<int>& b) {
+    vector<int> ans;
+    int i = 0, j = 0;
+    while (i &lt; (int) a.size() || j &lt; (int) b.size()) {
+        if (j == (int) b.size() || i &lt; (int) a.size() && a[i] &lt;= b[j]) {
+            ans.push_back(a[i++]);
+        } else {
+            ans.push_back(b[j++]);
+        }
+    }
+    return ans;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

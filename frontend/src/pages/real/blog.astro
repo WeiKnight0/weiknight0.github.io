@@ -29,5 +29,7 @@ import RealPage from '@/templates/RealPage.astro';
     </div>
     <div class='mt-14 grid gap-5 md:grid-cols-3' data-content-api='posts'><p class="text-real-text/70 font-real-mono">Loading posts...</p></div>
   </section>
-  <script is:inline src='/js/content-api.js'></script>
+  <script>
+    import '@/scripts/content-list';
+  </script>
 </RealPage>

@@ -1,0 +1,22 @@
+---
+/**
+ * @description Configures one public database-backed fiction entry list.
+ */
+export interface Props {
+  kind: 'novels' | 'oc';
+}
+
+const { kind } = Astro.props as Props;
+const emptyMessage = `No published ${kind === 'oc' ? 'OCs' : 'novels'} yet.`;
+const emptyMessageZh = kind === 'oc'
+  ? '暂时没有已发布的原创角色。'
+  : '暂时没有已发布的小说。';
+---
+
+<div data-fiction-entry-list data-kind={kind} data-empty-message={emptyMessage} data-empty-message-zh={emptyMessageZh} class='mt-14 grid gap-5'>
+  <p data-page-i18n={`${kind}.loading`} class='text-fiction-text/60'>Loading…</p>
+</div>
+
+<script>
+  import '@/scripts/fiction-entry-list';
+</script>

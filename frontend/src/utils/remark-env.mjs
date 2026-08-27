@@ -158,6 +158,9 @@ const cleanupTreeEnvMarkers = (node) => {
   };
 };
 
+/**
+ * @description Converts custom LaTeX-style environment markers into renderable Markdown nodes.
+ */
 export default function remarkEnv() {
   return (tree) => {
     if (!tree?.children) return;

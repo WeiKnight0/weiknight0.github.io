@@ -21,6 +21,6 @@ spring:
     enabled: true
 
 site:
-  note-assets-root: ${NOTE_ASSETS_ROOT:/data/note-assets}
   user-avatars-root: ${USER_AVATARS_ROOT:/data/user-avatars}
-  legacy-notes-root: ${LEGACY_NOTES_ROOT:/data/legacy-notes}
+  fiction-assets-root: ${FICTION_ASSETS_ROOT:/data/fiction-assets}
+  notes-root: ${NOTES_ROOT:/data/notes}

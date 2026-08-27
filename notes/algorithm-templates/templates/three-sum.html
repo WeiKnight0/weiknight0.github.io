@@ -1,0 +1,29 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>三数之和：排序 + 双指针去重 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">双指针</p><h1>三数之和：排序 + 双指针去重</h1><div class="tag-row"><span class="tag category">Hot100 15</span><span class="tag">排序</span><span class="tag">去重</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">vector<vector<int>> threeSum(vector<int>& nums) {
+    sort(nums.begin(), nums.end());
+    vector<vector<int>> ans;
+    int n = nums.size();
+
+    for (int i = 0; i < n; i++) {
+        if (i > 0 && nums[i] == nums[i - 1]) continue;
+        if (nums[i] > 0) break;
+
+        int left = i + 1;
+        int right = n - 1;
+        while (left < right) {
+            int sum = nums[i] + nums[left] + nums[right];
+            if (sum < 0) {
+                left++;
+            } else if (sum > 0) {
+                right--;
+            } else {
+                ans.push_back({nums[i], nums[left], nums[right]});
+                left++;
+                right--;
+                while (left < right && nums[left] == nums[left - 1]) left++;
+                while (left < right && nums[right] == nums[right + 1]) right--;
+            }
+        }
+    }
+
+    return ans;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

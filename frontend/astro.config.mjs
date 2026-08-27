@@ -6,7 +6,6 @@ import robotsTxt from 'astro-robots-txt';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import remarkCodeLanguageMarker from './src/utils/remark-code-language-marker.mjs';
-import remarkNoteLinks from './src/utils/remark-note-links.mjs';
 import remarkOcNames from './src/utils/remark-oc-names.mjs';
 import remarkEnv from './src/utils/remark-env.mjs';
 
@@ -27,7 +26,7 @@ export default defineConfig({
     },
   },
   markdown: {
-    remarkPlugins: [remarkEnv, remarkMath, remarkOcNames, remarkNoteLinks, remarkCodeLanguageMarker],
+    remarkPlugins: [remarkEnv, remarkMath, remarkOcNames, remarkCodeLanguageMarker],
     rehypePlugins: [rehypeKatex],
     shikiConfig: {
       // Choose from Shiki's built-in themes (or add your own)

@@ -1,17 +1,17 @@
 <script>
+  import {
+    getLanguagePath,
+    getLocaleFromPath,
+    getLocalizedPath,
+    hasDistinctLocalePaths,
+    i18n,
+    normalizePath,
+  } from '@/utils/i18n';
+
   const siteI18n = {
     en: {
       htmlLang: 'en',
-      nav: {
-        home: 'Home',
-        real: 'Real',
-        fiction: 'Fiction',
-        language: 'Language',
-      },
-      footer: {
-        builtWith: 'Built with Astro, React and Tailwind CSS.',
-        designedFor: 'Designed for real-world portfolio and fictional archive.',
-      },
+      ...i18n.en,
       pages: {
         '/': {
           title: 'WEIKNIGHT | Homepage',
@@ -19,7 +19,7 @@
             'Personal homepage for real-world portfolio and fictional archives.',
           text: {
             'hero.subtitle':
-              'Between <span class="font-readable-mono text-cyan-300">code archives</span> and <span class="font-fiction text-fuchsia-300">fictional worlds</span>, one who travels both paths.',
+              'Between <span class="font-readable-mono text-real-accent">code archives</span> and <span class="font-fiction text-fiction-accentSecondary">fictional worlds</span>, one who travels both paths.',
             'hero.real': 'Enter Real',
             'hero.fiction': 'Enter Fiction',
             'about.eyebrow': 'About me',
@@ -61,8 +61,8 @@
             'home.fiction.worldSub': 'Worldbuilding',
             'home.fiction.characters': 'Characters',
             'home.fiction.charactersSub': 'Characters',
-            'home.fiction.stories': 'Stories',
-            'home.fiction.storiesSub': 'Stories',
+            'home.fiction.stories': 'Novels',
+            'home.fiction.storiesSub': 'Novels',
             'home.fiction.gallery': 'Gallery',
             'home.fiction.gallerySub': 'Gallery',
             'home.fiction.sync': 'Sync Rate:',
@@ -125,7 +125,7 @@
             'fiction.menu': 'Archive menu',
             'fiction.ocs': 'OCs',
             'fiction.world': 'Worldbuilding',
-            'fiction.stories': 'Stories',
+            'fiction.stories': 'Novels',
             'fiction.commissions': 'Commissions',
           },
           links: {
@@ -136,16 +136,28 @@
           },
         },
         '/fiction/novels/': {
-          title: 'Stories | My Homepage',
-          description: 'Stories and narrative chapters.',
+          title: 'Novels | My Homepage',
+          description: 'Novels and narrative chapters.',
           text: {
-            'novels.kicker': 'Stories',
-            'novels.heading': 'Stories',
-            'novels.chapter': 'Chapter',
+            'novels.kicker': 'Novels',
+            'novels.heading': 'Novels',
+            'novels.loading': 'Loading…',
+            'novels.empty': 'No published novels yet.',
           },
           links: {
             chapter: '/fiction/novels/',
           },
+        },
+        '/fiction/oc/': {
+          title: 'Original Characters | My Homepage',
+          description: 'Original character overview.',
+          text: {
+            'oc.kicker': 'Original characters',
+            'oc.heading': 'Original Characters',
+            'oc.loading': 'Loading…',
+            'oc.empty': 'No published OCs yet.',
+          },
+          links: {},
         },
         '/fiction/commissions/': {
           title: 'Commissions | My Homepage',
@@ -164,23 +176,14 @@
     },
     'zh-cn': {
       htmlLang: 'zh-CN',
-      nav: {
-        home: '首页',
-        real: '三次元',
-        fiction: '二次元',
-        language: '语言',
-      },
-      footer: {
-        builtWith: '使用 Astro、React 与 Tailwind CSS 构建。',
-        designedFor: '为现实作品集与幻想档案而设计。',
-      },
+      ...i18n['zh-cn'],
       pages: {
         '/': {
           title: 'WEIKNIGHT | 个人主页',
           description: 'WEIKNIGHT 的个人主页，记录现实技术与幻想档案。',
           text: {
             'hero.subtitle':
-              '在 <span class="font-readable-mono text-cyan-300">代码档案</span> 与 <span class="font-fiction text-fuchsia-300">幻想世界</span> 之间往返的旅人。',
+              '在 <span class="font-readable-mono text-real-accent">代码档案</span> 与 <span class="font-fiction text-fiction-accentSecondary">幻想世界</span> 之间往返的旅人。',
             'hero.real': '进入现实侧',
             'hero.fiction': '进入幻想侧',
             'about.eyebrow': '关于我',
@@ -220,8 +223,8 @@
             'home.fiction.worldSub': 'Worldbuilding',
             'home.fiction.characters': '原创角色',
             'home.fiction.charactersSub': 'Characters',
-            'home.fiction.stories': '故事档案',
-            'home.fiction.storiesSub': 'Stories',
+            'home.fiction.stories': '小说档案',
+            'home.fiction.storiesSub': 'Novels',
             'home.fiction.gallery': '委托画廊',
             'home.fiction.gallerySub': 'Gallery',
             'home.fiction.sync': '同步率:',
@@ -282,27 +285,39 @@
             'fiction.menu': '档案菜单',
             'fiction.ocs': 'OCs',
             'fiction.world': '世界观',
-            'fiction.stories': '故事',
+            'fiction.stories': '小说',
             'fiction.commissions': '委托作品',
           },
           links: {
-            oc: '/fiction/oc/zh-cn/',
+            oc: '/fiction/oc/',
             world: '/fiction/world/zh-cn/',
             novels: '/fiction/novels/',
             commissions: '/fiction/commissions/',
           },
         },
         '/fiction/novels/': {
-          title: '故事 | 个人主页',
-          description: '故事与剧情章节。',
+          title: '小说 | 个人主页',
+          description: '小说与剧情章节。',
           text: {
-            'novels.kicker': 'Stories',
-            'novels.heading': '故事',
-            'novels.chapter': '第',
+            'novels.kicker': 'Novels',
+            'novels.heading': '小说',
+            'novels.loading': '加载中…',
+            'novels.empty': '暂时没有已发布的小说。',
           },
           links: {
             chapter: '/fiction/novels/',
           },
+        },
+        '/fiction/oc/': {
+          title: '原创角色 | 个人主页',
+          description: '原创角色总览。',
+          text: {
+            'oc.kicker': '原创角色',
+            'oc.heading': '原创角色',
+            'oc.loading': '加载中…',
+            'oc.empty': '暂时没有已发布的原创角色。',
+          },
+          links: {},
         },
         '/fiction/commissions/': {
           title: '委托作品 | 个人主页',
@@ -322,50 +337,11 @@
   };
 
   const storageKey = 'site-locale';
-  const clientPaths = new Set(Object.keys(siteI18n.en.pages));
-  const localizedRouteGroups = [
-    { base: '/fiction/world/', localizedBase: '/fiction/world/zh-cn/' },
-    { base: '/fiction/oc/', localizedBase: '/fiction/oc/zh-cn/' },
-    { base: '/real/projects/', localizedBase: '/real/projects/zh-cn/' },
-    { base: '/real/resume/', localizedBase: '/real/resume/zh-cn/' },
-  ];
-  const normalizePath = (path) => {
-    const pathOnly = path.split(/[?#]/)[0] || '/';
-    const withLeadingSlash = pathOnly.startsWith('/')
-      ? pathOnly
-      : `/${pathOnly}`;
-    return withLeadingSlash.endsWith('/')
-      ? withLeadingSlash
-      : `${withLeadingSlash}/`;
-  };
   const getPageConfig = (locale) =>
     siteI18n[locale]?.pages[normalizePath(window.location.pathname)];
   const getStoredLocale = () => {
     const storedLocale = localStorage.getItem(storageKey);
     return storedLocale === 'zh-cn' ? 'zh-cn' : 'en';
-  };
-  const getLocalizedPath = (path, locale) => {
-    const normalizedPath = normalizePath(path);
-
-    if (clientPaths.has(normalizedPath)) {
-      return normalizedPath;
-    }
-
-    if (locale === 'en') {
-      const group = localizedRouteGroups.find((item) =>
-        normalizedPath.startsWith(item.localizedBase)
-      );
-      return group
-        ? `${group.base}${normalizedPath.slice(group.localizedBase.length)}`
-        : normalizedPath;
-    }
-
-    const group = localizedRouteGroups.find((item) =>
-      normalizedPath.startsWith(item.base)
-    );
-    return group
-      ? `${group.localizedBase}${normalizedPath.slice(group.base.length)}`
-      : normalizedPath;
   };
   const renderTags = (element, tags) => {
     element.replaceChildren(
@@ -377,11 +353,6 @@
       })
     );
   };
-  const renderChapterPrefix = (element, value) => {
-    const order = element.getAttribute('data-page-i18n-order');
-    element.textContent =
-      value === '第' ? `${value} ${order} 章` : `${value} ${order}`;
-  };
   const setHrefPrefix = (element, prefix) => {
     const slug = element.getAttribute('data-page-href-slug') || '';
     element.setAttribute('href', `${prefix}${slug}`);
@@ -389,13 +360,14 @@
   const applyLocale = (locale) => {
     const dictionary = siteI18n[locale];
     const page = getPageConfig(locale);
-    if (!dictionary || !page) return;
+    if (!dictionary) return;
+    const pathname = normalizePath(window.location.pathname);
 
     document.documentElement.lang = dictionary.htmlLang;
-    document.title = page.title;
+    if (page) document.title = page.title;
 
     const description = document.querySelector('meta[name="description"]');
-    if (description) description.setAttribute('content', page.description);
+    if (description && page) description.setAttribute('content', page.description);
 
     document
       .querySelectorAll('[data-home-i18n], [data-page-i18n]')
@@ -404,7 +376,7 @@
           element.getAttribute('data-page-i18n') ||
           element.getAttribute('data-home-i18n');
         const value =
-          page.text[key] || dictionary.nav[key?.replace('nav.', '')];
+          page?.text[key] || dictionary.nav[key?.replace('nav.', '')];
         if (!key || !value) return;
 
         if (
@@ -423,11 +395,6 @@
           return;
         }
 
-        if (element.hasAttribute('data-page-i18n-order')) {
-          renderChapterPrefix(element, value);
-          return;
-        }
-
         element.textContent = value;
       });
 
@@ -440,6 +407,7 @@
     document
       .querySelectorAll('[data-home-link], [data-page-href]')
       .forEach((element) => {
+        if (!page) return;
         const key =
           element.getAttribute('data-page-href') ||
           element.getAttribute('data-home-link');
@@ -448,6 +416,7 @@
       });
 
     document.querySelectorAll('[data-page-href-prefix]').forEach((element) => {
+      if (!page) return;
       const key = element.getAttribute('data-page-href-prefix');
       const href = page.links[key];
       if (href) setHrefPrefix(element, href);
@@ -461,30 +430,41 @@
 
     document.querySelectorAll('[data-language-link]').forEach((element) => {
       const targetLocale = element.getAttribute('data-target-locale');
+      if (!targetLocale || !siteI18n[targetLocale]) return;
+      element.setAttribute('href', getLanguagePath(pathname, targetLocale));
       if (targetLocale === locale) {
         element.setAttribute('aria-current', 'page');
         return;
       }
       element.removeAttribute('aria-current');
     });
+
+    document
+      .querySelector('link[rel="canonical"]')
+      ?.setAttribute('href', new URL(pathname, window.location.origin).toString());
+    if (!hasDistinctLocalePaths(pathname)) {
+      document
+        .querySelector('link[hreflang="x-default"]')
+        ?.setAttribute('href', new URL(pathname, window.location.origin).toString());
+    }
   };
   const setupClientI18n = () => {
     const pathname = normalizePath(window.location.pathname);
-    if (!clientPaths.has(pathname)) return;
-
-    applyLocale(getStoredLocale());
+    const hasRouteLocale = hasDistinctLocalePaths(pathname);
+    const locale = hasRouteLocale ? getLocaleFromPath(pathname) : getStoredLocale();
+    if (hasRouteLocale) localStorage.setItem(storageKey, locale);
+    applyLocale(locale);
 
     document.querySelectorAll('[data-language-link]').forEach((link) => {
       if (link.dataset.clientI18nReady === 'true') return;
       link.dataset.clientI18nReady = 'true';
       link.addEventListener('click', (event) => {
-        if (!clientPaths.has(normalizePath(window.location.pathname))) return;
-
         const targetLocale = link.getAttribute('data-target-locale');
         if (!targetLocale || !siteI18n[targetLocale]) return;
 
-        event.preventDefault();
         localStorage.setItem(storageKey, targetLocale);
+        if (getLanguagePath(window.location.pathname, targetLocale) !== pathname) return;
+        event.preventDefault();
         applyLocale(targetLocale);
       });
     });

@@ -1,0 +1,36 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>完全背包：物品可重复选 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">动态规划</p><h1>完全背包：物品可重复选</h1><div class="tag-row"><span class="tag category">灵神风格</span><span class="tag">正序</span><span class="tag">无限次</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">// 最大价值：每个物品可以选无限次，容量为 target
+int completeKnapsack(vector<int>& weight, vector<int>& value, int target) {
+    vector<int> f(target + 1);
+    for (int i = 0; i &lt; weight.size(); i++) {
+        int w = weight[i], v = value[i];
+        for (int c = w; c &lt;= target; c++) { // 完全背包必须正序
+            f[c] = max(f[c], f[c - w] + v);
+        }
+    }
+    return f[target];
+}
+
+// 最少个数：凑成 target 的最少物品数，不能凑成返回 -1
+int minCoins(vector<int>& coins, int target) {
+    const int INF = target + 1;
+    vector<int> f(target + 1, INF);
+    f[0] = 0;
+    for (int x : coins) {
+        for (int c = x; c &lt;= target; c++) {
+            f[c] = min(f[c], f[c - x] + 1);
+        }
+    }
+    return f[target] == INF ? -1 : f[target];
+}
+
+// 组合数：外层枚举物品，内层正序枚举容量
+long long countCombinations(vector<int>& nums, int target) {
+    vector<long long> f(target + 1);
+    f[0] = 1;
+    for (int x : nums) {
+        for (int c = x; c &lt;= target; c++) {
+            f[c] += f[c - x];
+        }
+    }
+    return f[target];
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

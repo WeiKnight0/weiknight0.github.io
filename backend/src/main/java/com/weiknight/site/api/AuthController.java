@@ -87,6 +87,16 @@ public class AuthController {
   }
 
   /**
+   * @description Authorizes access to member-only static pages through an Nginx subrequest.
+   * @param session Session that must represent a member or administrator.
+   * @throws AccessDeniedException when the session is anonymous.
+   */
+  @GetMapping("/session")
+  public void session(HttpSession session) {
+    access.requireMember(session);
+  }
+
+  /**
    * @description Returns the account represented by the current authenticated session.
    * @param session Session being inspected.
    * @throws AccessDeniedException when the session is anonymous or references a deleted user.

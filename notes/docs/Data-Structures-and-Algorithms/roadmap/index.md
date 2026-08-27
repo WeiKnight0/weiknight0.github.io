@@ -12,7 +12,7 @@ lang: zh-cn
 2. [Hash Table 哈希表](../data-structures/hash-table.md)
 3. [Two Pointers 双指针](../techniques/two-pointers.md)
 4. [Sliding Window 滑动窗口](../techniques/sliding-window.md)
-5. [Greedy 贪心算法](../greedy.md)
+5. [Greedy 贪心算法](../techniques/greedy.md)
 6. [Prefix Sum and Difference 前缀和与差分](../techniques/prefix-sum-difference.md)
 7. [Linked List 链表](../data-structures/linked-list.md)
 8. [Stack, Queue, Deque 栈、队列、双端队列](../data-structures/stack-queue-deque.md)

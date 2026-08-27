@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes | WeiKnight</title>
+    <meta name="description" content="WeiKnight's study notes." />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css" />
+    <link rel="stylesheet" href="%BASE_URL%note.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="navbar-container">
+        <div class="navbar-brand">
+          <a class="avatar-link" href="https://github.com/WeiKnight0">
+            <img class="avatar" src="https://avatars.githubusercontent.com/u/84631479?v=4" alt="WeiKnight" />
+          </a>
+          <div class="navbar-info">
+            <a class="name" href="https://github.com/WeiKnight0">WeiKnight</a>
+            <div class="subject">Study Notes</div>
+          </div>
+          <a class="brand-home-link" href="/">
+            <i class="fas fa-home"></i>
+            <span>Return to HomePage</span>
+          </a>
+        </div>
+        <nav class="navbar-actions" aria-label="Notes navigation">
+          <a class="nav-link" id="notes-back" href="/real/notes/">
+            <i class="fas fa-level-up-alt"></i>
+            <span>Parent Directory</span>
+          </a>
+          <a class="nav-link" href="/real/">
+            <i class="fas fa-compass"></i>
+            <span>Return to Real</span>
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="title-section">
+      <div class="title-container">
+        <h1 class="chapter-title" id="note-title">Notes</h1>
+        <div class="chapter-meta">
+          <span class="chapter-date">
+            <i class="far fa-calendar-alt"></i>
+            <time id="note-date"></time>
+          </span>
+          <span class="chapter-lang" id="note-language"></span>
+          <div class="chapter-tags" id="note-tags"></div>
+        </div>
+      </div>
+    </section>
+
+    <main class="content-section">
+      <article class="chapter-content">
+        <div class="note-body" id="note-body">Loading…</div>
+      </article>
+      <div class="note-tools">
+        <button class="tool-btn" id="toggle-dark" type="button">
+          <i class="fas fa-moon"></i>
+          <span>Dark Mode</span>
+        </button>
+        <button class="tool-btn" id="print-note" type="button">
+          <i class="fas fa-print"></i>
+          <span>Print This Note</span>
+        </button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <p>© 2025 WeiKnight. All Rights Reserved.</p>
+        <div class="footer-links">
+          <a href="/about/" target="_blank">About</a>
+          <a href="/privacy/" target="_blank">Privacy Policy</a>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

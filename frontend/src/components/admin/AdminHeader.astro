@@ -6,10 +6,9 @@ export interface Props {
   eyebrow: string;
   title: string;
   description?: string;
-  active: 'blogs' | 'users' | 'notes';
+  active: 'blogs' | 'users' | 'novels' | 'commissions' | 'oc';
   viewHref?: string;
   viewLabel?: string;
-  showLogout?: boolean;
 }
 
 const {
@@ -19,12 +18,13 @@ const {
   active,
   viewHref,
   viewLabel,
-  showLogout = false,
 } = Astro.props as Props;
 const links = [
   { id: 'blogs', href: '/admin/blogs/', label: 'Edit blogs' },
+  { id: 'novels', href: '/admin/novels/', label: 'Manage novels' },
+  { id: 'oc', href: '/admin/oc/', label: 'Manage OCs' },
+  { id: 'commissions', href: '/admin/commissions/', label: 'Manage works' },
   { id: 'users', href: '/admin/users/', label: 'Manage users' },
-  { id: 'notes', href: '/admin/notes/', label: 'Edit notes' },
 ] as const;
 ---
 
@@ -35,18 +35,17 @@ const links = [
       <h1 class='mt-2 text-3xl font-black sm:text-4xl'>{title}</h1>
       {description && <p class='mt-2 text-sm text-white/45'>{description}</p>}
     </div>
-    {(viewHref || showLogout) && <div class='ml-auto flex min-h-9 flex-wrap justify-end gap-2 text-xs'>
+    {viewHref && <div class='ml-auto flex min-h-9 flex-wrap justify-end gap-2 text-xs'>
       {viewHref && <a href={viewHref} target='_blank' class='border border-white/20 px-3 py-2 text-white/65 transition hover:border-real-accent/50 hover:text-real-accent'>{viewLabel} ↗</a>}
-      {showLogout && <button id='logout' type='button' class='border border-red-300/25 px-3 py-2 text-red-200 transition hover:bg-red-300/10'>Sign out</button>}
     </div>}
   </div>
-  <nav class='mt-6 grid w-full max-w-3xl grid-cols-3 text-sm' aria-label='Administration sections'>
+  <nav class='mt-6 grid w-full grid-cols-2 text-sm sm:grid-cols-3 xl:grid-cols-5' aria-label='Administration sections'>
     {links.map((link) => (
       <a
         href={link.href}
         aria-current={link.id === active ? 'page' : undefined}
         class:list={[
-          'border px-3 py-3 text-center transition first:border-r-0 last:border-l-0',
+          'border border-white/20 px-3 py-3 text-center transition',
           link.id === active
             ? 'border-real-accent/50 bg-real-accent/10 font-bold text-real-accent'
             : 'border-white/20 text-white/70 hover:border-real-accent/40 hover:text-real-accent',

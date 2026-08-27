@@ -1,4 +1,3 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 import {
   type Locale,
   getLanguagePath,
@@ -9,113 +8,26 @@ import {
 } from '@/utils/i18n';
 import { Profile } from '@/utils/Profile';
 
-const realLinks = [
-  { href: '/real/', label: 'Overview' },
-  { href: '/real/resume/', label: 'Resume' },
-  { href: '/real/projects/', label: 'Projects' },
-  { href: '/real/notes/', label: 'Notes' },
-  { href: '/real/blog/', label: 'Blogs' },
+type NavLink = {
+  href: string;
+  labelKey: keyof typeof i18n.en.nav;
+};
+
+const realLinks: NavLink[] = [
+  { href: '/real/', labelKey: 'overview' },
+  { href: '/real/resume/', labelKey: 'resume' },
+  { href: '/real/projects/', labelKey: 'projects' },
+  { href: '/real/notes/', labelKey: 'notes' },
+  { href: '/real/blog/', labelKey: 'blogs' },
 ];
 
-const fictionLinks = [
-  { href: '/fiction/', label: 'Overview' },
-  { href: '/fiction/oc/', label: 'OCs' },
-  { href: '/fiction/world/', label: 'World' },
-  { href: '/fiction/novels/', label: 'Stories' },
-  { href: '/fiction/commissions/', label: 'Commissions' },
+const fictionLinks: NavLink[] = [
+  { href: '/fiction/', labelKey: 'overview' },
+  { href: '/fiction/oc/', labelKey: 'oc' },
+  { href: '/fiction/world/', labelKey: 'world' },
+  { href: '/fiction/novels/', labelKey: 'novels' },
+  { href: '/fiction/commissions/', labelKey: 'commissions' },
 ];
-
-const dropdownScript = `
-(() => {
-  const setupDropdowns = () => {
-    document.querySelectorAll('[data-dropdown-scope]').forEach((scope) => {
-      const dropdowns = Array.from(scope.querySelectorAll('details[data-dropdown]'));
-
-      dropdowns.forEach((dropdown) => {
-        if (dropdown.dataset.dropdownReady === 'true') {
-          return;
-        }
-
-        dropdown.dataset.dropdownReady = 'true';
-        dropdown.addEventListener('toggle', () => {
-          if (!dropdown.open) {
-            return;
-          }
-
-          dropdowns.forEach((otherDropdown) => {
-            if (otherDropdown !== dropdown) {
-              otherDropdown.open = false;
-            }
-          });
-        });
-      });
-    });
-  };
-
-  setupDropdowns();
-  document.addEventListener('astro:page-load', setupDropdowns);
-
-  const setupAccountNavigation = async () => {
-    const logins = document.querySelectorAll('[data-account-login]');
-    const profiles = document.querySelectorAll('[data-account-profile]');
-    try {
-      const response = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
-      if (!response.ok) return;
-      const account = await response.json();
-      const accountName = account.displayName || account.username;
-      logins.forEach((element) => { element.hidden = true; });
-      profiles.forEach((element) => {
-        element.hidden = false;
-        element.setAttribute('title', accountName + ' — Personal center');
-        element.setAttribute('aria-label', accountName + ' — Personal center');
-        const image = element.querySelector('[data-account-avatar-image]');
-        const fallback = element.querySelector('[data-account-avatar-fallback]');
-        fallback.textContent = accountName.trim().charAt(0).toUpperCase();
-        image.hidden = !account.avatarUrl;
-        fallback.hidden = Boolean(account.avatarUrl);
-        if (account.avatarUrl) image.src = account.avatarUrl;
-      });
-    } catch (_) {
-      // Visitors remain in the signed-out navigation state.
-    }
-  };
-
-  setupAccountNavigation();
-  document.addEventListener('astro:page-load', setupAccountNavigation);
-  window.addEventListener('account-profile-change', setupAccountNavigation);
-
-  const setupThemeControls = () => {
-    const root = document.documentElement;
-    const buttons = document.querySelectorAll('[data-theme-toggle]');
-    const syncButtons = () => {
-      const isDark = root.dataset.colorTheme === 'dark';
-      buttons.forEach((button) => {
-        button.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
-        button.setAttribute('title', isDark ? 'Switch to light theme' : 'Switch to dark theme');
-        const icon = button.querySelector('[data-theme-icon]');
-        const label = button.querySelector('[data-theme-label]');
-        if (icon) icon.textContent = isDark ? '☀' : '☾';
-        if (label) label.textContent = isDark ? 'Light theme' : 'Dark theme';
-      });
-    };
-    buttons.forEach((button) => {
-      if (button.dataset.themeReady === 'true') return;
-      button.dataset.themeReady = 'true';
-      button.addEventListener('click', () => {
-        const theme = root.dataset.colorTheme === 'dark' ? 'light' : 'dark';
-        root.dataset.colorTheme = theme;
-        root.style.colorScheme = theme;
-        localStorage.setItem('wkn-color-theme', theme);
-        syncButtons();
-      });
-    });
-    syncButtons();
-  };
-
-  setupThemeControls();
-  document.addEventListener('astro:page-load', setupThemeControls);
-})();
-`;
 
 const LinkGroup = ({
   label,
@@ -125,27 +37,29 @@ const LinkGroup = ({
 }: {
   label: string;
   labelKey: string;
-  links: typeof realLinks;
+  links: Array<NavLink & { label: string }>;
   themeClass: string;
 }) => (
   <details
     className="group relative"
     data-dropdown
+    data-hover-dropdown
     data-dropdown-group="desktop-nav-dropdown"
   >
-    <summary className={`flex cursor-pointer list-none items-center gap-2 px-4 py-2 text-sm font-semibold transition-colors ${themeClass}`}>
+    <summary className={`flex h-9 cursor-pointer list-none items-center gap-2 px-4 font-formal-sans text-sm font-semibold leading-none transition-colors ${themeClass}`}>
       <span data-home-i18n={labelKey}>{label}</span>
       <span className="text-xs transition-transform group-open:rotate-180 opacity-50">
         ⌄
       </span>
     </summary>
-    <div className="site-popover nav-dropdown-panel absolute left-0 top-full mt-2 z-30 grid w-48 gap-1 border p-2 shadow-2xl backdrop-blur-md">
+    <div className="site-popover nav-dropdown-panel absolute left-0 top-full z-30 grid w-48 gap-1 border p-2 shadow-2xl backdrop-blur-md">
       {links.map((link) => (
         <a
           key={link.href}
           href={link.href}
           data-localized-path={link.href}
-          className={`px-3 py-2 text-sm transition-colors ${themeClass}`}
+          data-home-i18n={`nav.${link.labelKey}`}
+          className={`px-3 py-2 font-formal-sans text-sm transition-colors ${themeClass}`}
         >
           {link.label}
         </a>
@@ -176,7 +90,7 @@ const LanguageGroup = ({
         ▼
       </span>
     </summary>
-    <div className="site-popover nav-dropdown-panel absolute right-0 top-full mt-2 z-30 grid w-32 gap-1 border p-2 shadow-2xl backdrop-blur-md">
+    <div className="site-popover nav-dropdown-panel absolute right-0 top-full z-30 grid w-32 gap-1 border p-2 shadow-2xl backdrop-blur-md">
       {locales.map((targetLocale) => (
         <a
           key={targetLocale}
@@ -193,15 +107,22 @@ const LanguageGroup = ({
   </details>
 );
 
+/**
+ * @description Renders the shared responsive navigation for real and fictional sections.
+ * @param locale Locale used for the initial static navigation labels.
+ * @param pathname Current route used to build localized navigation targets.
+ */
 const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
   const text = i18n[locale].nav;
   const localizedRealLinks = realLinks.map((link) => ({
     ...link,
     href: getLocalizedPath(link.href, locale),
+    label: text[link.labelKey],
   }));
   const localizedFictionLinks = fictionLinks.map((link) => ({
     ...link,
     href: getLocalizedPath(link.href, locale),
+    label: text[link.labelKey],
   }));
   const homeHref = getLocalizedPath('/', locale);
 
@@ -212,7 +133,6 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
         aria-label="Primary navigation"
       >
         <a href={homeHref} className="flex items-center gap-3 opacity-90 hover:opacity-100 transition-opacity">
-          {/* 头像保持原色，不加任何滤镜 */}
           <img
             src={Profile.avatar}
             alt={`${Profile.name} avatar`}
@@ -243,28 +163,36 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
             label={text.real}
             labelKey="nav.real"
             links={localizedRealLinks}
-            themeClass="font-real-mono text-white/70 hover:text-real-accent hover:bg-real-accent/10"
+            themeClass="text-white/70 hover:text-real-accent hover:bg-real-accent/10"
           />
           <LinkGroup
             label={text.fiction}
             labelKey="nav.fiction"
             links={localizedFictionLinks}
-            themeClass="font-fiction-serif text-white/70 hover:text-fiction-accent hover:bg-fiction-accent/10"
+            themeClass="text-white/70 hover:text-fiction-accent hover:bg-fiction-accent/10"
           />
           <div className="h-4 w-px bg-white/20 ml-2 mr-2"></div>
           <a
             href="/login/"
             data-account-login
+            data-home-i18n="nav.login"
             className="border border-real-accent/50 bg-real-accent/10 px-3 py-1.5 text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent transition hover:bg-real-accent hover:text-black"
           >
-            Login
+            {text.login}
           </a>
-          <a href="/profile/" data-account-profile hidden className="rounded-full transition hover:ring-2 hover:ring-real-accent" aria-label="Personal center">
-            <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full border border-real-accent/60 bg-real-accent/10 text-sm font-black text-real-accent">
-              <img data-account-avatar-image hidden alt="" className="h-full w-full object-cover" />
-              <span data-account-avatar-fallback>?</span>
-            </span>
-          </a>
+          <details data-account-profile data-dropdown data-hover-dropdown hidden className="group relative" aria-label="Account menu">
+            <summary className="cursor-pointer list-none rounded-full transition hover:ring-2 hover:ring-real-accent" aria-label="Personal center">
+              <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-full border border-real-accent/60 bg-real-accent/10 text-sm font-black text-real-accent">
+                <img data-account-avatar-image hidden alt="" className="h-full w-full object-cover" />
+                <span data-account-avatar-fallback>?</span>
+              </span>
+            </summary>
+            <div className="site-popover nav-dropdown-panel absolute right-0 top-full z-30 grid w-52 gap-1 border p-2 shadow-2xl backdrop-blur-md">
+              <a href="/profile/" data-home-i18n="nav.profile" className="px-3 py-2 text-sm text-white/70 transition hover:bg-white/10 hover:text-white">{text.profile}</a>
+              <a data-account-admin data-home-i18n="nav.administration" hidden href="/admin/blogs/" className="px-3 py-2 text-sm text-real-accent transition hover:bg-real-accent/10">{text.administration}</a>
+              <button data-account-logout data-home-i18n="nav.signOut" type="button" className="border-t border-white/10 px-3 py-2 text-left text-sm text-red-200 transition hover:bg-red-300/10">{text.signOut}</button>
+            </div>
+          </details>
           <button type="button" data-theme-toggle className="flex h-9 w-9 items-center justify-center border border-white/10 text-base text-white/70 transition hover:border-real-accent/50 hover:text-real-accent" aria-label="Switch color theme">
             <span data-theme-icon aria-hidden="true">☀</span>
           </button>
@@ -279,7 +207,7 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
         {/* Mobile menu */}
         <details className="md:hidden">
           <summary className="cursor-pointer list-none border border-white/10 px-4 py-2 text-xs font-semibold text-white uppercase tracking-widest">
-            Menu
+            <span data-home-i18n="nav.menu">{text.menu}</span>
           </summary>
           <div
             className="site-popover absolute left-0 right-0 top-full mt-1 border-b p-4 shadow-2xl backdrop-blur-xl"
@@ -288,15 +216,17 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
             <div className="grid gap-4">
               <a href={homeHref} className="text-white/80 font-bold uppercase tracking-widest text-sm py-2">{text.home}</a>
               <div className="pl-4 border-l border-white/10 grid gap-2">
-                 <div className="text-real-accent text-xs font-real-mono mb-1">REAL_</div>
-                 {localizedRealLinks.map(l => <a key={l.href} href={l.href} className="text-white/60 text-sm font-real-mono py-1">{l.label}</a>)}
+                 <div className="mb-1 font-formal-sans text-xs text-real-accent">REAL_</div>
+                 {localizedRealLinks.map(l => <a key={l.href} href={l.href} data-localized-path={l.href} data-home-i18n={`nav.${l.labelKey}`} className="py-1 font-formal-sans text-sm text-white/60">{l.label}</a>)}
               </div>
               <div className="pl-4 border-l border-white/10 grid gap-2">
-                 <div className="text-fiction-accent text-xs font-fiction-serif mb-1">FICTION*</div>
-                 {localizedFictionLinks.map(l => <a key={l.href} href={l.href} className="text-white/60 text-sm font-fiction-serif py-1">{l.label}</a>)}
+                 <div className="mb-1 font-formal-sans text-xs text-fiction-accent">FICTION*</div>
+                 {localizedFictionLinks.map(l => <a key={l.href} href={l.href} data-localized-path={l.href} data-home-i18n={`nav.${l.labelKey}`} className="py-1 font-formal-sans text-sm text-white/60">{l.label}</a>)}
               </div>
-              <a href="/login/" data-account-login className="border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-center text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent">Login</a>
-              <a href="/profile/" data-account-profile hidden className="flex items-center justify-center gap-3 border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent"><span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full border border-real-accent/60 bg-real-accent/10"><img data-account-avatar-image hidden alt="" className="h-full w-full object-cover" /><span data-account-avatar-fallback>?</span></span>Personal center</a>
+              <a href="/login/" data-account-login data-home-i18n="nav.login" className="border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-center text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent">{text.login}</a>
+              <a href="/profile/" data-account-profile hidden className="flex items-center justify-center gap-3 border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent"><span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full border border-real-accent/60 bg-real-accent/10"><img data-account-avatar-image hidden alt="" className="h-full w-full object-cover" /><span data-account-avatar-fallback>?</span></span><span data-home-i18n="nav.profile">{text.profile}</span></a>
+              <a data-account-admin data-home-i18n="nav.administration" hidden href="/admin/blogs/" className="border border-real-accent/30 px-4 py-3 text-center text-xs font-bold uppercase tracking-widest text-real-accent">{text.administration}</a>
+              <button data-account-logout data-home-i18n="nav.signOut" hidden type="button" className="border border-red-300/25 px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-200">{text.signOut}</button>
               <button type="button" data-theme-toggle className="flex items-center justify-center gap-2 border border-white/10 px-4 py-3 text-xs font-bold uppercase tracking-widest text-white/70">
                 <span data-theme-icon aria-hidden="true">☀</span><span data-theme-label>Light theme</span>
               </button>
@@ -321,7 +251,6 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
         }
       }
     `}</style>
-      <script dangerouslySetInnerHTML={{ __html: dropdownScript }} />
     </header>
   );
 };

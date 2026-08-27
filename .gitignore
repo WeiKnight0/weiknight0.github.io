@@ -20,11 +20,8 @@ bin-release/
 dist/
 node_modules/
 backend/target/
-data/postgres/
-data/note-assets/
-data/user-avatars/
-notes/site/
-notes/.publish
+data/
+notes/assets/
 
 # Local secrets. Keep the safe, documented template under version control.
 .env
@@ -40,6 +37,5 @@ notes/.publish
 __pycache__/
 *.py[cod]
 .pytest_cache/
-notes/.cache/
 
 AGENTS.md

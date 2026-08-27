@@ -17,11 +17,14 @@ const visit = (node, visitor) => {
   }
 };
 
+/**
+ * @description Adds visible language markers before fenced code blocks in technical content.
+ */
 export default function remarkCodeLanguageMarker() {
   return (tree, file) => {
     const filename = file.history[0]?.replace(/\\/g, '/') ?? '';
 
-    if (!filename.includes('/src/content/notes/') && !filename.includes('/src/content/blog/')) {
+    if (!filename.includes('/src/content/blog/')) {
       return;
     }
 

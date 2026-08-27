@@ -7,7 +7,7 @@ COPY pom.xml ./
 RUN mvn --batch-mode dependency:go-offline
 
 COPY src ./src
-RUN mvn --batch-mode package -DskipTests
+RUN mvn --batch-mode package
 
 # Alpine JRE keeps the Spring Boot runtime image small.
 FROM eclipse-temurin:17-jre-alpine

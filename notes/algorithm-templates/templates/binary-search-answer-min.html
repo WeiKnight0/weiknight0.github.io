@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>二分答案：求最小可行值 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">二分查找</p><h1>二分答案：求最小可行值</h1><div class="tag-row"><span class="tag category">灵神风格</span><span class="tag">check</span><span class="tag">开区间</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">// 开区间写法：left 一定不满足要求，right 一定满足要求
+// 循环结束时 right 是最小的满足要求的答案
+long long binarySearchMin(long long left, long long right) {
+    auto check = [&](long long x) -&gt; bool {
+        // TODO: 判断 x 是否满足要求
+        return true;
+    };
+
+    while (left + 1 &lt; right) {
+        long long mid = left + (right - left) / 2;
+        if (check(mid)) {
+            right = mid;
+        } else {
+            left = mid;
+        }
+    }
+    return right;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

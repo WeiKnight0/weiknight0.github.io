@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Z 函数：扩展 KMP | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">字符串</p><h1>Z 函数：扩展 KMP</h1><div class="tag-row"><span class="tag category">灵神风格</span><span class="tag">LCP</span><span class="tag">字符串匹配</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">vector<int> calcZ(string s) {
+    int n = s.length();
+    vector<int> z(n);
+    int box_l = 0, box_r = 0; // z-box 左右边界
+    for (int i = 1; i &lt; n; i++) {
+        if (i &lt;= box_r) {
+            z[i] = min(z[i - box_l], box_r - i + 1);
+        }
+        while (i + z[i] &lt; n && s[z[i]] == s[i + z[i]]) {
+            z[i]++;
+        }
+        if (i + z[i] - 1 &gt; box_r) {
+            box_l = i;
+            box_r = i + z[i] - 1;
+        }
+    }
+    return z;
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

@@ -6,7 +6,7 @@ import Base from '@/templates/Base.astro';
 <Base head={{ title: 'Blog Admin | WeiKnight', description: 'Blog administration' }} theme='real'>
   <main class='mx-auto w-full max-w-[110rem] px-4 py-10 font-formal-sans text-real-text sm:px-6 lg:px-8'>
     <section id='admin-panel'>
-      <AdminHeader eyebrow='Content control' title='Blog editor' active='blogs' viewHref='/real/blog/' viewLabel='View blog' showLogout />
+      <AdminHeader eyebrow='Content control' title='Blog editor' active='blogs' viewHref='/real/blog/' viewLabel='View blog' />
 
       <div id='notice' class='mb-5 hidden border px-4 py-3 text-sm' role='status' aria-live='polite'></div>
 
@@ -94,8 +94,9 @@ import Base from '@/templates/Base.astro';
       </div>
     </section>
   </main>
-  <script is:inline src='/js/api.js'></script>
-  <script is:inline src='/js/admin.js'></script>
+  <script>
+    import '@/scripts/blog-admin';
+  </script>
   <style is:global>
     .input { @apply border border-white/20 bg-black/30 p-3 text-white outline-none transition placeholder:text-white placeholder:opacity-30 focus:border-real-accent; }
     .field-label { @apply text-xs font-bold uppercase tracking-[0.16em] text-white/60; }

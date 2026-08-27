@@ -1,0 +1,28 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>快速幂与组合数预处理 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">数学</p><h1>快速幂与组合数预处理</h1><div class="tag-row"><span class="tag category">组合数学</span><span class="tag">取模</span><span class="tag">逆元</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">const long long MOD = 1000000007;
+
+long long qpow(long long a, long long e) {
+    long long res = 1;
+    while (e) {
+        if (e & 1) res = res * a % MOD;
+        a = a * a % MOD;
+        e &gt;&gt;= 1;
+    }
+    return res;
+}
+
+class Comb {
+    vector<long long> fact, invFact;
+
+public:
+    Comb(int n) : fact(n + 1), invFact(n + 1) {
+        fact[0] = 1;
+        for (int i = 1; i &lt;= n; i++) fact[i] = fact[i - 1] * i % MOD;
+        invFact[n] = qpow(fact[n], MOD - 2);
+        for (int i = n; i &gt; 0; i--) invFact[i - 1] = invFact[i] * i % MOD;
+    }
+
+    long long C(int n, int k) {
+        if (k &lt; 0 || k &gt; n) return 0;
+        return fact[n] * invFact[k] % MOD * invFact[n - k] % MOD;
+    }
+};</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

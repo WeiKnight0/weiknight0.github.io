@@ -11,3 +11,5 @@ lang: zh-cn
 - [Sliding Window 滑动窗口](./sliding-window.md)
 - [Prefix Sum and Difference 前缀和与差分](./prefix-sum-difference.md)
 - [Bitwise Operation 位运算](./bitwise-operation.md)
+- [Greedy 贪心算法](./greedy.md)
+- [LeetCode Hot 100：技巧](./hot-100.md)

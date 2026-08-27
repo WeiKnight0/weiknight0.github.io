@@ -30,11 +30,6 @@ const datedItem = z.object({
   draft: z.boolean().default(false),
 });
 
-const noteItem = datedItem.extend({
-  layout: z.string().optional(),
-  lang: z.string().optional(),
-});
-
 export const collections = {
   projects: defineCollection({
     schema: orderedItem.extend({
@@ -43,7 +38,6 @@ export const collections = {
       demo: z.string().url().optional(),
     }),
   }),
-  notes: defineCollection({ schema: noteItem }),
   blog: defineCollection({ schema: datedItem }),
   world: defineCollection({ schema: orderedItem }),
   novels: defineCollection({ schema: orderedItem }),

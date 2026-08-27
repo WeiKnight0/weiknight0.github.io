@@ -1,0 +1,27 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>MedianFinder：双堆维护中位数 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">堆与优先队列</p><h1>MedianFinder：双堆维护中位数</h1><div class="tag-row"><span class="tag category">Hot100 295</span><span class="tag">双堆</span><span class="tag">class</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">class MedianFinder {
+public:
+    priority_queue&lt;int&gt; left; // 最大堆
+    priority_queue&lt;int, vector&lt;int&gt;, greater&lt;&gt;&gt; right; // 最小堆
+
+    MedianFinder() {
+    }
+
+    void addNum(int num) {
+        if (left.size() == right.size()) {
+            right.push(num);
+            left.push(right.top());
+            right.pop();
+        } else {
+            left.push(num);
+            right.push(left.top());
+            left.pop();
+        }
+    }
+
+    double findMedian() {
+        if (left.size() &gt; right.size()) {
+            return left.top();
+        }
+        return (left.top() + right.top()) / 2.0;
+    }
+};</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

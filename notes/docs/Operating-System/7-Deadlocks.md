@@ -147,7 +147,7 @@ System is in safe state if there exists a sequence $<P_1, P_2, \cdots, P_n>$ of 
 		  - 当资源被分配给进程时，请求边会转换为**Assignment Edge 分配边**：例如下图由R指向P的实线
 		  - 当一个进程释放资源时，分配边会重新转换为需求边
 		  - 在系统中，资源必须事先被声明
-	- ![[pictures/7-1.png]]
+	- ![](pictures/7-1.png)
 	- Suppose that process $P_i$ requests a resource $R_j$
 	- The request can be granted only if converting the request edge to an assignment edge **does not result in the formation of a cycle** in the resource allocation graph
 	- 只有当将请求边转换为分配边不会导致在资源分配图中 **形成环路** 时，该请求才会被批准。
@@ -199,18 +199,18 @@ System is in safe state if there exists a sequence $<P_1, P_2, \cdots, P_n>$ of 
     - 如果系统处于不安全状态，则进程 $P_i$ 必须等待（因为不安全），并且恢复原来的资源分配状态。
 
 #### In Class Exercise 1
-![[pictures/7-2.png]]
+![](pictures/7-2.png)
 **Answer:**
 ![](pictures/7-6.png)
 ![](pictures/7-7.png)
 
 #### In Class Exercise 2
-![[pictures/7-3.png]]
+![](pictures/7-3.png)
 **Answer:**
 ![](pictures/7-8.png)
 
 #### In Class Exercise 3
-![[pictures/7-4.png]]
+![](pictures/7-4.png)
 **Answer:**
 1. Allocation-Total: `[4, 7, 4, 7]`. So that `[A,B,C,D]=[6,7,6,7]`
 2. Need Matrix：

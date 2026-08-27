@@ -17,6 +17,9 @@ import {
   locales,
 } from '@/utils/i18n';
 
+/**
+ * @description Defines the document metadata, visual section, and optional explicit locale.
+ */
 export interface Props {
   head: {
     title: string;
@@ -83,5 +86,8 @@ const hasAlternates = hasDistinctLocalePaths(Astro.url.pathname);
     <Footer locale={locale} />
 
     <ClientI18n />
+    <script>
+      import '@/scripts/navigation';
+    </script>
   </body>
 </html>

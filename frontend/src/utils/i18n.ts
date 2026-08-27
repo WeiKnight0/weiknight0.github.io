@@ -14,17 +14,13 @@ export const htmlLangs: Record<Locale, string> = {
   'zh-cn': 'zh-CN',
 };
 
-export const localePathPrefixes: Record<Locale, string> = {
-  en: '',
-  'zh-cn': '',
-};
-
 export const clientI18nPaths = [
   '/',
   '/real/',
   '/real/blog/',
   '/fiction/',
   '/fiction/novels/',
+  '/fiction/oc/',
   '/fiction/commissions/',
 ] as const;
 
@@ -32,7 +28,6 @@ const clientI18nPathSet = new Set<string>(clientI18nPaths);
 
 export const localizedRouteGroups = [
   { base: '/fiction/world/', localizedBase: '/fiction/world/zh-cn/' },
-  { base: '/fiction/oc/', localizedBase: '/fiction/oc/zh-cn/' },
   { base: '/real/projects/', localizedBase: '/real/projects/zh-cn/' },
   { base: '/real/resume/', localizedBase: '/real/resume/zh-cn/' },
 ] as const;
@@ -58,6 +53,20 @@ export const i18n = {
       real: 'Real',
       fiction: 'Fiction',
       language: 'Language',
+      overview: 'Overview',
+      resume: 'Resume',
+      projects: 'Projects',
+      notes: 'Notes',
+      blogs: 'Blogs',
+      oc: 'OCs',
+      world: 'World',
+      novels: 'Novels',
+      commissions: 'Commissions',
+      login: 'Login',
+      profile: 'Personal center',
+      administration: 'Administration',
+      signOut: 'Sign out',
+      menu: 'Menu',
     },
     footer: {
       builtWith: 'Built with Astro, React and Tailwind CSS.',
@@ -70,6 +79,20 @@ export const i18n = {
       real: '三次元',
       fiction: '二次元',
       language: '语言',
+      overview: '总览',
+      resume: '简历',
+      projects: '项目',
+      notes: '笔记',
+      blogs: '博客',
+      oc: '原创角色',
+      world: '世界观',
+      novels: '小说',
+      commissions: '委托作品',
+      login: '登录',
+      profile: '个人中心',
+      administration: '管理后台',
+      signOut: '退出登录',
+      menu: '菜单',
     },
     footer: {
       builtWith: '使用 Astro、React 与 Tailwind CSS 构建。',
@@ -78,6 +101,10 @@ export const i18n = {
   },
 } as const;
 
+/**
+ * @description Normalizes one site path to a leading and trailing slash form.
+ * @param pathname URL path with optional query or fragment text.
+ */
 export const normalizePath = (pathname: string): string => {
   if (pathname === '') {
     return '/';
@@ -91,9 +118,17 @@ export const normalizePath = (pathname: string): string => {
     : `${withLeadingSlash}/`;
 };
 
+/**
+ * @description Reports whether a path changes language without navigating to another page.
+ * @param pathname Site path to inspect.
+ */
 export const isClientI18nPath = (pathname: string): boolean =>
   clientI18nPathSet.has(normalizePath(pathname));
 
+/**
+ * @description Resolves the locale represented by one localized route.
+ * @param pathname Site path to inspect.
+ */
 export const getLocaleFromPath = (pathname: string): Locale => {
   const normalizedPath = normalizePath(pathname);
 
@@ -104,6 +139,10 @@ export const getLocaleFromPath = (pathname: string): Locale => {
     : defaultLocale;
 };
 
+/**
+ * @description Converts a localized route to its default-locale route.
+ * @param pathname Localized or default site path.
+ */
 export const stripLocaleFromPath = (pathname: string): string => {
   const normalizedPath = normalizePath(pathname);
 
@@ -120,6 +159,11 @@ export const stripLocaleFromPath = (pathname: string): string => {
   return normalizedPath;
 };
 
+/**
+ * @description Builds the route for a target locale without changing its content identity.
+ * @param path Current localized or default site path.
+ * @param locale Locale that the returned path must represent.
+ */
 export const getLocalizedPath = (path: string, locale: Locale): string => {
   const normalizedPath = normalizePath(stripLocaleFromPath(path));
 
@@ -144,6 +188,11 @@ export const getLocalizedPath = (path: string, locale: Locale): string => {
   return normalizedPath;
 };
 
+/**
+ * @description Resolves the navigation target for one language selector.
+ * @param pathname Current site path.
+ * @param targetLocale Locale selected by the visitor.
+ */
 export const getLanguagePath = (
   pathname: string,
   targetLocale: Locale
@@ -158,11 +207,20 @@ export const getLanguagePath = (
   return getLocalizedPath(normalizedPath, targetLocale);
 };
 
+/**
+ * @description Returns the alternate-language route for metadata and navigation.
+ * @param pathname Current site path.
+ * @param targetLocale Locale represented by the alternate route.
+ */
 export const getAlternateLocalePath = (
   pathname: string,
   targetLocale: Locale
 ): string => getLanguagePath(pathname, targetLocale);
 
+/**
+ * @description Builds alternate routes for every supported locale.
+ * @param pathname Current site path.
+ */
 export const getAlternateLocalePaths = (
   pathname: string
 ): Record<Locale, string> => ({
@@ -170,12 +228,21 @@ export const getAlternateLocalePaths = (
   'zh-cn': getAlternateLocalePath(pathname, 'zh-cn'),
 });
 
+/**
+ * @description Reports whether locale alternatives require distinct URLs.
+ * @param pathname Current site path.
+ */
 export const hasDistinctLocalePaths = (pathname: string): boolean => {
   const alternatePaths = getAlternateLocalePaths(pathname);
 
   return alternatePaths.en !== alternatePaths['zh-cn'];
 };
 
+/**
+ * @description Resolves a normalized site path against the configured production origin.
+ * @param site Optional Astro site origin.
+ * @param pathname Site path to resolve.
+ */
 export const getAbsoluteUrl = (
   site: URL | undefined,
   pathname: string

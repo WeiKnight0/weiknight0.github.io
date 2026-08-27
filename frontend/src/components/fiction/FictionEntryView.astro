@@ -1,0 +1,24 @@
+---
+/**
+ * @description Configures one shared public shell for a database-backed fiction entry.
+ */
+export interface Props {
+  kind: 'novels' | 'oc';
+}
+
+const { kind } = Astro.props as Props;
+const publicBase = `/fiction/${kind}`;
+const backLabel = kind === 'oc' ? 'OCs' : 'Novels';
+const backLabelKey = kind === 'oc' ? 'oc' : 'novels';
+---
+
+<article data-fiction-entry-view data-kind={kind} class='mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8'>
+  <a href={`${publicBase}/`} class='text-base font-bold text-fiction-accent transition hover:text-fiction-text'>← <span data-home-i18n={`nav.${backLabelKey}`}>{backLabel}</span></a>
+  <h1 id='fiction-entry-title' class='mt-10 font-fiction-serif text-3xl font-black leading-tight text-fiction-text md:text-5xl'>Loading…</h1>
+  <p id='fiction-entry-description' class='mt-6 text-lg leading-8 text-fiction-text/75'></p>
+  <div id='fiction-entry-content' class='prose prose-base prose-invert mt-14 max-w-none prose-headings:font-fiction-serif prose-headings:text-fiction-text prose-a:text-fiction-accent prose-strong:text-fiction-text md:prose-lg'></div>
+</article>
+
+<script>
+  import '@/scripts/fiction-entry-view';
+</script>

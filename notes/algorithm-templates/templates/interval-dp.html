@@ -1,0 +1,39 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>区间 DP：枚举区间长度和断点 | 算法模板速查</title><link rel="icon" href="/favicon.ico" /><script src="../assets/color-theme.js"></script><link rel="stylesheet" href="../assets/styles.css" /></head><body data-page="template" data-site-root="../"><header class="site-header"><a class="brand" href="../index.html">算法模板速查</a><nav class="top-nav"><a href="../index.html">返回首页</a><a id="download-page" class="download-button" href="#" role="button">下载网页压缩包</a></nav></header><main class="page-shell"><article class="template-page"><p class="eyebrow">动态规划</p><h1>区间 DP：枚举区间长度和断点</h1><div class="tag-row"><span class="tag category">灵神风格</span><span class="tag">枚举断点</span><span class="tag">O(n^3)</span></div><section class="code-shell"><textarea class="template-source" readonly spellcheck="false">// f[l][r] 表示闭区间 [l,r] 的最优值
+int intervalDp(vector<int>& nums) {
+    int n = nums.size();
+    vector<vector<int>> f(n, vector<int>(n));
+
+    for (int len = 2; len &lt;= n; len++) {
+        for (int l = 0; l + len - 1 &lt; n; l++) {
+            int r = l + len - 1;
+            f[l][r] = INT_MAX / 2;
+            for (int k = l; k &lt; r; k++) {
+                int cost = 0; // TODO: 合并 [l,k] 和 [k+1,r] 的额外代价
+                f[l][r] = min(f[l][r], f[l][k] + f[k + 1][r] + cost);
+            }
+        }
+    }
+    return f[0][n - 1];
+}
+
+// 记忆化搜索写法：适合从题意自然递归到左右端点
+int intervalDfs(vector<int>& nums) {
+    int n = nums.size();
+    vector<vector<int>> memo(n, vector<int>(n, -1));
+    auto dfs = [&](auto&& dfs, int l, int r) -&gt; int {
+        if (l == r) {
+            return 0;
+        }
+        int& res = memo[l][r];
+        if (res != -1) {
+            return res;
+        }
+        res = INT_MAX / 2;
+        for (int k = l; k &lt; r; k++) {
+            int cost = 0; // TODO: 合并代价
+            res = min(res, dfs(dfs, l, k) + dfs(dfs, k + 1, r) + cost);
+        }
+        return res;
+    };
+    return dfs(dfs, 0, n - 1);
+}</textarea></section></article></main><script src="../assets/jszip.min.js"></script><script src="../assets/index-data.js"></script><script src="../assets/app.js"></script></body></html>

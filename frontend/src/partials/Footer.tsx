@@ -1,5 +1,9 @@
 import { type Locale, i18n } from '@/utils/i18n';
 
+/**
+ * @description Renders the shared localized site footer.
+ * @param locale Locale used for the initial static content.
+ */
 const Footer = ({ locale }: { locale: Locale }) => (
   <footer className="site-footer border-t px-5 py-10 text-sm lg:px-8">
     <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">

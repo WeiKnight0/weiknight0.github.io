@@ -1,8 +1,5 @@
 ---
 import FictionPage from '@/templates/FictionPage.astro';
-import { getCommissionImages } from '@/utils/commissions';
-
-const images = getCommissionImages();
 ---
 
 <FictionPage
@@ -18,48 +15,10 @@ const images = getCommissionImages();
         Commissions
       </h1>
     </div>
-    <p
-      data-page-i18n='commissions.description'
-      data-page-i18n-html
-      class='mt-8 max-w-3xl border border-white/5 bg-black/30 p-5 font-fiction-serif text-base leading-7 text-fiction-text/75'
-    >
-      A direct gallery for commissioned artwork. Add images to <code
-        class='bg-black/30 px-2 py-1 text-fiction-accent'
-        >public/fiction/commissions/
-      </code> to show them here.
-    </p>
-    {images.length > 0 ? (
-      <div class="mt-14 columns-1 gap-5 sm:columns-2 lg:columns-3">
-        {images.map((image) => (
-          <a
-            href={image.src}
-            class="mb-5 block break-inside-avoid overflow-hidden border border-fiction-accent/30 bg-fiction-surface/80 transition hover:border-fiction-accent/70"
-            target="_blank"
-          >
-            <img
-              src={image.src}
-              alt={image.title}
-              loading="lazy"
-              class="w-full object-cover transition duration-500 hover:scale-[1.02]"
-            />
-            <div class="px-5 py-4 font-real-mono text-sm font-bold text-fiction-text/75">
-              {image.title}
-            </div>
-          </a>
-        ))}
-      </div>
-    ) : (
-      <div
-        data-page-i18n="commissions.empty"
-        data-page-i18n-html
-        class="mt-14 border border-dashed border-fiction-accent/40 bg-fiction-surface/70 p-8 font-fiction-serif text-base leading-7 text-fiction-text/75"
-      >
-        No commission images yet. Put image files in{' '}
-        <code class="bg-black/30 px-2 py-1 text-fiction-accent">
-          public/fiction/commissions/
-        </code>
-        .
-      </div>
-    )}
+    <p class='mt-8 max-w-3xl border border-white/5 bg-black/30 p-5 font-fiction-serif text-base leading-7 text-fiction-text/75'>A curated gallery of commissioned artwork and manuscripts.</p>
+    <div data-fiction-gallery class='mt-14 border border-dashed border-fiction-accent/40 bg-fiction-surface/70 p-8 font-fiction-serif text-base leading-7 text-fiction-text/75'>Loading gallery…</div>
   </section>
+  <script>
+    import '@/scripts/fiction-gallery';
+  </script>
 </FictionPage>

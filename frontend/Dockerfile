@@ -15,6 +15,13 @@ ARG SITE_URL=http://localhost
 ENV SITE_URL=${SITE_URL}
 RUN npm run build
 
+# Notes is a standalone Vite reader and never enters Astro's content pipeline.
+WORKDIR /notes-reader
+COPY notes/reader/package.json notes/reader/package-lock.json ./
+RUN npm ci
+COPY notes/reader ./
+RUN npm run build
+
 # Nginx is the only frontend runtime process.
 FROM nginx:1.27-alpine
 
@@ -25,6 +32,8 @@ RUN sed -i 's/^nginx:x:101:101:/nginx:x:1000:1000:/' /etc/passwd \
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --chown=1000:1000 nginx/wkn-personal-site.conf /etc/nginx/conf.d/default.conf
 COPY --chown=1000:1000 --from=frontend-builder /app/dist /usr/share/nginx/html
+COPY --chown=1000:1000 --from=frontend-builder /notes-reader/dist /usr/share/nginx/html/notes-reader
+COPY --chown=1000:1000 notes/algorithm-templates /usr/share/nginx/html/real/notes/algorithm-templates
 
 USER 1000:1000
 
