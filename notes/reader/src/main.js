@@ -6,6 +6,19 @@ import remarkMath from 'remark-math';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
+import hljs from 'highlight.js/lib/core';
+import bash from 'highlight.js/lib/languages/bash';
+import c from 'highlight.js/lib/languages/c';
+import cpp from 'highlight.js/lib/languages/cpp';
+import css from 'highlight.js/lib/languages/css';
+import java from 'highlight.js/lib/languages/java';
+import javascript from 'highlight.js/lib/languages/javascript';
+import json from 'highlight.js/lib/languages/json';
+import markdown from 'highlight.js/lib/languages/markdown';
+import python from 'highlight.js/lib/languages/python';
+import typescript from 'highlight.js/lib/languages/typescript';
+import xml from 'highlight.js/lib/languages/xml';
+import yaml from 'highlight.js/lib/languages/yaml';
 
 import remarkCodeLanguageMarker from './remark-code-language-marker.mjs';
 import remarkEnv from './remark-env.mjs';
@@ -13,6 +26,7 @@ import remarkNoteLinks from './remark-note-links.mjs';
 
 const NOTE_ROUTE = /^\/real\/notes(?:\/(.*?))?\/?$/;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
+const CJK_BOLD_LABEL = /(\*\*)([^*\n]+?)([：:])\1(?=[\p{Script=Han}])/gu;
 const CODE_LANGUAGE_LABELS = {
   asm: 'Assembly',
   bash: 'Shell',
@@ -36,6 +50,42 @@ const CODE_LANGUAGE_LABELS = {
   yaml: 'YAML',
   yml: 'YAML',
 };
+const HIGHLIGHT_LANGUAGES = {
+  asm: 'plaintext',
+  bash: 'bash',
+  c: 'c',
+  cpp: 'cpp',
+  css: 'css',
+  html: 'xml',
+  java: 'java',
+  javascript: 'javascript',
+  js: 'javascript',
+  json: 'json',
+  markdown: 'markdown',
+  md: 'markdown',
+  python: 'python',
+  sh: 'bash',
+  shell: 'bash',
+  ts: 'typescript',
+  typescript: 'typescript',
+  yaml: 'yaml',
+  yml: 'yaml',
+};
+
+[
+  ['bash', bash],
+  ['c', c],
+  ['cpp', cpp],
+  ['css', css],
+  ['java', java],
+  ['javascript', javascript],
+  ['json', json],
+  ['markdown', markdown],
+  ['python', python],
+  ['typescript', typescript],
+  ['xml', xml],
+  ['yaml', yaml],
+].forEach(([name, definition]) => hljs.registerLanguage(name, definition));
 
 function element(selector) {
   return document.querySelector(selector);
@@ -78,6 +128,10 @@ function parseMarkdown(markdown) {
   };
 }
 
+function normalizeCjkBoldLabels(markdown) {
+  return markdown.replace(CJK_BOLD_LABEL, '$1$2$1$3');
+}
+
 async function renderMarkdown(sourcePath, markdown) {
   return String(await unified()
     .use(remarkParse)
@@ -90,7 +144,7 @@ async function renderMarkdown(sourcePath, markdown) {
     .use(rehypeRaw)
     .use(rehypeKatex)
     .use(rehypeStringify)
-    .process({ path: `/notes/docs/${sourcePath}`, value: markdown }));
+    .process({ path: `/notes/docs/${sourcePath}`, value: normalizeCjkBoldLabels(markdown) }));
 }
 
 function languageLabel(lang) {
@@ -104,6 +158,40 @@ function languageLabel(lang) {
 
 function codeLanguageLabel(language) {
   return CODE_LANGUAGE_LABELS[language.toLowerCase()] ?? language.toUpperCase();
+}
+
+function highlightCodeLine(line, language) {
+  const registeredLanguage = HIGHLIGHT_LANGUAGES[language.toLowerCase()];
+  if (!registeredLanguage) return document.createTextNode(line);
+  const content = document.createElement('span');
+  content.className = 'line-content';
+  content.innerHTML = hljs.highlight(line, { language: registeredLanguage }).value;
+  return content;
+}
+
+function legacyCopy(text) {
+  const input = document.createElement('textarea');
+  input.value = text;
+  input.setAttribute('readonly', '');
+  input.style.cssText = 'position:fixed;opacity:0';
+  document.body.append(input);
+  input.select();
+  const copied = document.execCommand('copy');
+  input.remove();
+  if (!copied) throw new Error('Browser rejected clipboard copy');
+}
+
+async function copyCodeText(text) {
+  if (!window.isSecureContext || !navigator.clipboard?.writeText) {
+    legacyCopy(text);
+    return;
+  }
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    // A user click permits this fallback on browsers that deny the async Clipboard API.
+    legacyCopy(text);
+  }
 }
 
 function renderMetadata(note, path) {
@@ -144,7 +232,7 @@ function prepareCodeBlock(pre) {
     row.className = 'line';
     number.className = 'line-number';
     number.textContent = String(index + 1);
-    row.append(number, document.createTextNode(line));
+    row.append(number, highlightCodeLine(line, language));
     return row;
   }));
   const toolbar = document.createElement('span');
@@ -162,7 +250,7 @@ function prepareCodeBlock(pre) {
     const icon = copy.querySelector('i');
     const text = copy.querySelector('span');
     try {
-      await navigator.clipboard.writeText(source);
+      await copyCodeText(source);
       copy.dataset.state = 'copied';
       icon.className = 'fas fa-check';
       text.textContent = 'Copied';

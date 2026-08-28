@@ -77,92 +77,18 @@ int cube[4][2][3];
 | `int [2][3]` | `matrix` | `int (*)[3]` | `int [3]`，即第一行 `matrix[0]` |
 | `int [4][2][3]` | `cube` | `int (*)[2][3]` | `int [2][3]`，即第一个二维块 `cube[0]` |
 
-所以 `matrix` 的原始类型的确是 `int [2][3]`，不是指针；但在 `matrix + 1` 这类表达式中它退化为 `int (*)[3]`，`+1` 跳过一行 `int [3]`，也就是 3 个 `int`。同理，`cube + 1` 跳过一个 `int [2][3]` 块。`&matrix` 则是“指向整个二维数组”的 `int (*)[2][3]`，因此 `&matrix + 1` 会跳过完整的两行。
+对数组名，先去掉最外层维度，再加 `*`：`a[4]` 的 `a` 是 `int *`，`matrix[2][3]` 的 `matrix` 是 `int (*)[3]`，`cube[4][2][3]` 的 `cube` 是 `int (*)[2][3]`。`&数组名` 不退化，指向整个数组。
 
-对同一个数组，按下面顺序判断最稳妥：
-
-| 写法 | 对 `int matrix[2][3]` 的类型 | 为什么 |
+| 表达式 | 类型 | `+1` 跨过 |
 | --- | --- | --- |
-| `matrix` | `int (*)[3]` | 数组名退化，指向第一个元素 `matrix[0]`；该元素是一行 `int [3]` |
-| `&matrix` | `int (*)[2][3]` | `&` 阻止退化，取的是整个数组对象的地址 |
-| `matrix[0]` | `int *` | `matrix[0]` 原始类型为 `int [3]`，再退化为指向第一个 `int` 的指针 |
-| `&matrix[0]` | `int (*)[3]` | `&` 取第一行数组的地址，不发生退化 |
-| `matrix[0][0]` | `int` | 已取到一个具体元素，不是数组 |
-| `&matrix[0][0]` | `int *` | 具体 `int` 元素的地址 |
+| `a`，其中 `int a[4]` | `int *` | 一个 `int` |
+| `&a` | `int (*)[4]` | 整个 `int[4]` |
+| `matrix`，其中 `int matrix[2][3]` | `int (*)[3]` | 一行 `int[3]` |
+| `&matrix` | `int (*)[2][3]` | 整个 `int[2][3]` |
+| `p`，其中 `int *p` | `int *` | 一个 `int` |
+| `&p` | `int **` | 一个指针变量 |
 
-| 指针表达式类型 | `+1` 增加的字节数 | 会出现它的声明或表达式 |
-| --- | --- | --- |
-| `int *` | `sizeof(int)` | `int a[4];` 中的 `a`、`&a[0]`；或 `int *p = a;` 中的 `p` |
-| `char *` | `sizeof(char)`，标准规定为 1 | `char text[] = "hi";` 中的 `text`；或 `char *p = text;` 中的 `p` |
-| `struct Node *` | `sizeof(struct Node)` | `struct Node nodes[3];` 中的 `nodes`；或 `struct Node *node = nodes;` 中的 `node` |
-| `int **` | `sizeof(int *)` | `int *rows[2];` 中的 `rows` 退化后；或 `int **p = rows;` 中的 `p` |
-| `int (*)[4]` | `sizeof(int [4])`，即 4 个 `int` | `int a[4];` 中的 `&a`；或 `int matrix[2][4];` 中退化后的 `matrix`、`&matrix[0]` |
-| `int (*)[2][3]` | `sizeof(int [2][3])`，即 6 个 `int` | `int cube[4][2][3];` 中退化后的 `cube`、`&cube[0]` |
-
-标准 C 不允许对 `void *` 做 `+1`，因为 `void` 没有大小；某些编译器把它作为扩展支持，考试中不要依赖。
-
-```c
-#include <stdio.h>
-
-int main(void)
-{
-    int values[4] = {10, 20, 30, 40};
-    int *pointer;
-
-    pointer = values;
-    printf("%d %d %d\n", pointer[2], *(pointer + 2), values[2]);
-    return 0;
-}
-```
-
-三种访问都得到 `30`，因为 `a[i]` 等价于 `*(a + i)`。但数组名不是可重新赋值的指针变量：`values = pointer;` 非法。
-
-| 表达式 | 类型含义 | 常考结论 |
-| --- | --- | --- |
-| `values` | 多数表达式中转为 `int *` | `values + 1` 跨过 1 个 `int` |
-| `&values[0]` | `int *` | `&values[0] + 1` 也跨过 1 个 `int` |
-| `&values` | `int (*)[4]` | `&values + 1` 跨过整个 4 元素数组 |
-| `sizeof values` | 整个数组大小 | 不发生数组退化 |
-| `sizeof pointer` | 指针本身大小 | 不能得到数组长度 |
-
-### 一维数组：`a + 1` 与 `&a + 1`
-
-```c
-#include <stdio.h>
-
-int main(void)
-{
-    int a[4] = {10, 20, 30, 40};
-    int *element;
-    int (*whole)[4];
-
-    element = a;
-    whole = &a;
-    printf("%lu %lu\n", (unsigned long)sizeof *element,
-           (unsigned long)sizeof *whole);
-    printf("%d %d\n", element[1], (*whole)[1]);
-    return 0;
-}
-```
-
-- `a` 在大多数表达式中退化为 `&a[0]`，类型为 `int *`；所以 `a + 1` 和 `&a[0] + 1` 都指向 `a[1]`，跨过一个 `int`。
-- `&a` 的类型为 `int (*)[4]`，指向整个数组；`&a + 1` 跨过整个 `a`，增加 `sizeof a`，即 4 个 `int`。
-- 当前环境中上例第一行输出 `4 16`，说明一个 `int` 为 4 字节、整个 `int[4]` 为 16 字节；具体数字随平台变化，但两者的比例关系不变。
-- `a + 4` 与 `&a + 1` 都表示“数组末尾之后”的位置，但指针类型不同：前者是 `int *`，后者是 `int (*)[4]`。不要因为位置看起来相近就把它们混用。
-
-### `p + 1` 与 `&p + 1` 不是一回事
-
-```c
-int value;
-int *p;
-
-p = &value;
-```
-
-- `p + 1`：`p` 是 `int *`，跨过一个 `int`，增加 `sizeof(int)`。
-- `&p + 1`：`&p` 是 `int **`，跨过一个指针变量，增加 `sizeof(int *)`。
-
-看到任何 `x + 1` 时，先写出 `x` 的**表达式类型**，再看一层解引用 `*x` 是什么；这比只看变量名可靠。
+`a[i]` 等价于 `*(a + i)`；`a + 4` 与 `&a + 1` 都是尾后一位置，但类型不同，不能混用。标准 C 不允许对 `void *` 做指针算术。
 
 ## 4. `*p++`、`(*p)++` 与 `*++p`
 
@@ -216,80 +142,29 @@ int main(void)
 }
 ```
 
-数组形参 `int values[]` 与 `int *values` 在函数参数位置等价，因此必须同时传入长度。若参数不应修改数组，写为 `const int *values`。
+数组形参的退化与长度传递见[第四章：函数参数传递](./04-arrays-and-strings.md#3-函数参数传递)。
 
-## 7. 二维数组、`int **` 与 `+1` 到底移动多少
+## 7. 真正二维数组与 `int **`
 
-这几种写法的外观相近，但内存结构和 `+1` 的步长不同。关键不是“它们都像二维数组”，而是 `*matrix` 的类型不同。
+两者都能写 `matrix[i][j]`，但存储模型不同，不能互相赋值。
 
-| 声明或表达式 | `matrix` 在表达式中的类型 | `*matrix` 的类型 | `matrix + 1` 跨过 |
+| 声明 | 内存模型 | 表达式中的类型 | `matrix + 1` |
 | --- | --- | --- | --- |
-| `int matrix[2][3];` | `int (*)[3]`（数组退化后） | `int [3]`（一行） | `sizeof(int [3])`，即 3 个 `int` |
-| `int (*matrix)[3];` | `int (*)[3]` | `int [3]` | `sizeof(int [3])`，即 3 个 `int` |
-| `int *matrix[2];` | `int **`（数组退化后） | `int *` | `sizeof(int *)`，即一个“行指针” |
-| `int **matrix;` | `int **` | `int *` | `sizeof(int *)`，即一个“行指针” |
-| `int (*matrix)[2][3];` | `int (*)[2][3]` | `int [2][3]` | `sizeof(int [2][3])`，即 6 个 `int` |
+| `int matrix[2][3];` | 两行连续存放 | `int (*)[3]` | 跳过一行 3 个 `int` |
+| `int (*matrix)[3];` | 指向连续行 | `int (*)[3]` | 跳过一行 3 个 `int` |
+| `int *matrix[2];` | 两个行指针 | `int **` | 跳过一个 `int *` |
+| `int **matrix;` | 指向行指针 | `int **` | 跳过一个 `int *` |
 
-### 真正的二维数组：连续的行
-
-```c
-#include <stdio.h>
-
-int main(void)
-{
-    int matrix[2][3] = {{1, 2, 3}, {4, 5, 6}};
-    int (*row)[3];
-    int (*whole)[2][3];
-
-    row = matrix;
-    whole = &matrix;
-    printf("%lu %lu\n", (unsigned long)sizeof *row,
-           (unsigned long)sizeof *whole);
-    printf("%d %d\n", row[1][0], (*whole)[1][0]);
-    return 0;
-}
-```
-
-- `matrix` 在大多数表达式中退化为 `&matrix[0]`，类型是 `int (*)[3]`；因此 `matrix + 1` 或 `row + 1` 到达第二行 `&matrix[1]`，跨过 3 个 `int`。
-- `&matrix` 的类型是 `int (*)[2][3]`，指向整个二维数组；`&matrix + 1` 跨过完整的 2×3 数组，即 6 个 `int`。
-- 这里 `row[1][0]` 与 `matrix[1][0]` 都是 4。`row + 1` 不是移动一个指针大小，而是移动一整行。
-
-### `int **` 不是 `int [2][3]`
-
-```c
-#include <stdio.h>
-
-int main(void)
-{
-    int first_row[3] = {1, 2, 3};
-    int second_row[3] = {4, 5, 6};
-    int *rows[2];
-    int **matrix;
-
-    rows[0] = first_row;
-    rows[1] = second_row;
-    matrix = rows;
-    printf("%lu %d\n", (unsigned long)sizeof *matrix, matrix[1][0]);
-    return 0;
-}
-```
-
-`rows` 是“两个 `int *` 组成的数组”，退化后才可赋给 `int **matrix`。此时 `matrix + 1` 跨过一个 `int *` 槽位，抵达 `rows[1]`；`*matrix + 1` 才是在第一行内跨过一个 `int`。
-
-两行数据可以分别分配、甚至长度不同，也可以根本不连续。因此不能把真正二维数组直接赋给 `int **`：
+`int matrix[2][3]` 的首元素是一整行 `int[3]`，所以它退化为 `int (*)[3]`；`int **` 的首元素却必须是 `int *`。因此下面的赋值错误：
 
 ```c
 int table[2][3];
 int **wrong;
 
-wrong = table;  /* 类型不兼容，内存解释也错误 */
+wrong = table;  /* table 是 int (*)[3]，不是 int **。 */
 ```
 
-`table` 退化后是 `int (*)[3]`，其第一个元素是一整行；而 `int **` 期望第一个元素是 `int *`。若强行转换，`wrong[0]` 会把第一个 `int` 的数值误当成地址，访问时很可能崩溃。
-
-### 二维数组形参
-
-二维数组传参可写为 `void print(int matrix[][4], int rows)` 或 `void print(int (*matrix)[4], int rows)`。第二维 `4` 不能省略，因为编译器需要它计算 `matrix + 1` 应跳过一整行的距离。
+行指针模型的每行可以独立分配、长度也可以不同；真正二维数组的所有元素连续。二维数组形参和 `sizeof` 的规则见[第四章：函数参数传递](./04-arrays-and-strings.md#3-函数参数传递)。
 
 ## 8. 二级指针与修改指针本身
 

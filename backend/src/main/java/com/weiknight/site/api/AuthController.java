@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,15 +66,16 @@ public class AuthController {
   public ResponseEntity<Void> loginForm(
       @RequestParam String username,
       @RequestParam String password,
+      @RequestParam(required = false) String next,
       HttpServletRequest request) {
     try {
       LoginResponse response = authenticate(new LoginInput(username, password), request.getSession());
       request.changeSessionId();
       log.info("FORM_LOGIN_SUCCESS user={} role={} session={}", username, response.role(), request.getSession().getId());
-      return redirect("admin".equals(response.role()) ? "/admin/blogs/" : "/");
+      return redirect(loginDestination(next, response.role()));
     } catch (AccessDeniedException exception) {
       log.warn("FORM_LOGIN_FAILURE user={}", username);
-      return redirect("/login/?error=1");
+      return redirect("/login/?error=1&next=" + URLEncoder.encode(returnPath(next), StandardCharsets.UTF_8));
     }
   }
 
@@ -122,6 +125,17 @@ public class AuthController {
 
   private ResponseEntity<Void> redirect(String path) {
     return ResponseEntity.status(HttpStatus.SEE_OTHER).location(URI.create(path)).build();
+  }
+
+  private String loginDestination(String next, String role) {
+    String destination = returnPath(next);
+    if (!destination.isEmpty()) return destination;
+    return "admin".equals(role) ? "/admin/blogs/" : "/";
+  }
+
+  private String returnPath(String next) {
+    if (next == null || !next.startsWith("/") || next.startsWith("//") || next.contains("\\")) return "";
+    return next;
   }
 
   /** @description Credentials accepted by the JSON login endpoint. */

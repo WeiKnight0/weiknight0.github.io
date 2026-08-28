@@ -82,6 +82,33 @@ class AuthControllerTest {
         () -> controller.login(new AuthController.LoginInput("disabled", "member-password"), request));
   }
 
+  @Test
+  void returnsToTheRequestedSitePathAfterFormLogin() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    SiteUser user = account(1L, "admin", "Administrator", true);
+    when(users.findByUsernameIgnoreCase("admin")).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches("secret-password", "hash")).thenReturn(true);
+
+    assertEquals(
+        "/real/notes/C-Language/01-program-types-and-storage/",
+        controller.loginForm(
+            "admin", "secret-password", "/real/notes/C-Language/01-program-types-and-storage/", request)
+            .getHeaders().getLocation().toString());
+  }
+
+  @Test
+  void rejectsExternalReturnPathAfterFormLogin() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    SiteUser user = account(1L, "admin", "Administrator", true);
+    when(users.findByUsernameIgnoreCase("admin")).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches("secret-password", "hash")).thenReturn(true);
+
+    assertEquals(
+        "/admin/blogs/",
+        controller.loginForm("admin", "secret-password", "https://example.com", request)
+            .getHeaders().getLocation().toString());
+  }
+
   private SiteUser account(long id, String username, String displayName, boolean administrator) {
     SiteUser user = mock(SiteUser.class);
     when(user.getId()).thenReturn(id);

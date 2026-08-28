@@ -21,4 +21,4 @@ All notes in Operating System:
 - [12-File-Systeem-Implementation](./12-File-Systeem-Implementation.md)
 - [13-IO-Systems](./13-IO-Systems.md)
 - [OS-Exercises](./OS-Exercises.md)
-- [OS-Memory-List](./OS-Memory-List.md)
+- [OS Memory List（English / 中文）](./OS-Memory-List.md)

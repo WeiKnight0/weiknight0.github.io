@@ -666,6 +666,62 @@ figure.highlight .deletion {
     background-color: rgba(203, 36, 49, 0.15);
 }
 
+/* highlight.js token classes used by the dynamic note reader. */
+.chapter-content pre.astro-code .hljs-comment,
+.chapter-content pre.astro-code .hljs-quote {
+    color: var(--code-comment);
+    font-style: italic;
+}
+
+.chapter-content pre.astro-code .hljs-keyword,
+.chapter-content pre.astro-code .hljs-selector-tag,
+.chapter-content pre.astro-code .hljs-meta-keyword {
+    color: var(--code-keyword);
+    font-weight: 600;
+}
+
+.chapter-content pre.astro-code .hljs-type,
+.chapter-content pre.astro-code .hljs-title.class_ {
+    color: var(--code-type);
+}
+
+.chapter-content pre.astro-code .hljs-string,
+.chapter-content pre.astro-code .hljs-regexp,
+.chapter-content pre.astro-code .hljs-template-variable {
+    color: var(--code-string);
+}
+
+.chapter-content pre.astro-code .hljs-number,
+.chapter-content pre.astro-code .hljs-literal,
+.chapter-content pre.astro-code .hljs-symbol {
+    color: var(--code-number);
+}
+
+.chapter-content pre.astro-code .hljs-title.function_,
+.chapter-content pre.astro-code .hljs-function .hljs-title,
+.chapter-content pre.astro-code .hljs-built_in {
+    color: var(--code-function);
+}
+
+.chapter-content pre.astro-code .hljs-params {
+    color: var(--code-text);
+}
+
+.chapter-content pre.astro-code .hljs-meta,
+.chapter-content pre.astro-code .hljs-doctag {
+    color: var(--code-meta);
+}
+
+.chapter-content pre.astro-code .hljs-attr,
+.chapter-content pre.astro-code .hljs-attribute {
+    color: var(--code-attribute);
+}
+
+.chapter-content pre.astro-code .hljs-tag,
+.chapter-content pre.astro-code .hljs-name {
+    color: var(--code-tag);
+}
+
 /* ===== Katex 相关样式调整 ===== */
 .katex {
     font-size: 1.05em !important;

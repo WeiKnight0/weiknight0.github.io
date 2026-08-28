@@ -10,7 +10,7 @@ tags:
 
 # C Language C语言
 
-这套笔记以传统 C90 可编译写法为默认：变量声明放在代码块开头，注释使用 `/* ... */`，不把 C++ 语法当作 C 语法。适合 NCRE 二级 C 与高校 C 语言期末的读程序、改错和编程题复习。
+本笔记以传统 C90 可编译写法为默认。
 
 > C99、C11、C23 中新增的功能会单独标出。考试或编译环境没有明确允许时，不要默认使用。
 
@@ -30,7 +30,7 @@ tags:
 - [易错点、程序跟踪与答题方法](./09-exam-pitfalls-and-tracing.md)
 - [NCRE公共基础知识速览](./10-ncre-public-basics.md)
 
-## 参考边界
+## 参考文献
 
 - 考试范围以[中国教育考试网：二级C语言程序设计考试大纲（2025年版）](https://ncre.neea.edu.cn/html1/report/2412/185-1.htm)为骨架。
 - 语言规则以[ISO/IEC JTC1/SC22/WG14](https://www.open-std.org/jtc1/sc22/wg14/)发布的 C 标准为准；查阅具体语法和标准库时可使用[C reference](https://en.cppreference.com/w/c/)。

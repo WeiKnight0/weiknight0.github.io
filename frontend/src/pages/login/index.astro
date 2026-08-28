@@ -6,7 +6,7 @@ import Base from '@/templates/Base.astro';
     <section class='border border-real-accent/30 bg-real-surface p-8'>
       <p class='text-xs uppercase tracking-widest text-real-accent'>Member access</p>
       <h1 class='mt-3 text-3xl font-black'>Login</h1>
-      <form action='/api/v1/auth/login-form' method='post' class='mt-8 grid gap-4'>
+      <form data-login-form action='/api/v1/auth/login-form' method='post' class='mt-8 grid gap-4'>
         <input
           name='username'
           required
@@ -37,7 +37,13 @@ import Base from '@/templates/Base.astro';
 </Base>
 
 <script>
+  const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
   const loginError = document.querySelector<HTMLElement>('[data-login-error]');
+  if (!loginForm) throw new Error('Login form is required');
   if (!loginError) throw new Error('Login error element is required');
-  loginError.hidden = new URLSearchParams(window.location.search).get('error') !== '1';
+  const query = new URLSearchParams(window.location.search);
+  const next = query.get('next') || '';
+  const safeNext = next.startsWith('/') && !next.startsWith('//') && !next.includes('\\');
+  if (safeNext) loginForm.action += `?next=${encodeURIComponent(next)}`;
+  loginError.hidden = query.get('error') !== '1';
 </script>
