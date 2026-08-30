@@ -71,6 +71,7 @@ const HIGHLIGHT_LANGUAGES = {
   yaml: 'yaml',
   yml: 'yaml',
 };
+const iconHref = (name) => `${import.meta.env.BASE_URL}icons.svg#${name}`;
 
 [
   ['bash', bash],
@@ -244,24 +245,24 @@ function prepareCodeBlock(pre) {
   copy.className = 'copy-code-btn';
   copy.type = 'button';
   copy.dataset.state = 'idle';
-  copy.innerHTML = '<i class="far fa-copy" aria-hidden="true"></i><span>Copy</span>';
+  copy.innerHTML = `<svg class="icon" aria-hidden="true"><use href="${iconHref('copy')}"></use></svg><span>Copy</span>`;
   copy.setAttribute('aria-label', 'Copy code');
   copy.addEventListener('click', async () => {
-    const icon = copy.querySelector('i');
+    const icon = copy.querySelector('use');
     const text = copy.querySelector('span');
     try {
       await copyCodeText(source);
       copy.dataset.state = 'copied';
-      icon.className = 'fas fa-check';
+      icon.setAttribute('href', iconHref('check'));
       text.textContent = 'Copied';
     } catch {
       copy.dataset.state = 'failed';
-      icon.className = 'fas fa-xmark';
+      icon.setAttribute('href', iconHref('xmark'));
       text.textContent = 'Failed';
     }
     window.setTimeout(() => {
       copy.dataset.state = 'idle';
-      icon.className = 'far fa-copy';
+      icon.setAttribute('href', iconHref('copy'));
       text.textContent = 'Copy';
     }, 1200);
   });
@@ -275,9 +276,9 @@ function initializeTools() {
     ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   if (savedTheme === 'dark') document.body.dataset.theme = 'dark';
   const updateToggle = () => {
-    toggle.innerHTML = document.body.dataset.theme === 'dark'
-      ? '<i class="fas fa-sun"></i><span>Light Mode</span>'
-      : '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+    const dark = document.body.dataset.theme === 'dark';
+    element('#theme-icon').setAttribute('href', iconHref(dark ? 'sun' : 'moon'));
+    toggle.querySelector('span').textContent = dark ? 'Light Mode' : 'Dark Mode';
   };
   updateToggle();
   toggle.addEventListener('click', () => {

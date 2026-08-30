@@ -48,4 +48,4 @@ lang: zh-cn
 - 树形接近平衡时，查找、插入和删除接近 $O(\log n)$。
 - 关键字接近有序插入时，树可能退化为单链表，最坏复杂度为 $O(n)$。
 
-需要稳定对数高度时，应使用[平衡二叉树或红黑树](./balanced-search-tree.md)。
+需要稳定对数高度时，应使用 [AVL 树](./balanced-search-tree.md) 或[红黑树](./red-black-tree.md)。

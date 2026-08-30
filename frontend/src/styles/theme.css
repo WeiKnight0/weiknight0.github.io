@@ -259,19 +259,28 @@ html[data-color-theme='light'] select {
   color-scheme: light;
 }
 
-html[data-color-theme='light'] .input {
+html[data-color-theme='light'] .input,
+html[data-color-theme='light'] .admin-input {
   border-color: rgb(var(--page-text) / 0.2) !important;
   background: rgb(var(--page-surface)) !important;
   color: rgb(var(--page-text)) !important;
 }
 
-html[data-color-theme='light'] .input::placeholder {
+html[data-color-theme='light'] .input::placeholder,
+html[data-color-theme='light'] .admin-input::placeholder {
   color: rgb(var(--page-text) / 0.42) !important;
   opacity: 1 !important;
 }
 
-html[data-color-theme='light'] .field-label {
+html[data-color-theme='light'] .field-label,
+html[data-color-theme='light'] .admin-label {
   color: rgb(var(--page-text) / 0.68) !important;
+}
+
+html[data-color-theme='light'] .status-success {
+  border-color: rgb(5 150 105 / 0.35) !important;
+  background: rgb(16 185 129 / 0.08);
+  color: rgb(4 120 87) !important;
 }
 
 html[data-color-theme='light'] .blog-prose :not(pre) > code {

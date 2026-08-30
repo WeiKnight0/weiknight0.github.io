@@ -59,11 +59,7 @@ const setupLogout = () => {
     button.addEventListener('click', async () => {
       button.disabled = true;
       try {
-        const response = await fetch('/api/v1/auth/logout', {
-          method: 'POST',
-          credentials: 'same-origin',
-        });
-        if (!response.ok) throw new Error(`Sign out failed (${response.status}).`);
+        await siteApi('/auth/logout', { method: 'POST' });
         location.replace('/');
       } catch {
         button.textContent = 'Sign out failed';
@@ -112,3 +108,4 @@ const setupNavigation = () => {
 setupNavigation();
 document.addEventListener('astro:page-load', setupNavigation);
 window.addEventListener('account-profile-change', setupAccountNavigation);
+import { siteApi } from '@/utils/site-api';

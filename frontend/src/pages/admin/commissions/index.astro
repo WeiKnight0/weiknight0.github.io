@@ -14,11 +14,14 @@ import Base from '@/templates/Base.astro';
       viewLabel='View works'
     />
     <div id='commission-notice' class='mb-5 hidden border px-4 py-3 text-sm' role='status' aria-live='polite'></div>
-    <form id='commission-upload' class='grid items-end gap-4 border border-white/10 bg-real-surface p-5 md:grid-cols-[minmax(0,1fr)_10rem_minmax(15rem,1fr)_auto]'>
+    <form id='commission-upload' class='grid items-start gap-4 bg-real-surface p-5 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_8rem_minmax(0,1fr)_auto]'>
       <label class='grid gap-2'><span class='commission-label'>Public title</span><input name='title' required maxlength='240' class='commission-input' /></label>
       <label class='grid gap-2'><span class='commission-label'>Order</span><input name='displayOrder' required type='number' min='0' value='1000' class='commission-input' /></label>
-      <label class='grid gap-2'><span class='commission-label'>Image</span><input name='file' required type='file' accept='image/png,image/jpeg,image/gif,image/webp' class='commission-input file:text-white' /></label>
-      <button type='submit' class='bg-real-accent px-5 py-3 font-black text-black disabled:opacity-50'>Upload</button>
+      <label class='grid min-w-0 gap-2'>
+        <span class='commission-label'>Image</span>
+        <input name='file' required type='file' accept='image/png,image/jpeg,image/gif,image/webp' class='commission-file' />
+      </label>
+      <button type='submit' class='self-end bg-real-accent px-5 py-3 font-black text-black disabled:opacity-50 md:col-span-2 xl:col-span-1'>Upload</button>
     </form>
     <div class='mt-6 flex items-center justify-between gap-4'><h2 class='text-xl font-black'>Uploaded works</h2><p id='commission-count' class='text-sm text-white/40'>Loading…</p></div>
     <div id='commission-list' class='mt-4 grid gap-5 sm:grid-cols-2 xl:grid-cols-3'></div>
@@ -27,7 +30,9 @@ import Base from '@/templates/Base.astro';
     import '@/scripts/commission-admin';
   </script>
   <style is:global>
-    .commission-input { @apply border border-white/20 bg-black/30 p-3 text-white outline-none transition focus:border-real-accent; }
-    .commission-label { @apply text-xs font-bold uppercase tracking-[0.16em] text-white/60; }
+    .commission-input { @apply h-12 min-w-0 border px-3 outline-none transition focus:border-real-accent; border-color: rgb(var(--page-text) / 0.2); background: rgb(var(--page-bg)); color: rgb(var(--page-text)); }
+    .commission-file { @apply h-12 min-w-0 w-full border text-sm outline-none transition file:mr-4 file:border-0 file:border-r file:px-4 file:font-bold focus:border-real-accent; border-color: rgb(var(--page-text) / 0.2); background: rgb(var(--page-bg)); color: rgb(var(--page-text)); }
+    .commission-file::file-selector-button { height: calc(3rem - 2px); border-color: rgb(var(--page-text) / 0.2); background: rgb(var(--page-surface)); color: rgb(var(--page-text)); }
+    .commission-label { @apply text-xs font-bold uppercase tracking-[0.16em]; color: rgb(var(--page-text) / 0.68); }
   </style>
 </Base>

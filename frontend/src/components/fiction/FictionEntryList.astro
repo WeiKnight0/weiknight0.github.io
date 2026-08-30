@@ -7,7 +7,7 @@ export interface Props {
 }
 
 const { kind } = Astro.props as Props;
-const emptyMessage = `No published ${kind === 'oc' ? 'OCs' : 'novels'} yet.`;
+const emptyMessage = `No ${kind === 'oc' ? 'OCs' : 'novels'} yet.`;
 const emptyMessageZh = kind === 'oc'
   ? '暂时没有已发布的原创角色。'
   : '暂时没有已发布的小说。';

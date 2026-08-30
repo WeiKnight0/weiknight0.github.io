@@ -26,7 +26,19 @@ sudo chown -R 1000:1000 data/postgres data/user-avatars data/fiction-assets note
 docker compose up -d --build
 ```
 
-默认通过 `http://localhost` 访问网站；`http://localhost/api/health` 可验证 Nginx 到 Spring Boot 的路由。使用 `HTTP_PORT=8088 docker compose up -d --build` 可变更对外端口。
+默认通过 `https://localhost` 访问网站。首次启动前生成仅供本地测试的自签证书（证书目录已被 Git 忽略）：
+
+```bash
+mkdir -p nginx/certs
+openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
+  -keyout nginx/certs/localhost.key \
+  -out nginx/certs/localhost.crt \
+  -subj '/CN=localhost' \
+  -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1'
+chmod 600 nginx/certs/localhost.key
+```
+
+浏览器会显示不受信任警告；请手动继续访问，或将该证书导入本机信任库。`http://localhost` 会永久重定向至 HTTPS。`https://localhost/api/health` 可验证 Nginx 到 Spring Boot 的路由。可通过 `HTTP_PORT=8088 HTTPS_PORT=8443 docker compose up -d --build` 同时变更对外端口。
 
 Nginx、Spring Boot 和 PostgreSQL 的运行进程均固定使用 UID/GID `1000:1000`。持久化目录必须属于该用户；已有数据升级时也需要先停止服务并执行上面的 `chown`。Nginx 在容器内监听非特权端口 8080，对外端口仍默认为 80。
 
@@ -48,7 +60,7 @@ docker compose down
 SITE_URL=https://your-domain.example docker compose up -d --build
 ```
 
-容器内的 [Nginx 配置](nginx/wkn-personal-site.conf) 已提供静态资源、长期缓存与 `/api/` 到后端容器的反向代理。若要配置 HTTPS，建议在此 Compose 服务前再放置已有的证书终止代理，或在该配置中额外添加证书与 `443` server block。
+容器内的 [Nginx 配置](nginx/wkn-personal-site.conf) 已提供静态资源、长期缓存、`/api/` 到后端容器的反向代理，以及本地测试 HTTPS。生产环境不得使用镜像内的自签证书：应挂载受信任证书与私钥替换 `/etc/nginx/certs/localhost.crt`、`/etc/nginx/certs/localhost.key`，或在此 Compose 服务前放置证书终止代理。
 
 ## 不使用 Docker 的前端开发
 

@@ -1,0 +1,14 @@
+---
+import FictionPage from '@/templates/FictionPage.astro';
+---
+<FictionPage title='Fiction | WeiKnight' description='Novel chapter'>
+  <article class='mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8'>
+    <a id='chapter-back' class='text-fiction-accent hover:text-fiction-text'>← Novel</a>
+    <p id='chapter-novel' class='mt-10 text-fiction-text/60'></p>
+    <h1 id='chapter-title' class='mt-3 font-fiction-serif text-4xl font-black text-fiction-text'>Loading…</h1>
+    <div id='chapter-content' class='prose prose-invert mt-14 max-w-none prose-headings:font-fiction-serif prose-headings:text-fiction-text prose-a:text-fiction-accent prose-strong:text-fiction-text'></div>
+  </article>
+</FictionPage>
+<script>
+  import '@/scripts/fiction-chapter-view';
+</script>

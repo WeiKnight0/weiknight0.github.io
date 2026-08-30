@@ -27,6 +27,7 @@ notes/assets/
 .env
 .env.*
 !.env.example
+nginx/certs/
 
 # Local tooling and generated diagnostics
 .DS_Store

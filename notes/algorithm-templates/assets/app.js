@@ -1,4 +1,5 @@
-const templateIndex = window.ALGORITHM_TEMPLATE_INDEX || [];
+const templateIndex = window.ALGORITHM_TEMPLATE_INDEX;
+if (!Array.isArray(templateIndex)) throw new Error('Algorithm template index is missing.');
 const state = { query: '', category: '全部' };
 
 const pageType = document.body.dataset.page;

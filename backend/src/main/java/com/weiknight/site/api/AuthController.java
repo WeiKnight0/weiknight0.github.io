@@ -1,5 +1,6 @@
 package com.weiknight.site.api;
 
+import com.weiknight.site.audit.SecurityAuditService;
 import com.weiknight.site.user.SiteUserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -9,8 +10,6 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,18 +28,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
-  private static final Logger log = LoggerFactory.getLogger(AuthController.class);
   private final SiteUserRepository users;
   private final PasswordEncoder passwordEncoder;
   private final SessionAccess access;
+  private final SecurityAuditService audit;
 
   AuthController(
       SiteUserRepository users,
       PasswordEncoder passwordEncoder,
-      SessionAccess access) {
+      SessionAccess access,
+      SecurityAuditService audit) {
     this.users = users;
     this.passwordEncoder = passwordEncoder;
     this.access = access;
+    this.audit = audit;
   }
 
   /**
@@ -51,9 +52,15 @@ public class AuthController {
    */
   @PostMapping("/login")
   public LoginResponse login(@Valid @RequestBody LoginInput input, HttpServletRequest request) {
-    LoginResponse response = authenticate(input, request.getSession());
-    request.changeSessionId();
-    return response;
+    try {
+      LoginResponse response = authenticate(input, request.getSession());
+      request.changeSessionId();
+      audit.record("LOGIN_SUCCESS", access.requireUserId(request.getSession()), request, HttpStatus.OK.value());
+      return response;
+    } catch (AccessDeniedException exception) {
+      audit.record("LOGIN_FAILURE", null, request, HttpStatus.FORBIDDEN.value());
+      throw exception;
+    }
   }
 
   /**
@@ -71,10 +78,10 @@ public class AuthController {
     try {
       LoginResponse response = authenticate(new LoginInput(username, password), request.getSession());
       request.changeSessionId();
-      log.info("FORM_LOGIN_SUCCESS user={} role={} session={}", username, response.role(), request.getSession().getId());
+      audit.record("LOGIN_SUCCESS", access.requireUserId(request.getSession()), request, HttpStatus.SEE_OTHER.value());
       return redirect(loginDestination(next, response.role()));
     } catch (AccessDeniedException exception) {
-      log.warn("FORM_LOGIN_FAILURE user={}", username);
+      audit.record("LOGIN_FAILURE", null, request, HttpStatus.SEE_OTHER.value());
       return redirect("/login/?error=1&next=" + URLEncoder.encode(returnPath(next), StandardCharsets.UTF_8));
     }
   }

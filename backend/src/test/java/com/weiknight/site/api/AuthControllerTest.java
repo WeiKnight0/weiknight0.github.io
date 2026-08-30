@@ -1,5 +1,6 @@
 package com.weiknight.site.api;
 
+import com.weiknight.site.audit.SecurityAuditService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,7 +26,11 @@ class AuthControllerTest {
     users = mock(SiteUserRepository.class);
     passwordEncoder = mock(PasswordEncoder.class);
     access = new SessionAccess(users);
-    controller = new AuthController(users, passwordEncoder, access);
+    controller = new AuthController(
+        users,
+        passwordEncoder,
+        access,
+        mock(SecurityAuditService.class));
   }
 
   @Test

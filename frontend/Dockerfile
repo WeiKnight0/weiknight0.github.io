@@ -22,6 +22,12 @@ RUN npm ci
 COPY notes/reader ./
 RUN npm run build
 
+WORKDIR /algorithm-templates
+COPY notes/algorithm-templates/package.json notes/algorithm-templates/package-lock.json ./
+RUN npm ci
+COPY notes/algorithm-templates ./
+RUN npm run build
+
 # Nginx is the only frontend runtime process.
 FROM nginx:1.27-alpine
 
@@ -31,10 +37,11 @@ RUN sed -i 's/^nginx:x:101:101:/nginx:x:1000:1000:/' /etc/passwd \
     && chown -R 1000:1000 /tmp/nginx /var/cache/nginx /var/log/nginx /usr/share/nginx/html
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --chown=1000:1000 nginx/wkn-personal-site.conf /etc/nginx/conf.d/default.conf
+COPY --chown=1000:1000 nginx/certs /etc/nginx/certs
 COPY --chown=1000:1000 --from=frontend-builder /app/dist /usr/share/nginx/html
 COPY --chown=1000:1000 --from=frontend-builder /notes-reader/dist /usr/share/nginx/html/notes-reader
-COPY --chown=1000:1000 notes/algorithm-templates /usr/share/nginx/html/real/notes/algorithm-templates
+COPY --chown=1000:1000 --from=frontend-builder /algorithm-templates/dist /usr/share/nginx/html/real/notes/algorithm-templates
 
 USER 1000:1000
 
-EXPOSE 8080
+EXPOSE 8080 8443

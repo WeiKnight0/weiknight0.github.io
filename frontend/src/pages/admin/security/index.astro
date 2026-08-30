@@ -1,0 +1,44 @@
+---
+import AdminHeader from '@/components/admin/AdminHeader.astro';
+import Base from '@/templates/Base.astro';
+---
+
+<Base head={{ title: 'Security Logs | WeiKnight', description: 'Security audit logs' }} theme='real'>
+  <main class='mx-auto w-full max-w-[110rem] px-4 py-10 font-formal-sans text-real-text sm:px-6 lg:px-8'>
+    <AdminHeader eyebrow='Security' title='Security logs' description='The latest 200 authentication and data-change events. Passwords and session identifiers are never stored.' active='security' />
+
+    <section data-security-logs class='border border-white/10 bg-real-surface'>
+      <div class='flex flex-wrap items-end justify-between gap-4 border-b border-white/10 p-5'>
+        <div>
+          <h2 class='font-bold text-white'>Audit trail</h2>
+          <p id='security-count' class='mt-1 text-sm text-white/45'>Loading…</p>
+        </div>
+        <label class='grid gap-2 text-sm'>
+          <span class='field-label'>Event type</span>
+          <select id='security-event-type' class='input min-w-52'>
+            <option value=''>All events</option>
+            <option value='LOGIN_SUCCESS'>Login success</option>
+            <option value='LOGIN_FAILURE'>Login failure</option>
+            <option value='API_MUTATION'>Data change</option>
+          </select>
+        </label>
+      </div>
+      <div id='security-error' hidden class='m-5 border border-red-300/40 bg-red-300/10 px-4 py-3 text-sm text-red-100' role='alert'></div>
+      <div class='overflow-x-auto'>
+        <table class='w-full min-w-[62rem] text-left text-sm'>
+          <thead class='border-b border-white/10 text-xs uppercase tracking-[0.14em] text-white/45'>
+            <tr><th class='px-5 py-4 font-bold'>Time</th><th class='px-5 py-4 font-bold'>Event</th><th class='px-5 py-4 font-bold'>Actor</th><th class='px-5 py-4 font-bold'>Request</th><th class='px-5 py-4 font-bold'>Status</th><th class='px-5 py-4 font-bold'>IP</th></tr>
+          </thead>
+          <tbody id='security-events' class='divide-y divide-white/10'></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    import '@/scripts/security-audit';
+  </script>
+  <style is:global>
+    .input { @apply border border-white/20 bg-black/30 px-3 py-2.5 text-white outline-none transition focus:border-real-accent; }
+    .field-label { @apply text-xs font-bold uppercase tracking-[0.16em] text-white/60; }
+  </style>
+</Base>

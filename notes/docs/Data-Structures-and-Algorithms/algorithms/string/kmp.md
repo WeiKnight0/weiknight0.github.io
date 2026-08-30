@@ -92,3 +92,30 @@ nextval[next[j]], & P[j]=P[next[j]]
 $$
 
 `nextval` 只减少字符比较次数，不改变 KMP 的渐进复杂度。
+
+仍以模式串 `ABABCABAB` 为例，其 `next` 与 `nextval` 分别为：
+
+```text
+P          = A  B  A  B  C  A  B  A  B
+下标 j      = 0  1  2  3  4  5  6  7  8
+next[j]    = -1 0  0  1  2  0  1  2  3
+nextval[j] = -1 0 -1 0  2 -1 0 -1 0
+```
+
+例如 `j=3` 时，`next[3]=1`，但 $P[3]=P[1]=\texttt{B}$。若 `P[3]` 与主串当前字符失配，回退到 `P[1]` 后仍会拿同一个 `B` 与同一主串字符比较，结果必然再次失配，所以直接令 `nextval[3]=nextval[1]=0`。同理，`j=2`、`5`、`7` 都跳到 `-1`；`j=4` 的 `C` 与 $P[2]=\texttt{A}$ 不同，不能跳过，故保留 `nextval[4]=2`。
+
+构造 `nextval` 时复用 `next`：
+
+```cpp
+vector<int> computeNextVal(const string &pattern) {
+    vector<int> next = computeNext(pattern);
+    vector<int> nextval(pattern.size());
+    nextval[0] = -1;
+    for (int j = 1; j < pattern.size(); ++j) {
+        nextval[j] = pattern[j] == pattern[next[j]]
+            ? nextval[next[j]]
+            : next[j];
+    }
+    return nextval;
+}
+```

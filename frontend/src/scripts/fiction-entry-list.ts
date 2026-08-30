@@ -15,7 +15,7 @@ document.querySelectorAll<HTMLElement>('[data-fiction-entry-list]').forEach(asyn
     empty.dataset.pageI18n = `${kind}.empty`;
     empty.textContent = document.documentElement.lang === 'zh-CN'
       ? root.dataset.emptyMessageZh || '暂时没有已发布的内容。'
-      : root.dataset.emptyMessage || 'No published entries yet.';
+      : root.dataset.emptyMessage || 'No entries yet.';
     root.replaceChildren(empty);
     return;
   }

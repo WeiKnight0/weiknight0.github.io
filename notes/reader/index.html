@@ -7,7 +7,6 @@
     <meta name="description" content="WeiKnight's study notes." />
     <link rel="icon" href="/favicon.ico" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css" />
     <link rel="stylesheet" href="%BASE_URL%note.css" />
   </head>
@@ -23,17 +22,17 @@
             <div class="subject">Study Notes</div>
           </div>
           <a class="brand-home-link" href="/">
-            <i class="fas fa-home"></i>
+            <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#home"></use></svg>
             <span>Return to HomePage</span>
           </a>
         </div>
         <nav class="navbar-actions" aria-label="Notes navigation">
           <a class="nav-link" id="notes-back" href="/real/notes/">
-            <i class="fas fa-level-up-alt"></i>
+            <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#parent"></use></svg>
             <span>Parent Directory</span>
           </a>
           <a class="nav-link" href="/real/">
-            <i class="fas fa-compass"></i>
+            <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#compass"></use></svg>
             <span>Return to Real</span>
           </a>
         </nav>
@@ -45,7 +44,7 @@
         <h1 class="chapter-title" id="note-title">Notes</h1>
         <div class="chapter-meta">
           <span class="chapter-date">
-            <i class="far fa-calendar-alt"></i>
+            <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#calendar"></use></svg>
             <time id="note-date"></time>
           </span>
           <span class="chapter-lang" id="note-language"></span>
@@ -60,11 +59,11 @@
       </article>
       <div class="note-tools">
         <button class="tool-btn" id="toggle-dark" type="button">
-          <i class="fas fa-moon"></i>
+          <svg class="icon" aria-hidden="true"><use id="theme-icon" href="%BASE_URL%icons.svg#moon"></use></svg>
           <span>Dark Mode</span>
         </button>
         <button class="tool-btn" id="print-note" type="button">
-          <i class="fas fa-print"></i>
+          <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#print"></use></svg>
           <span>Print This Note</span>
         </button>
       </div>

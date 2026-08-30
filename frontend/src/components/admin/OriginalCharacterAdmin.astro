@@ -1,0 +1,58 @@
+---
+import AdminHeader from './AdminHeader.astro';
+---
+
+<section data-character-admin>
+  <AdminHeader
+    eyebrow='Fiction control'
+    title='Manage OCs'
+    description='Maintain original-character summaries, profiles, and reading order.'
+    active='oc'
+    viewHref='/fiction/oc/'
+    viewLabel='View OCs'
+  />
+  <div id='character-notice' class='mb-5 hidden border px-4 py-3 text-sm' role='status' aria-live='polite'></div>
+  <div class='grid min-h-[44rem] overflow-hidden border border-white/10 bg-black/20 lg:grid-cols-[21rem_minmax(0,1fr)]'>
+    <aside class='border-b border-white/10 bg-black/25 lg:border-b-0 lg:border-r'>
+      <div class='border-b border-white/10 p-4'>
+        <div class='flex items-center justify-between gap-3'>
+          <div><h2 class='font-bold text-white'>Original characters</h2><p id='character-count' class='mt-1 text-xs text-white/40'>Loading…</p></div>
+          <button id='character-new' type='button' class='bg-real-accent px-3 py-2 text-sm font-black text-black'>+ New OC</button>
+        </div>
+        <input id='character-search' type='search' placeholder='Search OCs…' class='admin-input mt-4 w-full text-sm' />
+      </div>
+      <div id='character-list' class='max-h-[calc(100vh-15rem)] overflow-y-auto p-2'></div>
+    </aside>
+    <section class='min-w-0'>
+      <div id='character-empty' class='grid min-h-[34rem] place-items-center p-8 text-center text-white/40'>Select an OC or create a new one.</div>
+      <form id='character-form' class='hidden' novalidate>
+        <input type='hidden' name='id' />
+        <header class='sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-real-bg/95 px-5 py-4 backdrop-blur'>
+          <div><p id='character-mode' class='text-xs font-bold uppercase tracking-[.2em] text-real-accent'></p><p class='mt-1 text-xs text-white/45'>Character profile</p></div>
+          <div class='flex flex-wrap gap-2'>
+            <button data-character-move='up' hidden type='button' class='border border-white/20 px-4 py-2 text-sm text-white/70 disabled:opacity-30'>Move up ↑</button>
+            <button data-character-move='down' hidden type='button' class='border border-white/20 px-4 py-2 text-sm text-white/70 disabled:opacity-30'>Move down ↓</button>
+            <a id='character-preview' hidden target='_blank' class='border border-white/20 px-4 py-2 text-sm text-white/70'>Preview ↗</a>
+            <button id='character-delete' hidden type='button' class='border border-red-300/30 px-4 py-2 text-sm text-red-200'>Delete</button>
+            <button id='character-save' type='submit' class='bg-real-accent px-5 py-2 text-sm font-black text-black disabled:opacity-50'>Save OC</button>
+          </div>
+        </header>
+        <div class='grid gap-5 p-5 sm:p-7'>
+          <label class='grid gap-2'><span class='admin-label'>Name</span><input name='title' required maxlength='240' class='admin-input' /></label>
+          <label id='character-slug-field' hidden class='grid gap-2'><span class='admin-label'>URL</span><input name='slug' required disabled maxlength='160' pattern='[a-z0-9]+(?:-[a-z0-9]+)*' class='admin-input font-real-mono' /></label>
+          <label class='grid gap-2'><span class='admin-label'>Description</span><textarea name='description' required maxlength='2000' rows='3' class='admin-input resize-y'></textarea></label>
+          <label class='grid gap-2'><span class='admin-label'>Markdown profile</span><textarea name='content' required rows='24' class='admin-input min-h-[32rem] resize-y font-real-mono leading-7'></textarea></label>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>
+
+<script>
+  import '@/scripts/original-character-admin';
+</script>
+
+<style is:global>
+  .admin-input { @apply border border-white/20 bg-black/30 p-3 text-white outline-none transition focus:border-real-accent; }
+  .admin-label { @apply text-xs font-bold uppercase tracking-[0.16em] text-white/60; }
+</style>

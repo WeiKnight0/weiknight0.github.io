@@ -31,6 +31,11 @@ class ApiExceptionHandler {
     return response(HttpStatus.CONFLICT, "conflict", "The resource conflicts with existing data");
   }
 
+  @ExceptionHandler(ResourceConflictException.class)
+  ResponseEntity<ApiError> conflict(ResourceConflictException exception) {
+    return response(HttpStatus.CONFLICT, "conflict", exception.getMessage());
+  }
+
   @ExceptionHandler(IllegalArgumentException.class)
   ResponseEntity<ApiError> badRequest(IllegalArgumentException exception) {
     return response(HttpStatus.BAD_REQUEST, "invalid_request", exception.getMessage());

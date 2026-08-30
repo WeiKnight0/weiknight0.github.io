@@ -3,6 +3,7 @@ package com.weiknight.site.api;
 import com.weiknight.site.user.SiteUserRepository;
 import com.weiknight.site.user.UserRole;
 import jakarta.servlet.http.HttpSession;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,6 +42,13 @@ final class SessionAccess {
       return userId;
     }
     throw new AccessDeniedException();
+  }
+
+  Optional<Long> authenticatedUserId(HttpSession session) {
+    if (session == null || !(session.getAttribute(USER_ID_ATTRIBUTE) instanceof Long userId)) {
+      return Optional.empty();
+    }
+    return users.existsByIdAndEnabledTrue(userId) ? Optional.of(userId) : Optional.empty();
   }
 
   void signIn(HttpSession session, long userId, boolean administrator) {

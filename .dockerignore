@@ -2,6 +2,8 @@
 frontend/.astro/
 frontend/dist/
 frontend/node_modules/
+notes/algorithm-templates/dist/
+notes/algorithm-templates/node_modules/
 backend/target/
 .idea/
 .vscode/
