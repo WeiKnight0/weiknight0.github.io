@@ -3,12 +3,34 @@ import { type Locale, i18n } from '@/utils/i18n';
 /**
  * @description Renders the shared localized site footer.
  * @param locale Locale used for the initial static content.
+ * @param icpRecordNumber Chinese ICP record number shown only when configured at build time.
  */
-const Footer = ({ locale }: { locale: Locale }) => (
-  <footer className="site-footer border-t px-5 py-10 text-sm lg:px-8">
-    <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <p data-footer-i18n="builtWith">{i18n[locale].footer.builtWith}</p>
-      <p data-footer-i18n="designedFor">{i18n[locale].footer.designedFor}</p>
+const Footer = ({
+  locale,
+  icpRecordNumber,
+}: {
+  locale: Locale;
+  icpRecordNumber?: string;
+}) => (
+  <footer className="site-footer border-t px-5 py-8 text-sm lg:px-8">
+    <div className="site-footer-inner mx-auto max-w-7xl">
+      <div className="site-footer-main">
+        <div className="site-footer-copy">
+          <p className="site-footer-owner">© {new Date().getFullYear()} WeiKnight</p>
+          <p data-footer-i18n="tagline">{i18n[locale].footer.tagline}</p>
+        </div>
+        <nav className="site-footer-links" aria-label="Footer">
+          <a href="/about/" data-footer-i18n="about">{i18n[locale].footer.about}</a>
+          <a href="/privacy/" target="_blank" rel="noopener noreferrer" data-footer-i18n="privacy">{i18n[locale].footer.privacy}</a>
+        </nav>
+      </div>
+      {icpRecordNumber && (
+        <div className="site-footer-records">
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
+            {icpRecordNumber}
+          </a>
+        </div>
+      )}
     </div>
   </footer>
 );

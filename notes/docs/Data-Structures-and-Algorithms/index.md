@@ -1,12 +1,13 @@
 ---
 title: Data Structures and Algorithms 数据结构与算法
 date: 2026-07-10
+page: index
 lang: zh-cn
 ---
 
 # Data Structures and Algorithms 数据结构与算法
 
-## 一、数据结构
+## 一、[数据结构](./data-structures/index.md)
 
 - [绪论](./data-structures/introduction/index.md)
 - [线性表](./data-structures/linear-list/index.md)
@@ -17,12 +18,14 @@ lang: zh-cn
 - [查找](./data-structures/searching/index.md)
 - [排序](./data-structures/sorting/index.md)
 
-## 二、算法基础
+## 二、[算法基础](./algorithms/index.md)
 
-- [算法与复杂度](./algorithms/foundations/index.md)
+- [算法与复杂度](./algorithms/complexity/index.md)
 - [基础算法技巧](./algorithms/techniques/index.md)
 - [排序](./algorithms/sorting/index.md)
-- [搜索与回溯](./algorithms/search-and-backtracking/index.md)
+- [链表算法](./algorithms/linked-list.md)
+- [树算法](./algorithms/tree/index.md)
+- [回溯](./algorithms/backtracking/index.md)
 - [图论算法](./algorithms/graph/index.md)
 - [动态规划](./algorithms/dynamic-programming/index.md)
 - [字符串算法](./algorithms/string/index.md)

@@ -90,6 +90,66 @@ html[data-color-theme='light'] {
   color: rgb(var(--page-muted));
 }
 
+.site-footer-inner {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.site-footer-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.site-footer-copy {
+  display: grid;
+  gap: 0.3rem;
+  line-height: 1.55;
+}
+
+.site-footer-owner {
+  color: rgb(var(--page-text));
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.site-footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  white-space: nowrap;
+}
+
+.site-footer-links a,
+.site-footer-records a {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 0.25em;
+  transition: color 160ms ease;
+}
+
+.site-footer-links a:hover,
+.site-footer-records a:hover {
+  color: rgb(var(--page-text));
+  text-decoration: underline;
+}
+
+.site-footer-records {
+  border-top: 1px solid rgb(var(--page-border) / 0.1);
+  padding-top: 1rem;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .site-footer-main {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
 html[data-color-theme='light'] .site-header {
   background: rgb(var(--page-surface) / 0.86);
   box-shadow: 0 1px 0 rgb(var(--page-border) / 0.08);

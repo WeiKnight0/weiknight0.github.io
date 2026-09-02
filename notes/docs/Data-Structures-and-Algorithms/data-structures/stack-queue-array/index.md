@@ -1,6 +1,7 @@
 ---
 title: 栈、队列和数组
 date: 2026-08-27
+page: index
 lang: zh-cn
 ---
 

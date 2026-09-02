@@ -1,6 +1,7 @@
 ---
 title: Dynamic Programming 动态规划
 date: 2026-07-10
+page: index
 lang: zh-cn
 ---
 

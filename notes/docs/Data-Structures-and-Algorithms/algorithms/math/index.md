@@ -1,6 +1,7 @@
 ---
 title: Math 数学
 date: 2026-07-10
+page: index
 lang: zh-cn
 ---
 

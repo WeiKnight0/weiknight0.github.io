@@ -14,21 +14,22 @@ tags:
   - Floyd
 ---
 
-# 最短路
-
 最短路问题是在带权图中求点到点的最小路径代价。面试和 LeetCode 中最常见的是：
 
 | 场景 | 算法 |
 | --- | --- |
 | 单源最短路，边权非负 | Dijkstra |
+| 单源最短路，允许负边权 | Bellman-Ford |
 | 多源最短路，点数较小 | Floyd |
 | 无权图最短路 | BFS |
 
-## Dijkstra
+# Dijkstra
 
 Dijkstra 用于边权非负的图。核心思想是：每次从未确定的点中取当前距离最小的点，用它更新相邻点。
 
 优先队列版本复杂度为 `O((n + m) log n)`。
+
+## 核心模板
 
 ```cpp
 vector<int> dijkstra(int n, vector<vector<pair<int, int>>>& graph, int start) {
@@ -59,36 +60,30 @@ vector<int> dijkstra(int n, vector<vector<pair<int, int>>>& graph, int start) {
 
 ## 例题：[743. 网络延迟时间](https://leetcode.cn/problems/network-delay-time/)
 
-### 题目描述
+题目描述：有 `n` 个网络节点，编号为 `1` 到 `n`。给定有向边 `times[i] = [u, v, w]`，表示信号从 `u` 到 `v` 需要 `w` 时间。信号从节点 `k` 发出，求所有节点收到信号的最短时间；如果有节点无法收到，返回 `-1`。
 
-有 `n` 个网络节点，编号为 `1` 到 `n`。给定有向边 `times[i] = [u, v, w]`，表示信号从 `u` 到 `v` 需要 `w` 时间。信号从节点 `k` 发出，求所有节点收到信号的最短时间；如果有节点无法收到，返回 `-1`。
+输入：第一行输入 `n m k`。接下来 `m` 行，每行输入 `u v w`，表示一条有向边。
 
-### 输入格式
+输出：网络延迟时间；如果存在不可达节点，输出 `-1`。
 
-第一行输入 `n m k`。接下来 `m` 行，每行输入 `u v w`，表示一条有向边。
+示例：
 
-### 输出格式
+- 输入：
 
-输出网络延迟时间；如果存在不可达节点，输出 `-1`。
+  ```text
+  4 3 2
+  2 1 1
+  2 3 1
+  3 4 1
+  ```
 
-### 示例
+- 输出：
 
-```text
-输入：
-4 3 2
-2 1 1
-2 3 1
-3 4 1
+  ```text
+  2
+  ```
 
-输出：
-2
-```
-
-### 思路
-
-这是从 `k` 出发到所有点的单源正权最短路，使用 Dijkstra。答案是所有最短距离的最大值；如果存在不可达节点，输出 `-1`。
-
-### 代码
+思路：这是从 `k` 出发到所有点的单源正权最短路，使用 Dijkstra。答案是所有最短距离的最大值；如果存在不可达节点，输出 `-1`。
 
 ```cpp
 #include <bits/stdc++.h>
@@ -140,13 +135,48 @@ int main() {
 }
 ```
 
-## Floyd
+# Bellman-Ford
+
+Bellman-Ford 用于单源最短路，允许负边权。对所有边重复松弛 $n-1$ 轮；第 $n$ 轮仍能松弛，说明源点可达负环。时间复杂度为 $O(nm)$。
+
+## 核心模板
+
+```cpp
+struct Edge {
+    int from;
+    int to;
+    int weight;
+};
+
+bool bellmanFord(int n, int start, const vector<Edge>& edges, vector<long long>& dist) {
+    const long long INF = 1LL << 60;
+    dist.assign(n, INF);
+    dist[start] = 0;
+
+    for (int round = 1; round < n; round++) {
+        bool changed = false;
+        for (const Edge& edge : edges) {
+            if (dist[edge.from] == INF) continue;
+            if (dist[edge.to] <= dist[edge.from] + edge.weight) continue;
+            dist[edge.to] = dist[edge.from] + edge.weight;
+            changed = true;
+        }
+        if (!changed) break;
+    }
+
+    for (const Edge& edge : edges) {
+        if (dist[edge.from] == INF) continue;
+        if (dist[edge.to] > dist[edge.from] + edge.weight) return false;
+    }
+    return true;
+}
+```
+
+# Floyd
 
 Floyd 用于求所有点对之间的最短路，适合点数较小的图，复杂度为 `O(n^3)`。
 
-状态含义：`dist[i][j]` 表示从 `i` 到 `j` 的当前最短距离。
-
-转移：尝试用中间点 `k` 改善 `i -> j`。
+## 核心模板
 
 ```cpp
 for (int k = 0; k < n; k++) {
@@ -162,37 +192,31 @@ for (int k = 0; k < n; k++) {
 
 ## 例题：[1334. 阈值距离内邻居最少的城市](https://leetcode.cn/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/)
 
-### 题目描述
+题目描述：有 `n` 个城市和若干条无向带权边。给定距离阈值 `distanceThreshold`，求能到达的邻居城市数量最少的城市编号；如果有多个答案，返回编号最大的城市。
 
-有 `n` 个城市和若干条无向带权边。给定距离阈值 `distanceThreshold`，求能到达的邻居城市数量最少的城市编号；如果有多个答案，返回编号最大的城市。
+输入：第一行输入 `n m distanceThreshold`。接下来 `m` 行，每行输入 `u v w`，表示无向带权边。
 
-### 输入格式
+输出：满足条件的城市编号。
 
-第一行输入 `n m distanceThreshold`。接下来 `m` 行，每行输入 `u v w`，表示无向带权边。
+示例：
 
-### 输出格式
+- 输入：
 
-输出满足条件的城市编号。
+  ```text
+  4 4 4
+  0 1 3
+  1 2 1
+  1 3 4
+  2 3 1
+  ```
 
-### 示例
+- 输出：
 
-```text
-输入：
-4 4 4
-0 1 3
-1 2 1
-1 3 4
-2 3 1
+  ```text
+  3
+  ```
 
-输出：
-3
-```
-
-### 思路
-
-需要知道任意两个城市之间的最短距离，且 `n` 较小，使用 Floyd。统计每个城市能到达的城市数量，数量更少或数量相同但编号更大时更新答案。
-
-### 代码
+思路：需要知道任意两个城市之间的最短距离，且 `n` 较小，使用 Floyd。统计每个城市能到达的城市数量，数量更少或数量相同但编号更大时更新答案。
 
 ```cpp
 #include <bits/stdc++.h>
@@ -248,7 +272,7 @@ int main() {
 }
 ```
 
-## 小结
+# 小结
 
 | 算法 | 适用条件 | 复杂度 |
 | --- | --- | --- |

@@ -1,6 +1,7 @@
 ---
 title: 图
 date: 2026-08-27
+page: index
 lang: zh-cn
 ---
 

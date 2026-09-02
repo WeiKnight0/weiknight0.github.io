@@ -60,6 +60,8 @@ docker compose down
 SITE_URL=https://your-domain.example docker compose up -d --build
 ```
 
+在 `.env` 中填写 `ICP_RECORD_NUMBER=京ICP备xxxxxxxx号` 并重新构建前端镜像后，主站与 Notes 页脚会显示指向工信部备案系统的备案号；该值留空时不显示。
+
 容器内的 [Nginx 配置](nginx/wkn-personal-site.conf) 已提供静态资源、长期缓存、`/api/` 到后端容器的反向代理，以及本地测试 HTTPS。生产环境不得使用镜像内的自签证书：应挂载受信任证书与私钥替换 `/etc/nginx/certs/localhost.crt`、`/etc/nginx/certs/localhost.key`，或在此 Compose 服务前放置证书终止代理。
 
 ## 不使用 Docker 的前端开发

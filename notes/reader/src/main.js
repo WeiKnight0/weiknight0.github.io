@@ -1,6 +1,8 @@
 import rehypeKatex from 'rehype-katex';
+import 'katex/dist/katex.min.css';
 import rehypeRaw from 'rehype-raw';
 import rehypeStringify from 'rehype-stringify';
+import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkParse from 'remark-parse';
@@ -26,7 +28,6 @@ import remarkNoteLinks from './remark-note-links.mjs';
 
 const NOTE_ROUTE = /^\/real\/notes(?:\/(.*?))?\/?$/;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
-const CJK_BOLD_LABEL = /(\*\*)([^*\n]+?)([：:])\1(?=[\p{Script=Han}])/gu;
 const CODE_LANGUAGE_LABELS = {
   asm: 'Assembly',
   bash: 'Shell',
@@ -72,6 +73,7 @@ const HIGHLIGHT_LANGUAGES = {
   yml: 'yaml',
 };
 const iconHref = (name) => `${import.meta.env.BASE_URL}icons.svg#${name}`;
+const ICP_RECORD_NUMBER = import.meta.env.VITE_ICP_RECORD_NUMBER?.trim();
 
 [
   ['bash', bash],
@@ -92,6 +94,44 @@ function element(selector) {
   return document.querySelector(selector);
 }
 
+function initializeFooter() {
+  if (!ICP_RECORD_NUMBER) return;
+  const link = document.createElement('a');
+  link.href = 'https://beian.miit.gov.cn/';
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  link.textContent = ICP_RECORD_NUMBER;
+  element('#footer-records').append(link);
+}
+
+async function initializeAccountMenu() {
+  const response = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
+  if (!response.ok) throw new Error(`Cannot load account: HTTP ${response.status}`);
+  const account = await response.json();
+  if (typeof account.username !== 'string'
+    || typeof account.displayName !== 'string'
+    || (account.avatarUrl !== null && typeof account.avatarUrl !== 'string')
+    || (account.role !== 'admin' && account.role !== 'user')) {
+    throw new Error('Invalid account response');
+  }
+
+  const name = account.displayName || account.username;
+  const avatar = element('#notes-account-avatar');
+  avatar.hidden = !account.avatarUrl;
+  avatar.src = account.avatarUrl || '';
+  avatar.alt = `${name} avatar`;
+  element('#notes-account-initial').hidden = Boolean(account.avatarUrl);
+  element('#notes-account-initial').textContent = name.trim().charAt(0).toUpperCase();
+  element('#notes-account-name').textContent = name;
+  element('#notes-account-menu').querySelector('summary').setAttribute('aria-label', `${name} — Personal center`);
+  element('#notes-account-admin').hidden = account.role !== 'admin';
+  element('#notes-sign-out').addEventListener('click', async () => {
+    const signOut = await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    if (!signOut.ok) throw new Error(`Cannot sign out: HTTP ${signOut.status}`);
+    window.location.replace('/');
+  });
+}
+
 function notePath() {
   const match = NOTE_ROUTE.exec(decodeURIComponent(window.location.pathname));
   if (!match) throw new Error('Invalid note route');
@@ -99,14 +139,32 @@ function notePath() {
 }
 
 function scalar(frontMatter, name) {
-  return frontMatter.match(new RegExp(`^${name}:\\s*(.+)$`, 'm'))[1]
-    .trim()
-    .replace(/^(["'])(.*)\1$/, '$2');
+  return scalarValue(frontMatter.match(new RegExp(`^${name}:\\s*(.+)$`, 'm'))[1]);
 }
 
 function optionalScalar(frontMatter, name) {
   const match = frontMatter.match(new RegExp(`^${name}:\\s*(.+)$`, 'm'));
-  return match ? match[1].trim().replace(/^(["'])(.*)\1$/, '$2') : '';
+  return match ? scalarValue(match[1]) : '';
+}
+
+function scalarValue(value) {
+  const normalized = value.trim();
+  if (normalized.startsWith('"') && normalized.endsWith('"')) return JSON.parse(normalized);
+  return normalized.replace(/^'(.*)'$/, '$1');
+}
+
+function pageKind(frontMatter) {
+  const value = optionalScalar(frontMatter, 'page');
+  if (!value) return 'content';
+  if (value === 'content' || value === 'index') return value;
+  throw new Error(`Unsupported note page type: ${value}`);
+}
+
+function wideLayout(frontMatter) {
+  const value = optionalScalar(frontMatter, 'wide');
+  if (!value || value === 'false') return false;
+  if (value === 'true') return true;
+  throw new Error(`Unsupported wide layout value: ${value}`);
 }
 
 function tags(frontMatter) {
@@ -124,19 +182,18 @@ function parseMarkdown(markdown) {
     title: scalar(match[1], 'title'),
     date: scalar(match[1], 'date'),
     lang: optionalScalar(match[1], 'lang'),
+    page: pageKind(match[1]),
+    wide: wideLayout(match[1]),
     tags: tags(match[1]),
     body: markdown.slice(match[0].length),
   };
-}
-
-function normalizeCjkBoldLabels(markdown) {
-  return markdown.replace(CJK_BOLD_LABEL, '$1$2$1$3');
 }
 
 async function renderMarkdown(sourcePath, markdown) {
   return String(await unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkCjkFriendly)
     .use(remarkEnv)
     .use(remarkMath)
     .use(remarkNoteLinks)
@@ -145,7 +202,7 @@ async function renderMarkdown(sourcePath, markdown) {
     .use(rehypeRaw)
     .use(rehypeKatex)
     .use(rehypeStringify)
-    .process({ path: `/notes/docs/${sourcePath}`, value: normalizeCjkBoldLabels(markdown) }));
+    .process({ path: `/notes/docs/${sourcePath}`, value: markdown }));
 }
 
 function languageLabel(lang) {
@@ -210,9 +267,100 @@ function renderMetadata(note, path) {
     item.textContent = tag;
     return item;
   }));
-  const parent = path.split('/').slice(0, -1).join('/');
-  element('#notes-back').href = parent ? `/real/notes/${parent}/` : '/real/notes/';
-  element('#notes-back').hidden = path === '';
+  document.querySelectorAll('[data-notes-back]').forEach((link) => {
+    link.href = '../';
+    const rootNote = path === '';
+    link.hidden = false;
+    link.title = rootNote ? 'Back to Real' : 'Back to parent';
+    link.querySelector('.outline-parent-label').textContent = rootNote ? 'Back to Real' : 'Back to parent';
+  });
+}
+
+function headingId(heading, occurrences) {
+  const title = heading.textContent.trim();
+  const base = title.normalize('NFKC')
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+    .replace(/^-|-$/g, '');
+  if (!base) throw new Error('Note headings must contain searchable text');
+  const occurrence = occurrences.get(base) ?? 0;
+  occurrences.set(base, occurrence + 1);
+  return occurrence === 0 ? base : `${base}-${occurrence + 1}`;
+}
+
+function initializeOutline(page) {
+  const layout = element('#note-layout');
+  const outline = element('#note-outline');
+  const toggle = element('#toggle-outline');
+  const toggleLabel = toggle.querySelector('.visually-hidden');
+  const setCollapsed = (collapsed) => {
+    layout.classList.toggle('outline-collapsed', collapsed);
+    document.documentElement.dataset.notesOutline = collapsed ? 'collapsed' : 'expanded';
+    toggle.setAttribute('aria-expanded', String(!collapsed));
+    toggleLabel.textContent = collapsed ? 'Expand table of contents' : 'Collapse table of contents';
+  };
+  setCollapsed(document.documentElement.dataset.notesOutline === 'collapsed');
+  toggle.addEventListener('click', () => {
+    const collapsed = !layout.classList.contains('outline-collapsed');
+    setCollapsed(collapsed);
+    localStorage.setItem('wkn-notes-outline', collapsed ? 'collapsed' : 'expanded');
+  });
+  const showParentOnly = () => {
+    outline.classList.add('parent-only');
+    outline.hidden = false;
+  };
+  if (page === 'index') {
+    showParentOnly();
+    return;
+  }
+  const headings = Array.from(document.querySelectorAll('#note-body h1, #note-body h2, #note-body h3, #note-body h4, #note-body h5, #note-body h6'));
+  if (headings.length === 0) {
+    showParentOnly();
+    return;
+  }
+
+  const occurrences = new Map();
+  const links = headings.map((heading) => {
+    heading.id = headingId(heading, occurrences);
+    const link = document.createElement('a');
+    link.className = 'outline-link';
+    link.href = `#${heading.id}`;
+    link.dataset.headingId = heading.id;
+    link.dataset.level = heading.tagName.slice(1);
+    link.textContent = heading.textContent.trim();
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.history.replaceState(null, '', `#${heading.id}`);
+    });
+    return link;
+  });
+  element('#note-outline-links').replaceChildren(...links);
+  outline.hidden = false;
+
+  const activateHeading = () => {
+    const threshold = window.innerHeight / 2;
+    const current = headings.reduce(
+      (active, heading) => heading.getBoundingClientRect().top <= threshold ? heading : active,
+      headings[0],
+    );
+    links.forEach((link) => link.toggleAttribute('aria-current', link.dataset.headingId === current.id));
+  };
+  let activationPending = false;
+  const scheduleActivation = () => {
+    if (activationPending) return;
+    activationPending = true;
+    requestAnimationFrame(() => {
+      activationPending = false;
+      activateHeading();
+    });
+  };
+  activateHeading();
+  window.addEventListener('scroll', scheduleActivation, { passive: true });
+  document.addEventListener('scroll', scheduleActivation, { capture: true, passive: true });
+  window.addEventListener('resize', scheduleActivation, { passive: true });
+  const initialHeading = headings.find((heading) => heading.id === decodeURIComponent(window.location.hash.slice(1)));
+  initialHeading?.scrollIntoView({ block: 'start' });
 }
 
 function prepareCodeBlock(pre) {
@@ -298,13 +446,18 @@ function initializeTools() {
 }
 
 async function main() {
+  initializeFooter();
+  await initializeAccountMenu();
   const path = notePath();
   const response = await fetch(`/api/v1/notes/source?${new URLSearchParams({ path })}`);
   if (!response.ok) throw new Error(`Cannot load note: HTTP ${response.status}`);
   const source = await response.json();
   const note = parseMarkdown(source.markdown);
+  element('.content-section').classList.toggle('wide-content', note.wide);
+  element('#note-layout').classList.toggle('wide-content', note.wide);
   renderMetadata(note, path);
   element('#note-body').innerHTML = await renderMarkdown(source.path, note.body);
+  initializeOutline(note.page);
   initializeTools();
 }
 

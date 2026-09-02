@@ -1,6 +1,7 @@
 ---
 title: Reference 参考资料
 date: 2026-08-27
+page: index
 lang: zh-cn
 ---
 

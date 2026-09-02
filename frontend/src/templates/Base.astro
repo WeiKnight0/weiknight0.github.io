@@ -40,6 +40,7 @@ const locale =
 const alternatePaths = getAlternateLocalePaths(Astro.url.pathname);
 const canonicalPath = alternatePaths[locale];
 const hasAlternates = hasDistinctLocalePaths(Astro.url.pathname);
+const icpRecordNumber = import.meta.env.ICP_RECORD_NUMBER?.trim();
 ---
 
 <html lang={htmlLangs[locale]} data-color-theme='dark'>
@@ -83,7 +84,7 @@ const hasAlternates = hasDistinctLocalePaths(Astro.url.pathname);
       <slot></slot>
     </div>
 
-    <Footer locale={locale} />
+    <Footer locale={locale} icpRecordNumber={icpRecordNumber} />
 
     <ClientI18n />
     <script>

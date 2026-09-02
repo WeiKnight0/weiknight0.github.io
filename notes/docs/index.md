@@ -1,6 +1,7 @@
 ---
 title: WeiKnight's Study Notes Index
 date: 2025-07-29T15:29:52
+page: index
 ---
 
 # Subjects Index

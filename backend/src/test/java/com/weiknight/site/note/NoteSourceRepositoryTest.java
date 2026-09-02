@@ -35,4 +35,19 @@ class NoteSourceRepositoryTest {
         ResourceNotFoundException.class,
         () -> new NoteSourceRepository(root.toString()).read("missing"));
   }
+
+  @Test
+  void readsNestedSourcesUsingTheirFileTreePath() throws IOException {
+    Path source = root.resolve(
+        "Data-Structures-and-Algorithms/algorithms/graph/shortest-path.md");
+    Files.createDirectories(source.getParent());
+    Files.writeString(source, "shortest path");
+
+    NoteSourceRepository repository = new NoteSourceRepository(root.toString());
+
+    assertEquals(
+        "shortest path",
+        repository.read("Data-Structures-and-Algorithms/algorithms/graph/shortest-path").markdown());
+  }
+
 }

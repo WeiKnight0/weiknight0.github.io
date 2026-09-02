@@ -1,6 +1,7 @@
 ---
 title: Advanced Data Structures 高级数据结构
 date: 2026-07-10
+page: index
 lang: zh-cn
 ---
 

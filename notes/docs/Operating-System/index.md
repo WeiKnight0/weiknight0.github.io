@@ -1,6 +1,7 @@
 ---
 title: Operating System
 date: 2025-07-24 11:41:17
+page: index
 ---
 
 # Table of Contents

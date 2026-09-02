@@ -69,8 +69,9 @@ export const i18n = {
       menu: 'Menu',
     },
     footer: {
-      builtWith: 'Built with Astro, React and Tailwind CSS.',
-      designedFor: 'Designed for real-world portfolio and fictional archive.',
+      tagline: 'A personal archive for projects, notes and fictional worlds.',
+      about: 'About',
+      privacy: 'Privacy',
     },
   },
   'zh-cn': {
@@ -95,8 +96,9 @@ export const i18n = {
       menu: '菜单',
     },
     footer: {
-      builtWith: '使用 Astro、React 与 Tailwind CSS 构建。',
-      designedFor: '为现实作品集与幻想档案而设计。',
+      tagline: '记录项目、笔记与幻想世界的个人档案。',
+      about: '关于',
+      privacy: '隐私',
     },
   },
 } as const;

@@ -42,6 +42,7 @@ services:
       dockerfile: frontend/Dockerfile
       args:
         SITE_URL: ${SITE_URL:-https://localhost}
+        ICP_RECORD_NUMBER: ${ICP_RECORD_NUMBER:-}
     restart: unless-stopped
     user: "1000:1000"
     depends_on:

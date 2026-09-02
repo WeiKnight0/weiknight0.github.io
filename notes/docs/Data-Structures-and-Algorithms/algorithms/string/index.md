@@ -1,6 +1,7 @@
 ---
 title: String 字符串
 date: 2026-07-10
+page: index
 lang: zh-cn
 ---
 

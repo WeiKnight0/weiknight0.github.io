@@ -12,7 +12,10 @@ COPY frontend/public ./public
 COPY frontend/scripts ./scripts
 
 ARG SITE_URL=http://localhost
+ARG ICP_RECORD_NUMBER
 ENV SITE_URL=${SITE_URL}
+ENV ICP_RECORD_NUMBER=${ICP_RECORD_NUMBER}
+ENV VITE_ICP_RECORD_NUMBER=${ICP_RECORD_NUMBER}
 RUN npm run build
 
 # Notes is a standalone Vite reader and never enters Astro's content pipeline.

@@ -1,6 +1,7 @@
 ---
 title: Techniques 算法技巧
 date: 2026-07-10
+page: index
 lang: zh-cn
 ---
 

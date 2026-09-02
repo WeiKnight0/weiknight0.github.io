@@ -1,13 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notes | WeiKnight</title>
     <meta name="description" content="WeiKnight's study notes." />
     <link rel="icon" href="/favicon.ico" />
+    <script>
+      if (localStorage.getItem('wkn-notes-outline') === 'collapsed') {
+        document.documentElement.dataset.notesOutline = 'collapsed';
+      }
+    </script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.45/dist/katex.min.css" />
     <link rel="stylesheet" href="%BASE_URL%note.css" />
   </head>
   <body>
@@ -27,14 +31,24 @@
           </a>
         </div>
         <nav class="navbar-actions" aria-label="Notes navigation">
-          <a class="nav-link" id="notes-back" href="/real/notes/">
-            <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#parent"></use></svg>
-            <span>Parent Directory</span>
-          </a>
           <a class="nav-link" href="/real/">
             <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#compass"></use></svg>
             <span>Return to Real</span>
           </a>
+          <details class="account-menu" id="notes-account-menu">
+            <summary class="account-trigger" aria-label="Personal center">
+              <span class="account-avatar">
+                <img id="notes-account-avatar" hidden alt="" />
+                <span id="notes-account-initial">?</span>
+              </span>
+              <span id="notes-account-name">Account</span>
+            </summary>
+            <div class="account-menu-panel">
+              <a href="/profile/">Personal center</a>
+              <a id="notes-account-admin" href="/admin/blogs/" target="_blank" rel="noopener noreferrer" hidden>Administration</a>
+              <button id="notes-sign-out" type="button">Sign out</button>
+            </div>
+          </details>
         </nav>
       </div>
     </header>
@@ -54,9 +68,25 @@
     </section>
 
     <main class="content-section">
-      <article class="chapter-content">
-        <div class="note-body" id="note-body">Loading…</div>
-      </article>
+      <div class="note-layout" id="note-layout">
+        <aside class="note-outline" id="note-outline" aria-label="Table of contents" hidden>
+          <a class="outline-parent-link" data-notes-back href="../" title="Back to Real">
+            <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#parent"></use></svg>
+            <span class="outline-parent-label">Back to Real</span>
+          </a>
+          <div class="outline-header">
+            <span class="outline-title">On this page</span>
+          </div>
+          <nav class="outline-links" id="note-outline-links" aria-label="Headings in this note"></nav>
+          <button class="outline-toggle" id="toggle-outline" type="button" aria-expanded="true">
+            <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#chevron-left"></use></svg>
+            <span class="visually-hidden">Collapse table of contents</span>
+          </button>
+        </aside>
+        <article class="chapter-content">
+          <div class="note-body" id="note-body">Loading…</div>
+        </article>
+      </div>
       <div class="note-tools">
         <button class="tool-btn" id="toggle-dark" type="button">
           <svg class="icon" aria-hidden="true"><use id="theme-icon" href="%BASE_URL%icons.svg#moon"></use></svg>
@@ -71,11 +101,17 @@
 
     <footer class="footer">
       <div class="footer-content">
-        <p>© 2025 WeiKnight. All Rights Reserved.</p>
-        <div class="footer-links">
-          <a href="/about/" target="_blank">About</a>
-          <a href="/privacy/" target="_blank">Privacy Policy</a>
+        <div class="footer-main">
+          <div class="footer-copy">
+            <p class="footer-owner">© WeiKnight</p>
+            <p>Personal notes and learning archive.</p>
+          </div>
+          <div class="footer-links">
+            <a href="/about/">About</a>
+            <a href="/privacy/" target="_blank" rel="noopener noreferrer">Privacy</a>
+          </div>
         </div>
+        <div class="footer-records" id="footer-records"></div>
       </div>
     </footer>
 
