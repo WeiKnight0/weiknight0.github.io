@@ -1,41 +1,43 @@
 ---
-title: Prefix Sum and Differential 前缀和与差分
+title: Prefix Sum and Difference 前缀和与差分
 date: 2025-10-7
 lang: zh-cn
 ---
 
 # 一维前缀和
 
-前缀和可以简单理解为「数列的前 $n$ 项的和」，是一种重要的预处理方式。
-给定数组$a_i$，$0 \le i \le n$，则其前缀和：
+给定长度为 $n$ 的数组 $a[0\ldots n-1]$，定义长度为 $n+1$ 的前缀和数组 $s$：
+
 $$
-S_i=\begin{cases}
-    0 & i=0 \\
-    a_0+a_1+\cdots+a_{i-1} & 1 \le i \le n \\
-    \end{cases}
+s[0]=0,\qquad s[i+1]=s[i]+a[i]\quad(0\le i<n)
 $$
-前缀和数组$S$的长度为$n+1$，其中$S[0]=0$，$S[i]$表示$a$数组前$i$个元素的和。这样我们可以在$O(1)$的时间内计算出任意区间$[l,r)$的和：
+
+因此，$s[i]$ 表示原数组前 $i$ 个元素之和：
+
 $$
-\sum_{i=l}^{r-1} a_i = S[r]-S[l]
+s[i]=\sum_{k=0}^{i-1}a[k]
 $$
-模板C++
+
+闭区间 $[l,r]$ 的元素和为：
+
+$$
+\sum_{k=l}^{r}a[k]=s[r+1]-s[l]
+$$
 
 ```cpp
-int n;                // Array size.
-std::vector<int> a;   // Array. (indexed from 1)
-std::vector<int> ps;  // Prefix sum array.
-
-// Calculate prefix sum.
-void prefix_sum() {
-  ps = a;
-  // Or simply:
-  // std::partial_sum(a.begin(), a.end(), ps.begin());
-  for (int i = 1; i <= n; ++i) {
-    ps[i] += ps[i - 1];
-  }
+// sum[i] 表示前 i 个数的求和
+vector<int> buildPrefix(const vector<int>& arr) {
+    int n = arr.size();
+    vector<int> sum(n + 1);
+    for (int i = 0; i < n; i++) {
+        sum[i + 1] = sum[i] + arr[i];
+    }
+    return sum;
 }
-// Query sum of elements in [l, r].
-int query(int l, int r) { return ps[r] - ps[l - 1]; }
+
+int rangeSum(const vector<int>& sum, int l, int r) {
+    return sum[r + 1] - sum[l]; // 返回 arr[l]~arr[r]的求和
+}
 ```
 
 ## 560. 和为 K 的子数组
@@ -97,41 +99,61 @@ int main() {
 
 # 一维差分
 
-对于区间修改，差分数组可以将时间复杂度从$O(n)$降到$O(1)$。给定数组$a_i$，$0 \le i < n$，则其差分数组$b_i$定义为：
+给定长度为 $n$ 的数组 $a[0\ldots n-1]$，定义差分数组 $d$：
+
 $$
-b_i = 
+d[i]=
 \begin{cases}
-    a_0 & i=0 \\
-    a_i - a_{i-1} & 1 \le i < n
+a[0], & i=0 \\
+a[i]-a[i-1], & 1\le i<n
 \end{cases}
 $$
-差分数组$b$的长度为$n$，其中$b[0]=a[0]$，$b[i]$表示$a[i]$与$a[i-1]$的差值。这样我们可以在$O(1)$的时间内将区间$[l,r]$的每个元素增加$x$：
-```cpp
-b[l] += x;
-b[r + 1] -= x;
-```
-模板C++
+
+实际实现额外令 $d[n]=0$，作为区间结束位置的哨兵。
+
+原数组可以由差分数组的前缀和恢复：
+
+$$
+a[i]=\sum_{k=0}^{i}d[k]
+$$
+
+将闭区间 $[l,r]$ 中的每个元素增加 $x$，只需修改变化开始和结束的位置：
+
+$$
+d[l]\mathrel{+}=x,\qquad d[r+1]\mathrel{-}=x
+$$
+
+代码让 `diff` 的长度为 $n+1$，最后一项作为哨兵，因此 `r = n - 1` 时也不需要单独判断。
 
 ```cpp
-int n;                // Array size.
-std::vector<int> a;   // Array. (indexed from 0)
-std::vector<int> diff; // Difference array.
-// Calculate difference array.
-void difference() {
-  diff = a;
-  for (int i = n - 1; i > 0; --i) {
-    diff[i] -= diff[i - 1];
-  }
+vector<int> buildDifference(const vector<int>& arr) {
+    int n = arr.size();
+    vector<int> diff(n + 1); // diff[n]只是为了rangeAdd的时候r+1不会越界
+    diff[0] = arr[0];
+    for (int i = 1; i < n; i++) {
+        diff[i] = arr[i] - arr[i - 1];
+    }
+    return diff;
 }
-// Range update: add x to elements in [l, r].
-void range_update(int l, int r, int x) {
-  diff[l] += x;
-  if (r + 1 < n) {
+
+void rangeAdd(vector<int>& diff, int l, int r, int x) {
+    // 增加
+    diff[l] += x;
     diff[r + 1] -= x;
-  }
+}
+
+vector<int> restoreArray(const vector<int>& diff) {
+    // 使用前缀和恢复原数组，但是注意第一个元素不是0而是diff[0]，与标准前缀和有差别
+    int n = diff.size() - 1;
+    vector<int> arr(n);
+    int sum = 0;
+    for (int i = 0; i < n; i++) {
+        sum += diff[i];
+        arr[i] = sum;
+    }
+    return arr;
 }
 ```
-使用的时候，需要注意边界条件，尤其是$r$是否为数组的最后一个元素。因此，差分数组通常会比原数组多一个元素，且最后一个元素初始化为0。
 
 ## 1109. 航班预订统计
 
@@ -154,9 +176,9 @@ void range_update(int l, int r, int x) {
 - 输出：`[10,25]`
 
 思路：
-- 每条预订记录都是一次区间加法。
-- 用差分数组 `diff` 记录变化量：`diff[first] += seats`，`diff[last + 1] -= seats`。
-- 最后对 `diff` 求前缀和，就得到每个航班的最终座位数。
+- 题目中的航班编号从 1 开始，读入后减 1，内部统一使用 0 下标。
+- 每条预订记录都是一次闭区间加法。
+- 最后对差分数组求前缀和，得到每个航班的座位数。
 
 ```cpp
 #include <bits/stdc++.h>
@@ -166,18 +188,20 @@ int main() {
     int n, m;
     cin >> n >> m;
 
-    vector<int> diff(n + 2, 0);
+    vector<int> diff(n + 1);
     for (int i = 0; i < m; i++) {
         int first, last, seats;
         cin >> first >> last >> seats;
+        first--;
+        last--;
         diff[first] += seats;
         diff[last + 1] -= seats;
     }
 
     int cur = 0;
-    for (int i = 1; i <= n; i++) {
+    for (int i = 0; i < n; i++) {
         cur += diff[i];
-        if (i > 1) {
+        if (i > 0) {
             cout << ' ';
         }
         cout << cur;
@@ -189,39 +213,45 @@ int main() {
 ```
 
 # 二维前缀和
-二维前缀和是前缀和的扩展，适用于二维数组。给定二维数组$a_{i,j}$，$0 \le i < n$，$0 \le j < m$，则其二维前缀和$S_{i,j}$定义为：
+
+给定 $m$ 行 $n$ 列的矩阵 $a$，原矩阵从 `a[0][0]` 开始。定义 $(m+1)\times(n+1)$ 的前缀和矩阵 $s$：
+
 $$
-S_{i,j} = \sum_{x=0}^{i-1} \sum_{y=0}^{j-1} a_{x,y}
-$$
-$S_{i,j}$表示从矩阵左上角$(0,0)$到$(i-1,j-1)$的子矩阵的和。
-我们可以将其改写成递推形式：
-$$
-S_{i+1, j+1} = a_{i,j} + S_{i,j+1} + S_{i+1,j} - S_{i,j}
+s[i+1][j+1]=\sum_{x=0}^{i}\sum_{y=0}^{j}a[x][y]
 $$
 
-二维前缀和数组$S$的大小为$(n+1) \times (m+1)$，其中$S[0][j]=0$和$S[i][0]=0$。这样我们可以在$O(1)$的时间内计算出任意子矩阵$(x_1,y_1)$到$(x_2,y_2)$的和：
+易知 `s[0][]` 和 `s[][0]` 均为0。
+
+由容斥原理得到递推式：
+
 $$
-\sum_{i=x_1}^{x_2-1} \sum_{j=y_1}^{y_2-1} a_{i,j} = S[x_2][y_2] - S[x_1][y_2] - S[x_2][y_1] + S[x_1][y_1]
+s[i+1][j+1]=s[i+1][j]+s[i][j+1]-s[i][j]+a[i][j]
 $$
-模板C++
+
+第一行和第一列均为 0。左上角为 $(r_1,c_1)$、右下角为 $(r_2,c_2)$ 的闭区间子矩阵之和为：
+
+$$
+\sum_{i=r_1}^{r_2}\sum_{j=c_1}^{c_2}a[i][j]
+=s[r_2+1][c_2+1]-s[r_2+1][c_1]-s[r_1][c_2+1]+s[r_1][c_1]
+$$
 
 ```cpp
-#define N 100
-#define M 100
-int n, m;                // Matrix size.
-int a[N][M];            // Matrix. (indexed from 1)
-int ps[N + 1][M + 1];   // Prefix sum matrix.
-// Calculate prefix sum.
-void prefix_sum() {
-  for (int i = 1; i <= n; ++i) {
-    for (int j = 1; j <= m; ++j) {
-      ps[i][j] = a[i][j] + ps[i - 1][j] + ps[i][j - 1] - ps[i - 1][j - 1];
+vector<vector<int>> buildPrefix2D(const vector<vector<int>>& matrix) {
+    int m = matrix.size(), n = matrix[0].size();
+    vector<vector<int>> sum(m + 1, vector<int>(n + 1));
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            sum[i + 1][j + 1] = sum[i + 1][j] + sum[i][j + 1]
+                                    - sum[i][j] + matrix[i][j];
+        }
     }
-  }
+    return sum;
 }
-// Query sum of submatrix [(x1, y1), (x2, y2)].
-int query(int x1, int y1, int x2, int y2) {
-  return ps[x2][y2] - ps[x1 - 1][y2] - ps[x2][y1 - 1] + ps[x1 - 1][y1 - 1];
+
+int sumRegion(const vector<vector<int>>& sum,
+                    int r1, int c1, int r2, int c2) {
+    return sum[r2 + 1][c2 + 1] - sum[r2 + 1][c1]
+           - sum[r1][c2 + 1] + sum[r1][c1];
 }
 ```
 
@@ -254,77 +284,173 @@ int query(int x1, int y1, int x2, int y2) {
   8
   ```
 
-思路：
-- 预处理二维前缀和 `sum`，其中 `sum[i + 1][j + 1]` 表示左上角到 `(i, j)` 的矩阵和。
-- 查询 `(row1, col1)` 到 `(row2, col2)` 时，用大矩形减去上方和左方，再加回被减两次的左上角。
-- 查询公式：`sum[row2 + 1][col2 + 1] - sum[row1][col2 + 1] - sum[row2 + 1][col1] + sum[row1][col1]`。
+思路：预处理 `sum` 后，每次查询用右下角大矩形减去上方和左方，再加回被重复减去的左上方。上述 `buildPrefix2D` 和 `sumRegion` 可以直接完成预处理与查询。
+
+# 二维差分
+
+给定从 `a[0][0]` 开始的 $m \times n$矩阵，二维差分$(m+1) \times (n+1)$定义为：
+
+$$
+d[i][j] = a[i][j]-a[i-1][j]-a[i][j-1]+a[i-1][j-1]
+$$
+对于式中 $a$ 矩阵越界的数字，直接定义为0。此外 `d[m][]` 和 `d[][n]` 也均为0。
+
+原矩阵由二维前缀和恢复：
+
+$$
+a[i][j]=\sum_{x=0}^{i}\sum_{y=0}^{j}d[x][y]
+$$
+
+如果要将`a`中的左上角为 $(r_1,c_1)$、右下角为 $(r_2,c_2)$ 的闭区间子矩阵全部增加 $x$，可以如下操作差分矩阵：
+
+$$
+\begin{aligned}
+d[r_1][c_1]&\mathrel{+}=x \\
+d[r_1][c_2+1]&\mathrel{-}=x \\
+d[r_2+1][c_1]&\mathrel{-}=x \\
+d[r_2+1][c_2+1]&\mathrel{+}=x
+\end{aligned}
+$$
+
+由于差分矩阵额外补了一行和一列，因此更新右边界与下边界时无需特判。
+
+```cpp
+vector<vector<int>> buildDifference2D(
+    const vector<vector<int>>& matrix) {
+    int m = matrix.size(), n = matrix[0].size();
+    vector<vector<int>> diff(m + 1, vector<int>(n + 1));
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            diff[i][j] = matrix[i][j];
+            if (i > 0) diff[i][j] -= matrix[i - 1][j];
+            if (j > 0) diff[i][j] -= matrix[i][j - 1];
+            if (i > 0 && j > 0) diff[i][j] += matrix[i - 1][j - 1];
+        }
+    }
+    return diff;
+}
+
+void rectangleAdd(vector<vector<int>>& diff,
+                  int r1, int c1, int r2, int c2, int x) {
+    diff[r1][c1] += x;
+    diff[r1][c2 + 1] -= x;
+    diff[r2 + 1][c1] -= x;
+    diff[r2 + 1][c2 + 1] += x;
+}
+
+vector<vector<int>> restoreMatrix(
+    const vector<vector<int>>& diff) {
+    int m = diff.size() - 1, n = diff[0].size() - 1;
+    vector<vector<int>> matrix(m, vector<int>(n));
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            matrix[i][j] = diff[i][j];
+            if (i > 0) matrix[i][j] += matrix[i - 1][j];
+            if (j > 0) matrix[i][j] += matrix[i][j - 1];
+            if (i > 0 && j > 0) matrix[i][j] -= matrix[i - 1][j - 1];
+        }
+    }
+    return matrix;
+}
+```
+
+## 例题：花园积水
+
+小明有一座位于平面直角坐标系第一象限的矩形花园，左下角位于原点。花园由 $a$ 列、$b$ 行单位方格组成，方格坐标记为 $(X,Y)$。横坐标从左向右递增，纵坐标从下向上递增，因此花园内的方格满足 $0\le X<a$、$0\le Y<b$。
+
+花园附近有 $n$ 片矩形积水区域。每片区域由左下角方格坐标 $(x,y)$、横向长度 $l$ 和纵向宽度 $w$ 描述，覆盖满足以下条件的方格：
+
+$$
+x\le X<x+l,\qquad y\le Y<y+w
+$$
+
+积水区域可以相交，也可能有一部分位于花园外。请输出花园内部的积水图案：普通方格用 `.` 表示，积水方格用 `x` 表示。按照从最上方一行到最下方一行的顺序输出，每行从左向右排列。
+
+输入格式：
+
+- 第一行包含两个整数 $a$ 和 $b$，分别表示花园的列数和行数。
+- 第二行包含整数 $n$，表示积水区域的数量。
+- 接下来 $n$ 行，每行包含四个整数 $x$、$y$、$l$ 和 $w$。
+
+输出格式：输出 $b$ 行，每行恰有 $a$ 个字符。
+
+数据范围：
+
+$$
+1\le a,b\le10^3,\qquad 1\le a\times b\le2\times10^5
+$$
+
+$$
+0\le n\le10^5,\qquad -10^9\le x,y\le10^9,\qquad 1\le l,w\le10^9
+$$
+
+**示例：**
+
+- 输入：
+
+  ```text
+  8 4
+  2
+  1 0 2 4
+  6 1 2 2
+  ```
+
+- 输出：
+
+  ```text
+  .xx.....
+  .xx...xx
+  .xx...xx
+  .xx.....
+  ```
+
+思路：矩形坐标可能超出花园，先把横坐标范围裁剪到 $[0,a)$，纵坐标范围裁剪到 $[0,b)$。裁剪结果仍是半开矩形 $[x_1,x_2)\times[y_1,y_2)$，可直接在二维差分矩阵的四个角更新。所有矩形处理完后求二维前缀和，值大于 0 的方格被积水覆盖。
+
+差分矩阵的行下标就是纵坐标 $Y$，所以恢复时按 $Y$ 从小到大计算；题目要求从花园顶部开始输出，因此输出时再按 $Y$ 从 $b-1$ 到 0 遍历。
 
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
 
 int main() {
-    int n, m, q;
-    cin >> n >> m >> q;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-    vector<vector<int>> sum(n + 1, vector<int>(m + 1, 0));
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            int x;
-            cin >> x;
-            sum[i + 1][j + 1] = x + sum[i][j + 1] + sum[i + 1][j] - sum[i][j];
+    int a, b, n;
+    cin >> a >> b >> n;
+
+    vector<vector<int>> diff(b + 1, vector<int>(a + 1));
+    while (n--) {
+        long long x, y, l, w;
+        cin >> x >> y >> l >> w;
+
+        int x1 = max(0LL, x);
+        int y1 = max(0LL, y);
+        int x2 = min((long long)a, x + l);
+        int y2 = min((long long)b, y + w);
+        if (x1 >= x2 || y1 >= y2) continue;
+
+        diff[y1][x1]++;
+        diff[y1][x2]--;
+        diff[y2][x1]--;
+        diff[y2][x2]++;
+    }
+
+    for (int y = 0; y < b; y++) {
+        for (int x = 0; x < a; x++) {
+            if (y > 0) diff[y][x] += diff[y - 1][x];
+            if (x > 0) diff[y][x] += diff[y][x - 1];
+            if (y > 0 && x > 0) diff[y][x] -= diff[y - 1][x - 1];
         }
     }
 
-    while (q--) {
-        int row1, col1, row2, col2;
-        cin >> row1 >> col1 >> row2 >> col2;
-
-        int ans = sum[row2 + 1][col2 + 1]
-                - sum[row1][col2 + 1]
-                - sum[row2 + 1][col1]
-                + sum[row1][col1];
-        cout << ans << '\n';
+    for (int y = b - 1; y >= 0; y--) {
+        for (int x = 0; x < a; x++) {
+            cout << (diff[y][x] > 0 ? 'x' : '.');
+        }
+        cout << '\n';
     }
-
     return 0;
-}
-```
-
-# 二维差分
-二维差分是差分数组的扩展，适用于二维数组。通常采用逐维度计算一维差分的方式来实现。
-对于二维差分的区域更新方法，要想将子矩阵$(x_1,y_1)$到$(x_2,y_2)$的每个元素增加$x$，可以进行如下操作：
-$$
-\begin{cases}
-  b[x_1][y_1] \leftarrow b[x_1][y_1] + x \\
-  b[x_1][y_2 + 1] \leftarrow b[x_1][y_2 + 1] - x \\
-  b[x_2 + 1][y_1] \leftarrow b[x_2 + 1][y_1] - x \\
-  b[x_2 + 1][y_2 + 1] \leftarrow b[x_2 + 1][y_2 + 1] + x \\
-\end{cases}
-$$
-模板C++
-
-```cpp
-int n, m;
-std::vector<std::vector<int>> diff, a;
-
-// Add v to each element from [x1, y1] to [x2, y2].
-void add(int x1, int y1, int x2, int y2, int v) {
-  diff[x1][y1] += v;
-  if (x2 < n) diff[x2 + 1][y1] -= v;
-  if (y2 < m) diff[x1][y2 + 1] -= v;
-  if (x2 < n && y2 < m) diff[x2 + 1][y2 + 1] += v;
-}
-
-// Execute this after all modifications and before all queries.
-void prefix_sum() {
-  a = diff;
-
-  for (int i = 1; i <= n; ++i)
-    for (int j = 1; j <= m; ++j) a[i][j] += a[i - 1][j];
-
-  for (int i = 1; i <= n; ++i)
-    for (int j = 1; j <= m; ++j) a[i][j] += a[i][j - 1];
 }
 ```
 
@@ -464,4 +590,6 @@ void apply_differences(int u, int p) {
 ```
 
 # 参考
- - [前缀和与差分 - OI Wiki](https://oi-wiki.org/basic/prefix-sum/)
+
+- [前缀和与差分 - OI Wiki](https://oi-wiki.org/basic/prefix-sum/)
+- [灵茶山艾府：前缀和与差分](https://leetcode.cn/discuss/post/mOr1u6/)

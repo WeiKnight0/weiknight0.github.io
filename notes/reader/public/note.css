@@ -453,8 +453,12 @@ body {
 }
 
 .chapter-content p {
-    line-height: 1.8;
+    line-height: 1.55;
     display: block;
+}
+
+.chapter-content p + p {
+    margin-top: 1.25rem;
 }
 
 .chapter-content a {

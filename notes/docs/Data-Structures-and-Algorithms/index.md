@@ -29,7 +29,7 @@ lang: zh-cn
 - [图论算法](./algorithms/graph/index.md)
 - [动态规划](./algorithms/dynamic-programming/index.md)
 - [字符串算法](./algorithms/string/index.md)
-- [数学基础](./algorithms/math/index.md)
+- [数学](./algorithms/math/index.md)
 - [高级数据结构](./algorithms/advanced-data-structures/index.md)
 
 ## 附录

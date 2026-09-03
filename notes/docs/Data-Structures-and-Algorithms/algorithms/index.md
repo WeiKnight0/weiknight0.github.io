@@ -17,5 +17,5 @@ lang: zh-cn
 - [图论算法](./graph/index.md)
 - [动态规划](./dynamic-programming/index.md)
 - [字符串算法](./string/index.md)
-- [数学基础](./math/index.md)
+- [数学](./math/index.md)
 - [高级数据结构](./advanced-data-structures/index.md)
