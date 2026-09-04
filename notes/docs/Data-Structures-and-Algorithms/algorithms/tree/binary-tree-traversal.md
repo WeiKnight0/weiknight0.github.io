@@ -9,19 +9,21 @@ tags:
   - Hot 100
 ---
 
-LeetCode 中二叉树节点通常为：
+本文中二叉树节点使用如下结构：
 
 ```cpp
 struct TreeNode {
     int val;
     TreeNode* left;
     TreeNode* right;
+    TreeNode(int val_=0, TreeNode* left_=nullptr, TreeNode* right_=nullptr)
+        :val(val_), left(left_), right(right){}
 };
 ```
 
 # 遍历模板
 
-## 递归 DFS
+## 递归遍历
 
 前序在递归左右子树前处理当前节点；中序在两者之间处理；后序在两者之后处理。
 
@@ -32,25 +34,90 @@ void preorder(TreeNode* root, vector<int>& ans) {
     preorder(root->left, ans);
     preorder(root->right, ans);
 }
+
+void inorder(TreeNode* root, vector<int>& ans) {
+    if (!root) return;
+    inorder(root->left, ans);
+    ans.push_back(root->val);
+    inorder(root->right, ans);
+}
+
+void postorder(TreeNode* root, vector<int>& ans) {
+    if (!root) return;
+    postorder(root->left, ans);
+    postorder(root->right, ans);
+    ans.push_back(root->val);
+}
 ```
 
-## 迭代中序遍历
+## 颜色遍历法
 
-栈保存尚未访问自身和右子树的祖先。不断向左压栈，无法再向左时弹出并转向其右子树。
+栈中保存 `pair<TreeNode*, bool>`。`false` 表示节点尚未展开，`true` 表示可以处理该节点。由于栈后进先出，节点必须按遍历顺序的逆序入栈。
+
+前序遍历的顺序是根、左、右，因此依次将右、左、根压栈。
+
+```cpp
+vector<int> preorder(TreeNode* root) {
+    vector<int> ans;
+    stack<pair<TreeNode*, bool>> st;
+    st.push({root, false});
+    while (!st.empty()) {
+        auto [node, visited] = st.top();
+        st.pop();
+        if (!node) continue;
+        if (visited) {
+            ans.push_back(node->val);
+            continue;
+        }
+        st.push({node->right, false});
+        st.push({node->left, false});
+        st.push({node, true});
+    }
+    return ans;
+}
+```
+
+中序遍历的顺序是左、根、右，因此依次将右、根、左压栈。
 
 ```cpp
 vector<int> inorder(TreeNode* root) {
     vector<int> ans;
-    stack<TreeNode*> st;
-    while (root || !st.empty()) {
-        while (root) {
-            st.push(root);
-            root = root->left;
-        }
-        root = st.top();
+    stack<pair<TreeNode*, bool>> st;
+    st.push({root, false});
+    while (!st.empty()) {
+        auto [node, visited] = st.top();
         st.pop();
-        ans.push_back(root->val);
-        root = root->right;
+        if (!node) continue;
+        if (visited) {
+            ans.push_back(node->val);
+            continue;
+        }
+        st.push({node->right, false});
+        st.push({node, true});
+        st.push({node->left, false});
+    }
+    return ans;
+}
+```
+
+后序遍历的顺序是左、右、根，因此依次将根、右、左压栈。
+
+```cpp
+vector<int> postorder(TreeNode* root) {
+    vector<int> ans;
+    stack<pair<TreeNode*, bool>> st;
+    st.push({root, false});
+    while (!st.empty()) {
+        auto [node, visited] = st.top();
+        st.pop();
+        if (!node) continue;
+        if (visited) {
+            ans.push_back(node->val);
+            continue;
+        }
+        st.push({node, true});
+        st.push({node->right, false});
+        st.push({node->left, false});
     }
     return ans;
 }
@@ -82,83 +149,6 @@ vector<vector<int>> levelOrder(TreeNode* root) {
 ```
 
 # 例题
-
-## 94. 二叉树的中序遍历
-
-题目来源：[94. 二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
-
-题目描述：给定二叉树根节点 `root`，返回其中序遍历结果。
-
-**示例 1：**
-
-- 输入：`root = [1,null,2,3]`
-
-- 输出：`[1,3,2]`
-
-思路：中序顺序为左、根、右。使用“迭代中序遍历”模板，栈顶节点的左链处理完毕后才访问它。
-
-```cpp
-class Solution {
-public:
-    vector<int> inorderTraversal(TreeNode* root) {
-        vector<int> ans;
-        stack<TreeNode*> st;
-        while (root || !st.empty()) {
-            while (root) {
-                st.push(root);
-                root = root->left;
-            }
-            root = st.top();
-            st.pop();
-            ans.push_back(root->val);
-            root = root->right;
-        }
-        return ans;
-    }
-};
-```
-
-时间复杂度 $O(n)$，空间复杂度 $O(h)$，$h$ 为树高。
-
-## 102. 二叉树的层序遍历
-
-题目来源：[102. 二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/)
-
-题目描述：按从左到右、从上到下的顺序返回二叉树每一层的节点值。
-
-**示例 1：**
-
-- 输入：`root = [3,9,20,null,null,15,7]`
-
-- 输出：`[[3],[9,20],[15,7]]`
-
-思路：队列天然按进入顺序处理节点。每轮固定取出当前队列长度个节点，正好得到一层。
-
-```cpp
-class Solution {
-public:
-    vector<vector<int>> levelOrder(TreeNode* root) {
-        if (!root) return {};
-        vector<vector<int>> ans;
-        queue<TreeNode*> q;
-        q.push(root);
-        while (!q.empty()) {
-            int size = q.size();
-            ans.emplace_back();
-            while (size--) {
-                TreeNode* node = q.front();
-                q.pop();
-                ans.back().push_back(node->val);
-                if (node->left) q.push(node->left);
-                if (node->right) q.push(node->right);
-            }
-        }
-        return ans;
-    }
-};
-```
-
-时间复杂度 $O(n)$，空间复杂度 $O(n)$。
 
 ## 104. 二叉树的最大深度
 
@@ -225,9 +215,48 @@ public:
 
 时间复杂度 $O(n)$，空间复杂度 $O(n)$。
 
+## 199. 二叉树的右视图
+
+题目来源：[199. 二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
+
+题目描述：给定二叉树的根节点 `root`，想象自己站在二叉树右侧，按照从上到下的顺序返回能够看到的节点值。
+
+**示例 1：**
+
+- 输入：`root = [1,2,3,null,5,null,4]`
+
+- 输出：`[1,3,4]`
+
+思路：队列同时保存节点和层号。按照左子节点、右子节点的顺序入队，每访问到同一层的新节点就覆盖这一层原有的答案，因此遍历结束后保留的是每层最右侧的节点。
+
+```cpp
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        queue<pair<TreeNode*, int>> q;
+        q.push({root, 0});
+        vector<int> ans;
+        while (!q.empty()) {
+            auto [node, depth] = q.front();
+            q.pop();
+            if (!node) continue;
+            if (depth == ans.size()) {
+                ans.push_back(node->val);
+            } else {
+                ans[depth] = node->val;
+            }
+            q.push({node->left, depth + 1});
+            q.push({node->right, depth + 1});
+        }
+        return ans;
+    }
+};
+```
+
+时间复杂度 $O(n)$，空间复杂度 $O(n)$。
+
 # 扩展练习
 
 - [144. 二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/)
 - [145. 二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/)
-- [199. 二叉树的右视图](https://leetcode.cn/problems/binary-tree-right-side-view/)
 - [226. 翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/)

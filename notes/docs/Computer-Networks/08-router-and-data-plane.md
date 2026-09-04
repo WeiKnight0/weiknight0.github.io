@@ -1,5 +1,5 @@
 ---
-title: Router and Data Plane 路由器与数据平面
+title: Router Forwarding 路由器：ARP、分组转发与 ICMP
 date: 2026-08-27
 lang: zh-cn
 ---

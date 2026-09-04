@@ -166,9 +166,24 @@ void mergeSort(vector<int>& nums) {
 
 # Quick Sort 快速排序
 
-快速排序核心是 partition：选一个 pivot，把小于 pivot 的放左边，大于 pivot 的放右边，再递归处理两侧。
+快速排序分为“选择基准并划分区间”和“递归排序子区间”两部分。
+
+## 选择基准并划分区间
+
+1. 从当前区间 `[left,right]` 中选择一个元素值作为基准 `pivot`。代码选择中间元素的值。
+2. 令指针 `i` 从左向右移动，直到找到第一个大于或等于 `pivot` 的元素。
+3. 令指针 `j` 从右向左移动，直到找到第一个小于或等于 `pivot` 的元素。
+4. 若 `i <= j`，交换 `nums[i]` 和 `nums[j]`，然后令 `i++`、`j--`，继续扫描。
+5. 当 `i > j` 时划分结束。此时 `[left,j]` 中的元素不大于 `pivot`，`[i,right]` 中的元素不小于 `pivot`。
+
+## 递归排序子区间
+
+1. 若区间中不超过一个元素，即 `left >= right`，该区间已经有序，结束递归。
+2. 完成一次划分后，递归排序左区间 `[left,j]` 和右区间 `[i,right]`。
+3. 当所有子区间都缩小到不超过一个元素时，整个数组排序完成。
 
 ```cpp
+// 对 [left, right] 数组排序
 void quickSort(vector<int>& nums, int left, int right) {
     if (left >= right) {
         return;

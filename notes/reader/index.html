@@ -35,20 +35,19 @@
             <svg class="icon" aria-hidden="true"><use href="%BASE_URL%icons.svg#compass"></use></svg>
             <span>Return to Real</span>
           </a>
-          <details class="account-menu" id="notes-account-menu">
-            <summary class="account-trigger" aria-label="Personal center">
+          <div class="account-menu" id="notes-account-menu">
+            <a class="account-trigger" href="/profile/" aria-label="Personal center">
               <span class="account-avatar">
                 <img id="notes-account-avatar" hidden alt="" />
                 <span id="notes-account-initial">?</span>
               </span>
-              <span id="notes-account-name">Account</span>
-            </summary>
+            </a>
             <div class="account-menu-panel">
               <a href="/profile/">Personal center</a>
               <a id="notes-account-admin" href="/admin/blogs/" target="_blank" rel="noopener noreferrer" hidden>Administration</a>
               <button id="notes-sign-out" type="button">Sign out</button>
             </div>
-          </details>
+          </div>
         </nav>
       </div>
     </header>

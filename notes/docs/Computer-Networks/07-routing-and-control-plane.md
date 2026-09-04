@@ -1,5 +1,5 @@
 ---
-title: Routing and Control Plane 路由与控制平面
+title: Routing 路由：路由算法、OSPF、BGP 与组播
 date: 2026-08-27
 lang: zh-cn
 ---

@@ -122,8 +122,8 @@ async function initializeAccountMenu() {
   avatar.alt = `${name} avatar`;
   element('#notes-account-initial').hidden = Boolean(account.avatarUrl);
   element('#notes-account-initial').textContent = name.trim().charAt(0).toUpperCase();
-  element('#notes-account-name').textContent = name;
-  element('#notes-account-menu').querySelector('summary').setAttribute('aria-label', `${name} — Personal center`);
+  element('#notes-account-menu').querySelector('.account-trigger')
+    .setAttribute('aria-label', `${name} — Personal center`);
   element('#notes-account-admin').hidden = account.role !== 'admin';
   element('#notes-sign-out').addEventListener('click', async () => {
     const signOut = await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' });

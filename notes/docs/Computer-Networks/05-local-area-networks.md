@@ -1,5 +1,5 @@
 ---
-title: Local Area Networks 局域网
+title: Local Area Networks 局域网：以太网、VLAN 与 WLAN
 date: 2026-08-27
 lang: zh-cn
 ---

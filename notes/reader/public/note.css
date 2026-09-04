@@ -197,6 +197,7 @@ body {
 
 .navbar-actions {
     display: flex;
+    align-items: center;
     gap: 1.5rem;
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -224,23 +225,31 @@ body {
     position: relative;
 }
 
+.account-menu::after {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 11rem;
+    height: 0.5rem;
+    content: "";
+}
+
 .account-trigger {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     color: var(--text-color);
     cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 500;
-    list-style: none;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: box-shadow 0.18s ease;
 }
 
-.account-trigger::-webkit-details-marker {
-    display: none;
-}
-
-.account-trigger:hover {
-    color: var(--primary-color);
+.account-trigger:hover,
+.account-trigger:focus-visible,
+.account-menu:hover .account-trigger,
+.account-menu:focus-within .account-trigger {
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 70%, transparent);
+    outline: none;
 }
 
 .account-avatar {
@@ -265,16 +274,43 @@ body {
 
 .account-menu-panel {
     position: absolute;
-    top: calc(100% + 0.65rem);
-    right: 0;
-    z-index: 1;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    z-index: 20;
     display: grid;
     width: 11rem;
     padding: 0.45rem;
     background: var(--white);
     border: 1px solid color-mix(in srgb, var(--primary-color) 22%, transparent);
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-0.3rem) scale(0.98);
+    transform-origin: top left;
+    transition: opacity 140ms ease-out, transform 140ms ease-out, visibility 140ms;
+}
+
+.account-menu:hover .account-menu-panel,
+.account-menu:focus-within .account-menu-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.account-menu-panel::before {
+    position: absolute;
+    top: -0.35rem;
+    left: 0.85rem;
+    width: 0.65rem;
+    height: 0.65rem;
+    content: "";
+    background: var(--white);
+    border-top: 1px solid color-mix(in srgb, var(--primary-color) 22%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--primary-color) 22%, transparent);
+    transform: rotate(45deg);
 }
 
 .account-menu-panel a,
@@ -998,7 +1034,8 @@ figure.highlight figcaption a:hover {
     }
 
     .navbar-actions {
-        justify-content: flex-start;
+        width: 100%;
+        justify-content: space-between;
         gap: 1rem;
     }
 

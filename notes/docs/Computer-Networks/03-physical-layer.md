@@ -1,5 +1,5 @@
 ---
-title: Physical Layer 物理层
+title: Physical Layer 物理层：信号、编码与传输介质
 date: 2026-08-27
 lang: zh-cn
 ---

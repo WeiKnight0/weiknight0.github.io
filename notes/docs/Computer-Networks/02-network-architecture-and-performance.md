@@ -1,5 +1,5 @@
 ---
-title: Network Architecture and Performance 网络体系结构与性能
+title: Network Architecture 网络体系结构：协议、分层与性能
 date: 2026-08-27
 lang: zh-cn
 ---

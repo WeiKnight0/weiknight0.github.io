@@ -1,5 +1,5 @@
 ---
-title: Data Link Layer 数据链路层与介质访问控制
+title: Data Link Layer 数据链路层：成帧、差错控制与介质访问
 date: 2026-08-27
 lang: zh-cn
 ---

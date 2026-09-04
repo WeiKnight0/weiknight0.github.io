@@ -1,5 +1,5 @@
 ---
-title: Computer Network Overview 网络导论与交换
+title: Computer Network Overview 计算机网络概述：互联网结构与数据交换
 date: 2026-08-27
 lang: zh-cn
 ---
