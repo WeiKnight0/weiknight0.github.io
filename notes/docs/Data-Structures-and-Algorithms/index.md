@@ -32,6 +32,23 @@ lang: zh-cn
 - [数学](./algorithms/math/index.md)
 - [高级数据结构](./algorithms/advanced-data-structures/index.md)
 
+## 三、[Hot 100 解析](./hot-100/index.md)
+
+- [哈希](./hot-100/hashing/index.md)
+- [双指针](./hot-100/two-pointers/index.md)
+- [滑动窗口](./hot-100/sliding-window/index.md)
+- [子串](./hot-100/substring/index.md)
+- [普通数组](./hot-100/array/index.md)
+- [矩阵](./hot-100/matrix/index.md)
+- [链表](./hot-100/linked-list/index.md)
+- [二叉树](./hot-100/binary-tree/index.md)
+- [图论](./hot-100/graph/index.md)
+- [回溯](./hot-100/backtracking/index.md)
+- [二分查找](./hot-100/binary-search/index.md)
+- [栈](./hot-100/stack/index.md)
+- [堆](./hot-100/heap/index.md)
+- [贪心](./hot-100/greedy/index.md)
+
 ## 附录
 
 - [参考资料](./reference/index.md)

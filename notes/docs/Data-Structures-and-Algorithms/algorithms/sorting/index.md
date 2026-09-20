@@ -170,16 +170,16 @@ void mergeSort(vector<int>& nums) {
 
 ## 选择基准并划分区间
 
-1. 从当前区间 `[left,right]` 中选择一个元素值作为基准 `pivot`。代码选择中间元素的值。
+1. 从当前区间 `[left,right]` 中选择中间元素作为基准 `pivot`，将其交换到最左边。
 2. 令指针 `i` 从左向右移动，直到找到第一个大于或等于 `pivot` 的元素。
 3. 令指针 `j` 从右向左移动，直到找到第一个小于或等于 `pivot` 的元素。
 4. 若 `i <= j`，交换 `nums[i]` 和 `nums[j]`，然后令 `i++`、`j--`，继续扫描。
-5. 当 `i > j` 时划分结束。此时 `[left,j]` 中的元素不大于 `pivot`，`[i,right]` 中的元素不小于 `pivot`。
+5. 当 `i > j` 时，将 `nums[left]` 与 `nums[j]` 交换。此时 `[left,j-1]` 的元素不大于 `pivot`，`[j+1,right]` 的元素不小于 `pivot`。
 
 ## 递归排序子区间
 
 1. 若区间中不超过一个元素，即 `left >= right`，该区间已经有序，结束递归。
-2. 完成一次划分后，递归排序左区间 `[left,j]` 和右区间 `[i,right]`。
+2. 完成一次划分后，递归排序左区间 `[left,j-1]` 和右区间 `[j+1,right]`。
 3. 当所有子区间都缩小到不超过一个元素时，整个数组排序完成。
 
 ```cpp
@@ -189,29 +189,24 @@ void quickSort(vector<int>& nums, int left, int right) {
         return;
     }
 
-    // 取中间元素的值作为 pivot，避免 pivot 被交换后丢失比较基准。
-    int pivot = nums[left + (right - left) / 2];
-    int i = left;
+    swap(nums[left], nums[left + (right - left) / 2]);
+    int pivot = nums[left];
+    int i = left + 1;
     int j = right;
 
-    // Hoare 双指针分区：循环后 [left, j] <= pivot，
-    // [i, right] >= pivot，中间部分已经完成分区。
     while (i <= j) {
-        while (nums[i] < pivot) {
-            i++;
-        }
-        while (nums[j] > pivot) {
-            j--;
-        }
+        while (i <= j && nums[i] < pivot) i++;
+        while (i <= j && nums[j] > pivot) j--;
         if (i <= j) {
             swap(nums[i], nums[j]);
             i++;
             j--;
         }
     }
+    swap(nums[left], nums[j]);
 
-    quickSort(nums, left, j);
-    quickSort(nums, i, right);
+    quickSort(nums, left, j - 1);
+    quickSort(nums, j + 1, right);
 }
 
 void quickSort(vector<int>& nums) {
