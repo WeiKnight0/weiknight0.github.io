@@ -14,6 +14,7 @@ Currently available subjects:
 - [Computer Networks 计算机网络](./Computer-Networks/index.md)
 - [Computer Organization 计算机组成原理](./Computer-Organization/index.md)
 - [C Language C语言](./C-Language/index.md)
+- [AI 人工智能](./AI/index.md)
 
 Also, you can check out my GitHub repositories for more study materials:
 
