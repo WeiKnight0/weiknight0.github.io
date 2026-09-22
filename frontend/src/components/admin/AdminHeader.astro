@@ -6,7 +6,7 @@ export interface Props {
   eyebrow: string;
   title: string;
   description?: string;
-  active: 'blogs' | 'users' | 'novels' | 'commissions' | 'oc' | 'security';
+  active: 'users' | 'novels' | 'commissions' | 'oc' | 'security';
   viewHref?: string;
   viewLabel?: string;
 }
@@ -20,7 +20,6 @@ const {
   viewLabel,
 } = Astro.props as Props;
 const links = [
-  { id: 'blogs', href: '/admin/blogs/', label: 'Edit blogs' },
   { id: 'novels', href: '/admin/novels/', label: 'Manage novels' },
   { id: 'oc', href: '/admin/oc/', label: 'Manage OCs' },
   { id: 'commissions', href: '/admin/commissions/', label: 'Manage commissions' },
@@ -40,7 +39,7 @@ const links = [
       {viewHref && <a href={viewHref} target='_blank' class='border border-white/20 px-3 py-2 text-white/65 transition hover:border-real-accent/50 hover:text-real-accent'>{viewLabel} ↗</a>}
     </div>}
   </div>
-  <nav class='mt-6 grid w-full grid-cols-2 text-sm sm:grid-cols-3 xl:grid-cols-6' aria-label='Administration sections'>
+  <nav class='mt-6 grid w-full grid-cols-2 text-sm sm:grid-cols-3 xl:grid-cols-5' aria-label='Administration sections'>
     {links.map((link) => (
       <a
         href={link.href}

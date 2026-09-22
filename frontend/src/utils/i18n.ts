@@ -17,7 +17,6 @@ export const htmlLangs: Record<Locale, string> = {
 export const clientI18nPaths = [
   '/',
   '/real/',
-  '/real/blog/',
   '/fiction/',
   '/fiction/novels/',
   '/fiction/oc/',
@@ -57,7 +56,6 @@ export const i18n = {
       resume: 'Resume',
       projects: 'Projects',
       notes: 'Notes',
-      blogs: 'Blogs',
       oc: 'OCs',
       world: 'World',
       novels: 'Novels',
@@ -84,7 +82,6 @@ export const i18n = {
       resume: '简历',
       projects: '项目',
       notes: '笔记',
-      blogs: '博客',
       oc: '原创角色',
       world: '世界观',
       novels: '小说',

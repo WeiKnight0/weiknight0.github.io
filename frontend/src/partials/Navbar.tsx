@@ -18,7 +18,6 @@ const realLinks: NavLink[] = [
   { href: '/real/resume/', labelKey: 'resume' },
   { href: '/real/projects/', labelKey: 'projects' },
   { href: '/real/notes/', labelKey: 'notes' },
-  { href: '/real/blog/', labelKey: 'blogs' },
 ];
 
 const fictionLinks: NavLink[] = [
@@ -189,7 +188,7 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
             </a>
             <div className="site-popover nav-dropdown-panel invisible pointer-events-none absolute left-0 top-full z-30 grid w-52 origin-top-left gap-1 border p-2 opacity-0 shadow-2xl backdrop-blur-md transition group-hover/account:visible group-hover/account:pointer-events-auto group-hover/account:opacity-100 group-focus-within/account:visible group-focus-within/account:pointer-events-auto group-focus-within/account:opacity-100">
               <a href="/profile/" data-home-i18n="nav.profile" className="px-3 py-2 text-sm text-white/70 transition hover:bg-white/10 hover:text-white">{text.profile}</a>
-              <a data-account-admin data-home-i18n="nav.administration" hidden href="/admin/blogs/" target="_blank" rel="noopener noreferrer" className="px-3 py-2 text-sm text-real-accent transition hover:bg-real-accent/10">{text.administration}</a>
+              <a data-account-admin data-home-i18n="nav.administration" hidden href="/admin/novels/" target="_blank" rel="noopener noreferrer" className="px-3 py-2 text-sm text-real-accent transition hover:bg-real-accent/10">{text.administration}</a>
               <button data-account-logout data-home-i18n="nav.signOut" type="button" className="border-t border-white/10 px-3 py-2 text-left text-sm text-red-200 transition hover:bg-red-300/10">{text.signOut}</button>
             </div>
           </div>
@@ -225,7 +224,7 @@ const Navbar = ({ locale, pathname }: { locale: Locale; pathname: string }) => {
               </div>
               <a href="/login/" data-account-login data-home-i18n="nav.login" className="border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-center text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent">{text.login}</a>
               <a href="/profile/" data-account-profile hidden className="flex items-center justify-center gap-3 border border-real-accent/40 bg-real-accent/10 px-4 py-3 text-xs font-real-mono font-bold uppercase tracking-widest text-real-accent"><span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full border border-real-accent/60 bg-real-accent/10"><img data-account-avatar-image hidden alt="" className="h-full w-full object-cover" /><span data-account-avatar-fallback>?</span></span><span data-home-i18n="nav.profile">{text.profile}</span></a>
-              <a data-account-admin data-home-i18n="nav.administration" hidden href="/admin/blogs/" target="_blank" rel="noopener noreferrer" className="border border-real-accent/30 px-4 py-3 text-center text-xs font-bold uppercase tracking-widest text-real-accent">{text.administration}</a>
+              <a data-account-admin data-home-i18n="nav.administration" hidden href="/admin/novels/" target="_blank" rel="noopener noreferrer" className="border border-real-accent/30 px-4 py-3 text-center text-xs font-bold uppercase tracking-widest text-real-accent">{text.administration}</a>
               <button data-account-logout data-home-i18n="nav.signOut" hidden type="button" className="border border-red-300/25 px-4 py-3 text-xs font-bold uppercase tracking-widest text-red-200">{text.signOut}</button>
               <button type="button" data-theme-toggle className="flex items-center justify-center gap-2 border border-white/10 px-4 py-3 text-xs font-bold uppercase tracking-widest text-white/70">
                 <span data-theme-icon aria-hidden="true">☀</span><span data-theme-label>Light theme</span>

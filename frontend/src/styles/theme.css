@@ -342,13 +342,3 @@ html[data-color-theme='light'] .status-success {
   background: rgb(16 185 129 / 0.08);
   color: rgb(4 120 87) !important;
 }
-
-html[data-color-theme='light'] .blog-prose :not(pre) > code {
-  border-color: rgb(var(--real-accent) / 0.18);
-  background: rgb(var(--real-accent) / 0.08);
-  color: rgb(var(--real-accent));
-}
-
-html[data-color-theme='light'] .blog-prose blockquote {
-  background: rgb(var(--real-surface-hover) / 0.72);
-}

@@ -1595,8 +1595,51 @@ html[data-notes-outline="collapsed"] .outline-toggle .icon {
     }
 }
 
+.chapter-content .note-solution {
+    margin: 1.5rem 0;
+    padding: 0 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);
+    border-radius: var(--border-radius);
+}
+
+.chapter-content .note-solution > summary {
+    padding: 0.85rem 1.25rem;
+    margin: 0 -1.25rem;
+    border-radius: inherit;
+    background: var(--light-bg);
+    color: var(--text-color);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.chapter-content .note-solution > summary::marker {
+    color: var(--primary-color);
+}
+
+.chapter-content .note-solution > summary:hover {
+    background: color-mix(in srgb, var(--primary-color) 12%, var(--light-bg));
+}
+
+.chapter-content .note-solution > summary:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 3px;
+}
+
+.chapter-content .note-solution[open] {
+    padding-bottom: 0.5rem;
+}
+
 /* Keep this at the end: dark-mode editor rules above use !important. */
 @media print {
+    .chapter-content .note-solution {
+        padding: 0;
+        border: 0;
+    }
+
+    .chapter-content .note-solution > summary {
+        display: none;
+    }
+
     html,
     body,
     [data-theme="dark"] {

@@ -66,7 +66,7 @@ Nginx、Spring Boot 和 PostgreSQL 的运行进程均固定使用 UID/GID `1000:
 
 运行时仅包含 Nginx（上限 128MB）、Spring Boot 后端（上限 512MB）和 PostgreSQL（上限 256MB）。Node 和 Maven 仅用于镜像构建，不会驻留在服务器内存中，适合 2GB 服务器。
 
-首次启动会自动创建动态内容所需的 PostgreSQL 数据表并导入现有项目和博客列表。笔记不进入数据库，也没有网页编辑器；Spring Boot 只读地返回 `notes/docs/` 中的 Markdown，独立阅读器在浏览器中渲染。该目录同时以只读方式挂载到 Nginx 和后端，因此修改 Markdown 或图片后无需重新构建或重启。Nginx 会对所有 `/real/notes/**` 请求执行登录鉴权，并在读取页面前确认对应文件真实存在。About 与 Privacy 是 `/about/`、`/privacy/` 独立静态页面，不属于笔记数据。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
+首次启动会自动创建动态内容所需的 PostgreSQL 数据表并导入现有项目列表。笔记不进入数据库，也没有网页编辑器；Spring Boot 只读地返回 `notes/docs/` 中的 Markdown，独立阅读器在浏览器中渲染。该目录同时以只读方式挂载到 Nginx 和后端，因此修改 Markdown 或图片后无需重新构建或重启。Nginx 会对所有 `/real/notes/**` 请求执行登录鉴权，并在读取页面前确认对应文件真实存在。About 与 Privacy 是 `/about/`、`/privacy/` 独立静态页面，不属于笔记数据。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
 
 编辑笔记前进入 Submodule 并切换到 `main`。先提交并推送笔记仓库，再回到网站仓库提交新的 Submodule 指针：
 
@@ -84,7 +84,7 @@ git commit -m "chore: update notes submodule"
 git push
 ```
 
-将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。后两个变量只在数据库中尚无该用户名时初始化管理员；管理员随后在个人中心修改的资料、头像和密码都会持久化，不会在重启时被环境变量覆盖。登录后可从管理后台维护博客、Fiction 内容和用户。所有用户都可在 `/profile/` 修改显示名称、个人简介、头像和密码；公开注册入口不存在。
+将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。后两个变量只在数据库中尚无该用户名时初始化管理员；管理员随后在个人中心修改的资料、头像和密码都会持久化，不会在重启时被环境变量覆盖。登录后可从管理后台维护 Fiction 内容和用户。所有用户都可在 `/profile/` 修改显示名称、个人简介、头像和密码；公开注册入口不存在。
 
 停止服务：
 
@@ -93,6 +93,12 @@ docker compose down
 ```
 
 ## 生产部署
+
+从仍含博客功能的版本升级前，先在仓库外备份旧博客表；V16 数据库迁移会永久删除该表：
+
+```bash
+docker compose exec -T postgres pg_dump -U wkn -d wkn_site --no-owner --no-privileges --table=posts --table=posts_id_seq > ../wkn-posts-before-v16.sql
+```
 
 ```bash
 SITE_URL=https://your-domain.example docker compose up -d --build

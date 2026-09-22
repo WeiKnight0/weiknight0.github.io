@@ -288,6 +288,12 @@ function headingId(heading, occurrences) {
   return occurrence === 0 ? base : `${base}-${occurrence + 1}`;
 }
 
+function revealHeading(heading) {
+  for (let parent = heading.parentElement; parent; parent = parent.parentElement) {
+    if (parent.tagName === 'DETAILS') parent.open = true;
+  }
+}
+
 function initializeOutline(page) {
   const layout = element('#note-layout');
   const outline = element('#note-outline');
@@ -330,6 +336,7 @@ function initializeOutline(page) {
     link.textContent = heading.textContent.trim();
     link.addEventListener('click', (event) => {
       event.preventDefault();
+      revealHeading(heading);
       heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
       window.history.replaceState(null, '', `#${heading.id}`);
     });
@@ -341,10 +348,10 @@ function initializeOutline(page) {
   const activateHeading = () => {
     const threshold = window.innerHeight / 2;
     const current = headings.reduce(
-      (active, heading) => heading.getBoundingClientRect().top <= threshold ? heading : active,
-      headings[0],
+      (active, heading) => !heading.closest('details:not([open])') && heading.getBoundingClientRect().top <= threshold ? heading : active,
+      headings.find((heading) => !heading.closest('details:not([open])')),
     );
-    links.forEach((link) => link.toggleAttribute('aria-current', link.dataset.headingId === current.id));
+    links.forEach((link) => link.toggleAttribute('aria-current', link.dataset.headingId === current?.id));
   };
   let activationPending = false;
   const scheduleActivation = () => {
@@ -359,8 +366,12 @@ function initializeOutline(page) {
   window.addEventListener('scroll', scheduleActivation, { passive: true });
   document.addEventListener('scroll', scheduleActivation, { capture: true, passive: true });
   window.addEventListener('resize', scheduleActivation, { passive: true });
+  element('#note-body').addEventListener('toggle', scheduleActivation, true);
   const initialHeading = headings.find((heading) => heading.id === decodeURIComponent(window.location.hash.slice(1)));
-  initialHeading?.scrollIntoView({ block: 'start' });
+  if (initialHeading) {
+    revealHeading(initialHeading);
+    initialHeading.scrollIntoView({ block: 'start' });
+  }
 }
 
 function prepareCodeBlock(pre) {
@@ -435,6 +446,15 @@ function initializeTools() {
     updateToggle();
   });
   element('#print-note').addEventListener('click', () => window.print());
+  let printClosedSolutions = [];
+  window.addEventListener('beforeprint', () => {
+    printClosedSolutions = Array.from(document.querySelectorAll('#note-body details.note-solution:not([open])'));
+    printClosedSolutions.forEach((solution) => { solution.open = true; });
+  });
+  window.addEventListener('afterprint', () => {
+    printClosedSolutions.forEach((solution) => { solution.open = false; });
+    printClosedSolutions = [];
+  });
   document.querySelectorAll('.chapter-content img').forEach((image) => {
     image.style.cursor = 'zoom-in';
     image.addEventListener('click', () => {
