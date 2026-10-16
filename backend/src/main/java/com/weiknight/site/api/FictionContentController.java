@@ -4,8 +4,6 @@ import com.weiknight.site.fiction.Novel;
 import com.weiknight.site.fiction.NovelChapter;
 import com.weiknight.site.fiction.NovelChapterRepository;
 import com.weiknight.site.fiction.NovelRepository;
-import com.weiknight.site.fiction.OriginalCharacter;
-import com.weiknight.site.fiction.OriginalCharacterRepository;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -14,35 +12,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** @description Exposes public novel, chapter, and original-character content. */
+/** @description Exposes public novel and chapter content. */
 @RestController
 @RequestMapping("/api/v1/fiction")
 public class FictionContentController {
   private final NovelRepository novels;
   private final NovelChapterRepository chapters;
-  private final OriginalCharacterRepository characters;
 
   FictionContentController(
       NovelRepository novels,
-      NovelChapterRepository chapters,
-      OriginalCharacterRepository characters) {
+      NovelChapterRepository chapters) {
     this.novels = novels;
     this.chapters = chapters;
-    this.characters = characters;
   }
 
   /** @description Lists novels without loading chapter bodies. */
   @GetMapping("/novels")
   public List<EntrySummary> novels() {
     return novels.findAllByOrderByDisplayOrderAscTitleAsc().stream()
-        .map(EntrySummary::from)
-        .toList();
-  }
-
-  /** @description Lists original characters without loading profile bodies. */
-  @GetMapping("/oc")
-  public List<EntrySummary> characters() {
-    return characters.findAllByOrderByDisplayOrderAscTitleAsc().stream()
         .map(EntrySummary::from)
         .toList();
   }
@@ -54,12 +41,6 @@ public class FictionContentController {
     return NovelDetail.from(
         novel,
         chapters.findAllByNovelIdOrderByDisplayOrderAscTitleAsc(novel.getId()));
-  }
-
-  /** @description Loads one complete original-character profile. */
-  @GetMapping("/oc/{slug}")
-  public CharacterDetail character(@PathVariable String slug) {
-    return CharacterDetail.from(findCharacter(slug));
   }
 
   /** @description Loads one chapter scoped by both novel and chapter slugs. */
@@ -81,13 +62,6 @@ public class FictionContentController {
     return internal("/internal/fiction/novels/");
   }
 
-  /** @description Confirms a character slug before Nginx serves the static character shell. */
-  @GetMapping("/page/oc/{slug}")
-  public ResponseEntity<Void> characterPage(@PathVariable String slug) {
-    findCharacter(slug);
-    return internal("/internal/fiction/oc/");
-  }
-
   /** @description Confirms a chapter path before Nginx serves the static chapter shell. */
   @GetMapping("/page/novels/{novelSlug}/{chapterSlug}")
   public ResponseEntity<Void> chapterPage(
@@ -104,26 +78,15 @@ public class FictionContentController {
         .orElseThrow(() -> new ResourceNotFoundException("Novel not found"));
   }
 
-  private OriginalCharacter findCharacter(String slug) {
-    return characters.findBySlug(slug)
-        .orElseThrow(() -> new ResourceNotFoundException("Original character not found"));
-  }
-
   private ResponseEntity<Void> internal(String path) {
     return ResponseEntity.ok().header("X-Accel-Redirect", path).build();
   }
 
-  /** @description Returns the fields shared by public fiction listings. */
+  /** @description Returns a novel's public listing fields. */
   public record EntrySummary(String slug, String title, String description, Instant updatedAt) {
     static EntrySummary from(Novel novel) {
       return new EntrySummary(
           novel.getSlug(), novel.getTitle(), novel.getDescription(), novel.getUpdatedAt());
-    }
-
-    static EntrySummary from(OriginalCharacter character) {
-      return new EntrySummary(
-          character.getSlug(), character.getTitle(), character.getDescription(),
-          character.getUpdatedAt());
     }
   }
 
@@ -138,20 +101,6 @@ public class FictionContentController {
       return new NovelDetail(
           novel.getSlug(), novel.getTitle(), novel.getDescription(), novel.getUpdatedAt(),
           chapters.stream().map(ChapterSummary::from).toList());
-    }
-  }
-
-  /** @description Returns a complete public original-character profile. */
-  public record CharacterDetail(
-      String slug,
-      String title,
-      String description,
-      String content,
-      Instant updatedAt) {
-    static CharacterDetail from(OriginalCharacter character) {
-      return new CharacterDetail(
-          character.getSlug(), character.getTitle(), character.getDescription(),
-          character.getContent(), character.getUpdatedAt());
     }
   }
 

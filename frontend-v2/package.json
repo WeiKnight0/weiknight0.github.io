@@ -1,0 +1,48 @@
+{
+  "name": "weiknight-personal-site-frontend-v2",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "clean": "rimraf --glob dist .astro ses_*.json session-ses_*.md session_restore.patch",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx,.astro .",
+    "build-types": "tsc --noEmit --pretty"
+  },
+  "devDependencies": {
+    "@astrojs/react": "^3.0.7",
+    "@astrojs/rss": "^0.2.2",
+    "@astrojs/sitemap": "^0.1.2",
+    "@astrojs/tailwind": "^5.0.3",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/typography": "^0.5.10",
+    "@types/node": "^20.19.41",
+    "@types/react": "^18.2.42",
+    "@types/react-dom": "^18.3.7",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "astro": "4.0.2",
+    "astro-eslint-parser": "^0.16.0",
+    "astro-robots-txt": "^0.3.12",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "path-browserify": "^1.0.1",
+    "rimraf": "^5.0.5",
+    "tailwindcss": "^3.3.6"
+  },
+  "dependencies": {
+    "katex": "^0.16.45",
+    "micromark": "^4.0.0",
+    "micromark-extension-gfm": "^3.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
+  },
+  "volta": {
+    "node": "20.19.0"
+  },
+  "author": "Ixartz (https://github.com/ixartz)"
+}

@@ -1,0 +1,69 @@
+---
+import Base from '@/templates/Base.astro';
+import { AppConfig } from '@/utils/AppConfig';
+import { Profile } from '@/utils/Profile';
+
+const { title, description } = AppConfig;
+---
+
+<Base head={{ title, description }} theme='home'>
+  <main class="home-page">
+    <section class="home-hero mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1fr_300px] md:py-24">
+      <div>
+        <p class="home-eyebrow" data-home-i18n="hero.greeting">Hello, I'm</p>
+        <h1 class="home-title">{Profile.handle}</h1>
+        <p class="home-lead" data-home-i18n="hero.headline">Computer science student at Southeast University, interested in systems, software, and original worlds.</p>
+        <p class="home-copy" data-home-i18n="hero.description">I’m based in Nanjing, China. This site brings together the projects and notes I make, alongside characters and stories from my own fictional settings.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a class="home-button home-button-primary" href="/projects/" data-home-i18n="hero.projects">View projects</a>
+          <a class="home-button" href="/about/" data-home-i18n="hero.about">About</a>
+        </div>
+        <div class="home-socials mt-7 flex gap-5 text-sm">
+          <a href={Profile.github}>GitHub ↗</a>
+          <a href="mailto:weiknight0@outlook.com" data-home-i18n="hero.contact">Get in touch ↗</a>
+        </div>
+      </div>
+      <img src={Profile.avatar} alt={`${Profile.name} avatar`} class="home-avatar mx-auto h-56 w-56 rounded-2xl object-cover md:h-72 md:w-72" />
+    </section>
+
+    <section class="home-facts mx-auto grid max-w-6xl gap-8 border-y px-6 py-8 sm:grid-cols-3" aria-label="Profile">
+      <div><h2 class="home-label" data-home-i18n="profile.location">Location</h2><p>{Profile.location}</p></div>
+      <div><h2 class="home-label" data-home-i18n="profile.education">Education</h2><p>{Profile.school}</p></div>
+      <div><h2 class="home-label" data-home-i18n="profile.languages">Languages</h2><p>{Profile.techStack.join(' · ')}</p></div>
+    </section>
+
+    <section class="home-section mx-auto max-w-6xl px-6 py-16">
+      <div class="home-section-heading">
+        <div><p class="home-label" data-home-i18n="projects.eyebrow">Selected work</p><h2 data-home-i18n="projects.heading">Things I’ve built</h2></div>
+        <a class="home-inline-link" href="/projects/" data-home-i18n="projects.all">All projects →</a>
+      </div>
+      <div data-project-list data-project-limit="3" class="home-projects"><p class="text-real-muted" data-home-i18n="projects.loading">Loading projects…</p></div>
+    </section>
+
+    <section class="home-section mx-auto max-w-6xl border-t px-6 py-16">
+      <div class="home-section-heading"><div><p class="home-label" data-home-i18n="archive.eyebrow">Outside of code</p><h2 data-home-i18n="archive.heading">A second kind of making</h2></div></div>
+      <div class="grid gap-5 md:grid-cols-2">
+        <a href="/worldbuilding/" class="home-feature-card">
+          <span class="home-label" data-home-i18n="archive.worldLabel">Worldbuilding</span>
+          <h3 data-home-i18n="archive.worldTitle">Worlds, characters, and their rules</h3>
+          <p data-home-i18n="archive.worldDescription">A growing collection of settings and ideas behind my original fiction.</p>
+          <span class="home-inline-link" data-home-i18n="archive.explore">Explore the archive →</span>
+        </a>
+        <a href="/ocs/" class="home-feature-card home-feature-fiction">
+          <span class="home-label" data-home-i18n="archive.ocsLabel">Original characters</span>
+          <h3 data-home-i18n="archive.ocsTitle">Characters I’ve created</h3>
+          <p data-home-i18n="archive.ocsDescription">Profiles and notes for the characters who live in my fictional worlds.</p>
+          <span class="home-inline-link" data-home-i18n="archive.explore">Explore the archive →</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="home-contact mx-auto max-w-6xl border-t px-6 py-12">
+      <div><p class="home-label" data-home-i18n="contact.eyebrow">Say hello</p><h2 data-home-i18n="contact.heading">Have a question or an idea?</h2></div>
+      <a class="home-button home-button-primary" href="mailto:weiknight0@outlook.com">weiknight0@outlook.com ↗</a>
+    </section>
+  </main>
+  <script>
+    import '@/scripts/project-list';
+  </script>
+</Base>

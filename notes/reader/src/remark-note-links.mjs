@@ -23,7 +23,7 @@ const stripMarkdownExtension = (path) => path.replace(/\.(md|mdx)$/i, '');
 
 const stripIndex = (path) => path.replace(/\/index$/i, '');
 
-const noteHref = (path) => `/real/notes/${stripIndex(stripMarkdownExtension(path))}/`;
+const noteHref = (path) => `/notes/${stripIndex(stripMarkdownExtension(path))}/`;
 
 const visit = (node, visitor) => {
   if (!node || typeof node !== 'object') {
@@ -66,7 +66,7 @@ export default function remarkNoteLinks() {
       const resolved = normalizePath(`${noteDir}/${rawPath}`);
 
       if (/\.(png|jpe?g|gif|webp|svg|avif)$/i.test(rawPath)) {
-        node.url = `/real/notes/${resolved}${suffix}`;
+        node.url = `/notes/${resolved}${suffix}`;
         return;
       }
 

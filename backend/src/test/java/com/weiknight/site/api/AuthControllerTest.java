@@ -109,7 +109,7 @@ class AuthControllerTest {
     when(passwordEncoder.matches("secret-password", "hash")).thenReturn(true);
 
     assertEquals(
-        "/admin/novels/",
+        "/admin/users/",
         controller.loginForm("admin", "secret-password", "https://example.com", request)
             .getHeaders().getLocation().toString());
   }

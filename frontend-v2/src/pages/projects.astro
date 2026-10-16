@@ -1,0 +1,24 @@
+---
+import RealPage from '@/templates/RealPage.astro';
+---
+
+<RealPage
+  title='Projects | My Homepage'
+  description='Project and portfolio entries.'
+>
+  <section class='mx-auto max-w-[92rem] px-4 py-24 sm:px-6 lg:px-8'>
+    <div class='border-b border-real-accent/30 pb-6'>
+      <p class='mb-4 flex items-center gap-2 text-xs font-real-mono font-black uppercase tracking-[0.28em] text-real-accent md:text-sm'>
+        <span class='h-2 w-2 animate-pulse bg-real-accent'></span>
+        /projects
+      </p>
+      <h1 class='font-real-mono text-4xl font-black leading-none tracking-tight text-real-text md:text-6xl drop-shadow-[0_0_14px_rgba(0,245,255,0.18)]'>
+        Projects
+      </h1>
+    </div>
+    <div class='mt-14 grid gap-5 md:grid-cols-3' data-project-list><p class="text-real-text/70 font-real-mono">Loading projects...</p></div>
+  </section>
+  <script>
+    import '@/scripts/project-list';
+  </script>
+</RealPage>

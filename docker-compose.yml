@@ -39,7 +39,7 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: frontend-v2/Dockerfile
       args:
         SITE_URL: ${SITE_URL:-https://localhost}
         ICP_RECORD_NUMBER: ${ICP_RECORD_NUMBER:-}

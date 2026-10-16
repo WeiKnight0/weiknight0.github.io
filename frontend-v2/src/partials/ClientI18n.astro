@@ -1,0 +1,177 @@
+<script>
+  import {
+    getLanguagePath,
+    getLocaleFromPath,
+    getLocalizedPath,
+    hasDistinctLocalePaths,
+    i18n,
+    localeLabels,
+    normalizePath,
+  } from '@/utils/i18n';
+
+  const pages: Record<'en' | 'zh-cn', Record<string, { title: string; description: string; text: Record<string, string>; links: Record<string, string> }>> = {
+    en: {
+      '/': {
+        title: 'WeiKnight | Personal Site',
+        description: 'Projects, notes, original characters, and worldbuilding by WeiKnight.',
+        text: {
+          'hero.greeting': "Hello, I'm",
+          'hero.headline': 'Computer science student at Southeast University, interested in systems, software, and original worlds.',
+          'hero.description': 'I’m based in Nanjing, China. This site brings together the projects and notes I make, alongside characters and stories from my own fictional settings.',
+          'hero.projects': 'View projects',
+          'hero.contact': 'Get in touch',
+          'hero.about': 'About ↗',
+          'profile.location': 'Location',
+          'profile.education': 'Education',
+          'profile.languages': 'Languages',
+          'projects.eyebrow': 'Selected work',
+          'projects.heading': 'Things I’ve built',
+          'projects.all': 'All projects →',
+          'projects.loading': 'Loading projects…',
+          'archive.eyebrow': 'Outside of code',
+          'archive.heading': 'A second kind of making',
+          'archive.worldLabel': 'Worldbuilding',
+          'archive.worldTitle': 'Worlds, characters, and their rules',
+          'archive.worldDescription': 'A growing collection of settings and ideas behind my original fiction.',
+          'archive.ocsLabel': 'Original characters',
+          'archive.ocsTitle': 'Characters I’ve created',
+          'archive.ocsDescription': 'Profiles and notes for the characters who live in my fictional worlds.',
+          'archive.explore': 'Explore the archive →',
+          'contact.eyebrow': 'Say hello',
+          'contact.heading': 'Have a question or an idea?',
+        },
+        links: { home: '/' },
+      },
+      '/ocs/': {
+        title: 'Original Characters | WeiKnight',
+        description: 'Original character profiles by WeiKnight.',
+        text: {
+          'oc.kicker': 'Original characters',
+          'oc.heading': 'Original Characters',
+          'oc.empty': 'No OCs yet.',
+        },
+        links: {},
+      },
+    },
+    'zh-cn': {
+      '/': {
+        title: 'WeiKnight | 个人主页',
+        description: 'WeiKnight 的项目、笔记、原创角色与世界观设定。',
+        text: {
+          'hero.greeting': '你好，我是',
+          'hero.headline': '东南大学计算机专业学生，关注系统、软件与原创世界。',
+          'hero.description': '我在中国南京生活。这里整理了我的项目和笔记，也收录原创设定中的角色与故事。',
+          'hero.projects': '查看项目',
+          'hero.contact': '联系我',
+          'hero.about': '关于 ↗',
+          'profile.location': '所在地',
+          'profile.education': '学校',
+          'profile.languages': '编程语言',
+          'projects.eyebrow': '部分项目',
+          'projects.heading': '做过的东西',
+          'projects.all': '全部项目 →',
+          'projects.loading': '正在加载项目…',
+          'archive.eyebrow': '代码之外',
+          'archive.heading': '另一种创作',
+          'archive.worldLabel': '世界观',
+          'archive.worldTitle': '世界、角色与其中的规则',
+          'archive.worldDescription': '持续整理原创故事背后的设定与想法。',
+          'archive.ocsLabel': '原创角色',
+          'archive.ocsTitle': '我创作的角色',
+          'archive.ocsDescription': '收录生活在原创世界中的角色档案与设定。',
+          'archive.explore': '浏览档案 →',
+          'contact.eyebrow': '保持联系',
+          'contact.heading': '有问题或想法？',
+        },
+        links: { home: '/' },
+      },
+      '/ocs/': {
+        title: '原创角色 | WeiKnight',
+        description: 'WeiKnight 的原创角色档案。',
+        text: {
+          'oc.kicker': '原创角色',
+          'oc.heading': '原创角色',
+          'oc.empty': '暂时没有已发布的原创角色。',
+        },
+        links: {},
+      },
+    },
+  };
+
+  const storageKey = 'site-locale';
+  const getStoredLocale = () => localStorage.getItem(storageKey) === 'zh-cn' ? 'zh-cn' : 'en';
+
+  const applyLocale = (locale: 'en' | 'zh-cn') => {
+    const pathname = normalizePath(window.location.pathname);
+    const page = pages[locale][pathname];
+    const dictionary = i18n[locale];
+    document.documentElement.lang = locale === 'zh-cn' ? 'zh-CN' : 'en';
+    document.querySelectorAll<HTMLElement>('[data-language-current]')
+      .forEach((element) => { element.textContent = localeLabels[locale]; });
+    document.querySelectorAll<HTMLAnchorElement>('[data-language-link]').forEach((link) => {
+      if (link.dataset.targetLocale === locale) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+    if (page) {
+      document.title = page.title;
+      document.querySelector('meta[name="description"]')?.setAttribute('content', page.description);
+    }
+
+    document.querySelectorAll<HTMLElement>('[data-home-i18n], [data-page-i18n]').forEach((element) => {
+      const key = element.dataset.pageI18n || element.dataset.homeI18n;
+      if (!key) return;
+      const value = page?.text[key as keyof typeof page.text] || dictionary.nav[key.replace('nav.', '') as keyof typeof dictionary.nav];
+      if (value) element.textContent = value;
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-footer-i18n]').forEach((element) => {
+      const key = element.dataset.footerI18n as keyof typeof dictionary.footer | undefined;
+      if (key && dictionary.footer[key]) element.textContent = dictionary.footer[key];
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-home-link], [data-page-href]').forEach((element) => {
+      const key = element.dataset.pageHref || element.dataset.homeLink;
+      const href = key && page?.links[key as keyof typeof page.links];
+      if (href) element.setAttribute('href', href);
+    });
+
+    document.querySelectorAll<HTMLElement>('[data-localized-path]').forEach((element) => {
+      const path = element.dataset.localizedPath;
+      if (path) element.setAttribute('href', getLocalizedPath(path, locale));
+    });
+
+    document.querySelectorAll<HTMLAnchorElement>('[data-language-link]').forEach((element) => {
+      const target = element.dataset.targetLocale;
+      if (target) element.href = getLanguagePath(pathname, target as 'en' | 'zh-cn');
+    });
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', new URL(pathname, window.location.origin).toString());
+    if (!hasDistinctLocalePaths(pathname)) {
+      document.querySelector('link[hreflang="x-default"]')?.setAttribute('href', new URL(pathname, window.location.origin).toString());
+    }
+  };
+
+  const setupClientI18n = () => {
+    const pathname = normalizePath(window.location.pathname);
+    const routeLocale = getLocaleFromPath(pathname);
+    const localizedRoute = routeLocale === 'zh-cn';
+    const locale = localizedRoute ? routeLocale : getStoredLocale();
+    if (localizedRoute) localStorage.setItem(storageKey, locale);
+    applyLocale(locale);
+
+    document.querySelectorAll<HTMLAnchorElement>('[data-language-link]').forEach((link) => {
+      if (link.dataset.clientI18nReady === 'true') return;
+      link.dataset.clientI18nReady = 'true';
+      link.addEventListener('click', (event) => {
+        const target = link.dataset.targetLocale;
+        if (!target) return;
+        localStorage.setItem(storageKey, target);
+        if (getLanguagePath(window.location.pathname, target as 'en' | 'zh-cn') !== pathname) return;
+        event.preventDefault();
+        applyLocale(target as 'en' | 'zh-cn');
+      });
+    });
+  };
+
+  setupClientI18n();
+  document.addEventListener('astro:page-load', setupClientI18n);
+</script>

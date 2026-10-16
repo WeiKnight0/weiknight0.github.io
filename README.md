@@ -2,18 +2,19 @@
 
 前后端分离的个人网站：Astro 提供静态页面，Spring Boot 与 PostgreSQL 提供动态内容 API。生产环境由 Nginx 提供静态文件并将 `/api/` 反向代理到后端。
 
-导航栏提供浅色/深色主题切换并在浏览器中保存偏好。Real 保留代码字体风格，Fiction 使用文学衬线字体；Notes 是不经过 Astro 的独立阅读器。
+主导航直接列出 Resume、Projects、Notes、OCs 和 Worldbuilding，并提供浅色/深色主题切换。Notes 是不经过 Astro 的独立阅读器。
 
 ## 目录
 
-- `frontend/`：Astro 前端源码、静态资源、Node.js 配置与前端 Dockerfile。
+- `frontend-v2/`：新版 Astro 主站源码，负责生产镜像中的主站静态页面。
+- `frontend/`：旧版 Astro 前端保留目录，不参与当前生产镜像构建。
 - `notes/docs/`：指向独立 `wkn-notes` 仓库的 Git Submodule，是 Notes 唯一的 Markdown 与图片数据源。
 - `notes/reader/`：独立 Vite 阅读器，复用旧站 Notes 样式与 Markdown 扩展。
 - `notes/algorithm-templates/`：独立的算法模板静态工具。
 - `backend/`：Spring Boot API 服务。
 - `data/postgres/`：PostgreSQL 持久化数据（已忽略，不提交 Git）。
 - `data/user-avatars/`：用户头像持久化目录（已忽略，不提交 Git）。
-- `data/fiction-assets/`：Fiction 稿件图片持久化目录（已忽略，不提交 Git）。
+- `data/fiction-assets/`：委托图片持久化目录（已忽略，不提交 Git）。
 - `nginx/wkn-personal-site.conf`：生产 Nginx 示例配置。
 
 ## 克隆仓库
@@ -66,7 +67,7 @@ Nginx、Spring Boot 和 PostgreSQL 的运行进程均固定使用 UID/GID `1000:
 
 运行时仅包含 Nginx（上限 128MB）、Spring Boot 后端（上限 512MB）和 PostgreSQL（上限 256MB）。Node 和 Maven 仅用于镜像构建，不会驻留在服务器内存中，适合 2GB 服务器。
 
-首次启动会自动创建动态内容所需的 PostgreSQL 数据表并导入现有项目列表。笔记不进入数据库，也没有网页编辑器；Spring Boot 只读地返回 `notes/docs/` 中的 Markdown，独立阅读器在浏览器中渲染。该目录同时以只读方式挂载到 Nginx 和后端，因此修改 Markdown 或图片后无需重新构建或重启。Nginx 会对所有 `/real/notes/**` 请求执行登录鉴权，并在读取页面前确认对应文件真实存在。About 与 Privacy 是 `/about/`、`/privacy/` 独立静态页面，不属于笔记数据。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
+首次启动会自动创建动态内容所需的 PostgreSQL 数据表并导入现有项目列表。笔记不进入数据库，也没有网页编辑器；Spring Boot 只读地返回 `notes/docs/` 中的 Markdown，独立阅读器在浏览器中渲染。该目录同时以只读方式挂载到 Nginx 和后端，因此修改 Markdown 或图片后无需重新构建或重启。Nginx 会对所有 `/notes/**` 请求执行登录鉴权，并在读取页面前确认对应文件真实存在。About 与 Privacy 是 `/about/`、`/privacy/` 独立静态页面，不属于笔记数据。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
 
 编辑笔记前进入 Submodule 并切换到 `main`。先提交并推送笔记仓库，再回到网站仓库提交新的 Submodule 指针：
 
@@ -84,7 +85,9 @@ git commit -m "chore: update notes submodule"
 git push
 ```
 
-将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。后两个变量只在数据库中尚无该用户名时初始化管理员；管理员随后在个人中心修改的资料、头像和密码都会持久化，不会在重启时被环境变量覆盖。登录后可从管理后台维护 Fiction 内容和用户。所有用户都可在 `/profile/` 修改显示名称、个人简介、头像和密码；公开注册入口不存在。
+将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。后两个变量只在数据库中尚无该用户名时初始化管理员；管理员随后在个人中心修改的资料、头像和密码都会持久化，不会在重启时被环境变量覆盖。登录后可从管理后台维护用户。所有用户都可在 `/profile/` 修改显示名称、个人简介、头像和密码；公开注册入口不存在。
+
+OC 页面由 Astro 静态生成。新增角色时，在 `frontend-v2/src/content/ocs/` 添加 Markdown 文件，例如 `nova.md`，并填写 `title`、`description` 和 `order` frontmatter；角色正文直接写在 Markdown 中。重新构建前端即可发布，无需写入数据库。
 
 停止服务：
 
@@ -110,4 +113,4 @@ SITE_URL=https://your-domain.example docker compose up -d --build
 
 ## 不使用 Docker 的前端开发
 
-安装 Node.js 后运行 `cd frontend && npm install && npm run dev` 可开发主站。Notes 阅读器可在 `notes/reader/` 中单独安装依赖并运行 `npm run dev`；完整的登录、文件映射与 404 行为请通过 Docker 中的 Nginx 验证。
+安装 Node.js 后运行 `cd frontend-v2 && npm install && npm run dev` 可开发主站。Notes 阅读器可在 `notes/reader/` 中单独安装依赖并运行 `npm run dev`；完整的登录、文件映射与 404 行为请通过 Docker 中的 Nginx 验证。

@@ -1,0 +1,49 @@
+---
+import Base from '@/templates/Base.astro';
+---
+<Base head={{ title: 'Login | WeiKnight', description: 'User login' }} theme='real'>
+  <main class='mx-auto max-w-md px-5 py-20 font-formal-sans text-real-text'>
+    <section class='border border-real-accent/30 bg-real-surface p-8'>
+      <p class='text-xs uppercase tracking-widest text-real-accent'>Member access</p>
+      <h1 class='mt-3 text-3xl font-black'>Login</h1>
+      <form data-login-form action='/api/v1/auth/login-form' method='post' class='mt-8 grid gap-4'>
+        <input
+          name='username'
+          required
+          autocomplete='username'
+          placeholder='Username'
+          class='border border-white/20 bg-black/30 p-3'
+        />
+        <input
+          name='password'
+          required
+          autocomplete='current-password'
+          type='password'
+          placeholder='Password'
+          class='border border-white/20 bg-black/30 p-3'
+        />
+        <p
+          data-login-error
+          hidden
+          role='alert'
+          class='border border-red-300/30 bg-red-300/10 px-3 py-2 text-sm text-red-200'
+        >
+          Invalid username or password.
+        </p>
+        <button type='submit' class='bg-real-accent p-3 font-bold text-black'>Login</button>
+      </form>
+    </section>
+  </main>
+</Base>
+
+<script>
+  const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
+  const loginError = document.querySelector<HTMLElement>('[data-login-error]');
+  if (!loginForm) throw new Error('Login form is required');
+  if (!loginError) throw new Error('Login error element is required');
+  const query = new URLSearchParams(window.location.search);
+  const next = query.get('next') || '';
+  const safeNext = next.startsWith('/') && !next.startsWith('//') && !next.includes('\\');
+  if (safeNext) loginForm.action += `?next=${encodeURIComponent(next)}`;
+  loginError.hidden = query.get('error') !== '1';
+</script>

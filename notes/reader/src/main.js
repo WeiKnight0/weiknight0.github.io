@@ -26,7 +26,7 @@ import remarkCodeLanguageMarker from './remark-code-language-marker.mjs';
 import remarkEnv from './remark-env.mjs';
 import remarkNoteLinks from './remark-note-links.mjs';
 
-const NOTE_ROUTE = /^\/real\/notes(?:\/(.*?))?\/?$/;
+const NOTE_ROUTE = /^\/notes(?:\/(.*?))?\/?$/;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 const CODE_LANGUAGE_LABELS = {
   asm: 'Assembly',
@@ -271,8 +271,8 @@ function renderMetadata(note, path) {
     link.href = '../';
     const rootNote = path === '';
     link.hidden = false;
-    link.title = rootNote ? 'Back to Real' : 'Back to parent';
-    link.querySelector('.outline-parent-label').textContent = rootNote ? 'Back to Real' : 'Back to parent';
+    link.title = rootNote ? 'Back to Home' : 'Back to parent';
+    link.querySelector('.outline-parent-label').textContent = rootNote ? 'Back to Home' : 'Back to parent';
   });
 }
 

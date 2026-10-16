@@ -1,0 +1,18 @@
+---
+import Base from './Base.astro';
+import { defaultLocale, type Locale } from '@/utils/i18n';
+
+export interface Props {
+  title: string;
+  description: string;
+  locale?: Locale;
+}
+
+const { title, description, locale = defaultLocale } = Astro.props as Props;
+---
+
+<Base head={{ title, description }} theme='fiction' locale={locale}>
+  <main class="site-main fiction-main">
+    <slot />
+  </main>
+</Base>

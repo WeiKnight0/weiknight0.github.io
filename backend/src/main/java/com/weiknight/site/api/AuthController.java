@@ -137,7 +137,7 @@ public class AuthController {
   private String loginDestination(String next, String role) {
     String destination = returnPath(next);
     if (!destination.isEmpty()) return destination;
-    return "admin".equals(role) ? "/admin/novels/" : "/";
+    return "admin".equals(role) ? "/admin/users/" : "/";
   }
 
   private String returnPath(String next) {
