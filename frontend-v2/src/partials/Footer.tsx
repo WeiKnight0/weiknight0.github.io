@@ -1,4 +1,4 @@
-import { type Locale, i18n } from '@/utils/i18n';
+import { type Locale, getLocalizedPath, i18n } from '@/utils/i18n';
 
 /**
  * @description Renders the shared localized site footer.
@@ -20,7 +20,7 @@ const Footer = ({
           <p data-footer-i18n="tagline">{i18n[locale].footer.tagline}</p>
         </div>
         <nav className="site-footer-links" aria-label="Footer">
-          <a href="/about/" data-footer-i18n="about">{i18n[locale].footer.about}</a>
+          <a href={getLocalizedPath('/about/', locale)} data-localized-path="/about/" data-footer-i18n="about">{i18n[locale].footer.about}</a>
           <a href="/privacy/" target="_blank" rel="noopener noreferrer" data-footer-i18n="privacy">{i18n[locale].footer.privacy}</a>
         </nav>
       </div>

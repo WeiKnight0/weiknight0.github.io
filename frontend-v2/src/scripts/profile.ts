@@ -25,8 +25,11 @@ const avatarFile = element<HTMLInputElement>('#profile-avatar-file');
 const bio = control<HTMLTextAreaElement>(profileForm, 'bio');
 let account: Account;
 
-const roleName = () => account.role === 'admin' ? 'Administrator' : 'Member';
-const formatDate = (value: string) => new Intl.DateTimeFormat(undefined, {
+const chinese = document.documentElement.lang.toLowerCase().startsWith('zh');
+const roleName = () => chinese
+  ? account.role === 'admin' ? '管理员' : '成员'
+  : account.role === 'admin' ? 'Administrator' : 'Member';
+const formatDate = (value: string) => new Intl.DateTimeFormat(chinese ? 'zh-CN' : 'en', {
   year: 'numeric', month: 'short', day: 'numeric',
 }).format(new Date(value));
 
@@ -52,7 +55,9 @@ const renderAccount = () => {
   }
   element<HTMLElement>('#profile-name').textContent = accountName;
   element<HTMLElement>('#profile-username').textContent = `@${account.username}`;
-  element<HTMLElement>('#profile-bio').textContent = account.bio || 'Add a short introduction so this account feels like your own.';
+  element<HTMLElement>('#profile-bio').textContent = account.bio || (chinese
+    ? '为账户添加一段简介，让个人资料更完整。'
+    : 'Add a short introduction so this account feels like your own.');
   element<HTMLElement>('#profile-role').textContent = roleName();
   element<HTMLElement>('#profile-detail-role').textContent = roleName();
   element<HTMLElement>('#profile-created').textContent = formatDate(account.createdAt);
@@ -86,7 +91,7 @@ profileForm.addEventListener('submit', async (event) => {
       }),
     });
     renderAccount();
-    showMessage('Profile updated.');
+    showMessage(chinese ? '个人资料已更新。' : 'Profile updated.');
     window.dispatchEvent(new CustomEvent('account-profile-change'));
   } catch (reason) {
     showMessage((reason as SiteApiError).message, true);
@@ -99,7 +104,7 @@ passwordForm.addEventListener('submit', async (event) => {
   confirmation.setCustomValidity(
     control<HTMLInputElement>(passwordForm, 'password').value === confirmation.value
       ? ''
-      : 'Passwords do not match.',
+      : chinese ? '两次输入的密码不一致。' : 'Passwords do not match.',
   );
   if (!passwordForm.reportValidity()) return;
   try {
@@ -108,7 +113,7 @@ passwordForm.addEventListener('submit', async (event) => {
       body: JSON.stringify(Object.fromEntries(new FormData(passwordForm))),
     });
     passwordForm.reset();
-    showMessage('Password changed.');
+    showMessage(chinese ? '密码已修改。' : 'Password changed.');
   } catch (reason) {
     showMessage((reason as SiteApiError).message, true);
   }
@@ -122,7 +127,7 @@ avatarFile.addEventListener('change', async () => {
   try {
     await siteApi('/account/avatar', { method: 'POST', body });
     await refreshAccount();
-    showMessage('Avatar updated.');
+    showMessage(chinese ? '头像已更新。' : 'Avatar updated.');
   } catch (reason) {
     showMessage((reason as SiteApiError).message, true);
   } finally {
@@ -134,7 +139,7 @@ element<HTMLButtonElement>('#profile-avatar-remove').addEventListener('click', a
   try {
     await siteApi('/account/avatar', { method: 'DELETE' });
     await refreshAccount();
-    showMessage('Avatar removed.');
+    showMessage(chinese ? '头像已移除。' : 'Avatar removed.');
   } catch (reason) {
     showMessage((reason as SiteApiError).message, true);
   }

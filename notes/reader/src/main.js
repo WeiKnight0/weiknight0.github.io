@@ -95,6 +95,7 @@ function element(selector) {
 }
 
 function initializeFooter() {
+  element('#footer-year').textContent = String(new Date().getFullYear());
   if (!ICP_RECORD_NUMBER) return;
   const link = document.createElement('a');
   link.href = 'https://beian.miit.gov.cn/';
@@ -104,9 +105,83 @@ function initializeFooter() {
   element('#footer-records').append(link);
 }
 
+const SHELL_TEXT = {
+  en: {
+    nav: { home: 'Home', about: 'About me', projects: 'Projects', notes: 'Notes', ocs: 'OCs', worldbuilding: 'Worldbuilding', login: 'Login', profile: 'Personal center', administration: 'Administration', signOut: 'Sign out', menu: 'Menu' },
+    footer: { tagline: 'A personal archive for projects, notes and fictional worlds.', about: 'About this site', privacy: 'Privacy' },
+  },
+  'zh-cn': {
+    nav: { home: '首页', about: '关于我', projects: '项目', notes: '笔记', ocs: '原创角色', worldbuilding: '世界观', login: '登录', profile: '个人中心', administration: '管理后台', signOut: '退出登录', menu: '菜单' },
+    footer: { tagline: '记录项目、笔记与幻想世界的个人档案。', about: '关于本站', privacy: '隐私' },
+  },
+};
+
+function applyShellLocale(locale) {
+  const text = SHELL_TEXT[locale];
+  document.documentElement.lang = locale === 'zh-cn' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-nav-i18n]').forEach((item) => {
+    item.textContent = text.nav[item.dataset.navI18n];
+  });
+  document.querySelectorAll('[data-footer-i18n]').forEach((item) => {
+    item.textContent = text.footer[item.dataset.footerI18n];
+  });
+  document.querySelectorAll('[data-localized-path]').forEach((link) => {
+    const path = link.dataset.localizedPath;
+    link.href = locale === 'zh-cn' && /^\/(about|about-me|profile|worldbuilding|projects)\/$/.test(path)
+      ? `${path}zh-cn/` : path;
+  });
+  document.querySelectorAll('[data-language-current]').forEach((item) => {
+    item.textContent = locale === 'zh-cn' ? '简体中文' : 'English';
+  });
+  document.querySelectorAll('[data-language-link]').forEach((link) => {
+    link.toggleAttribute('aria-current', link.dataset.targetLocale === locale);
+    if (link.hasAttribute('aria-current')) link.setAttribute('aria-current', 'true');
+    link.href = window.location.pathname + window.location.search + window.location.hash;
+  });
+}
+
+function initializeSiteLinks() {
+  applyShellLocale(localStorage.getItem('site-locale') === 'zh-cn' ? 'zh-cn' : 'en');
+  document.querySelectorAll('[data-language-link]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      event.preventDefault();
+      localStorage.setItem('site-locale', link.dataset.targetLocale);
+      applyShellLocale(link.dataset.targetLocale);
+    });
+  });
+}
+
+function initializeDropdowns() {
+  const dropdowns = Array.from(document.querySelectorAll('details[data-dropdown]'));
+  dropdowns.forEach((dropdown) => {
+    const summary = dropdown.querySelector('summary');
+    dropdown.addEventListener('toggle', () => {
+      summary.setAttribute('aria-expanded', String(dropdown.open));
+      if (dropdown.open) dropdowns.filter((other) => other !== dropdown)
+        .forEach((other) => { other.open = false; });
+    });
+  });
+  document.addEventListener('pointerdown', (event) => {
+    dropdowns.forEach((dropdown) => {
+      if (!dropdown.contains(event.target)) dropdown.open = false;
+    });
+  });
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element) || event.target.closest('summary, [data-account-logout]')) return;
+    event.target.closest('details[data-dropdown]')?.removeAttribute('open');
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    const dropdown = dropdowns.find((item) => item.open);
+    if (!dropdown) return;
+    dropdown.open = false;
+    dropdown.querySelector('summary').focus();
+  });
+}
+
 async function initializeAccountMenu() {
   const response = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
-  if (!response.ok) throw new Error(`Cannot load account: HTTP ${response.status}`);
+  if (!response.ok) return;
   const account = await response.json();
   if (typeof account.username !== 'string'
     || typeof account.displayName !== 'string'
@@ -116,19 +191,42 @@ async function initializeAccountMenu() {
   }
 
   const name = account.displayName || account.username;
-  const avatar = element('#notes-account-avatar');
-  avatar.hidden = !account.avatarUrl;
-  avatar.src = account.avatarUrl || '';
-  avatar.alt = `${name} avatar`;
-  element('#notes-account-initial').hidden = Boolean(account.avatarUrl);
-  element('#notes-account-initial').textContent = name.trim().charAt(0).toUpperCase();
-  element('#notes-account-menu').querySelector('.account-trigger')
-    .setAttribute('aria-label', `${name} — Personal center`);
-  element('#notes-account-admin').hidden = account.role !== 'admin';
-  element('#notes-sign-out').addEventListener('click', async () => {
-    const signOut = await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' });
-    if (!signOut.ok) throw new Error(`Cannot sign out: HTTP ${signOut.status}`);
-    window.location.replace('/');
+  document.querySelectorAll('[data-account-avatar-image]').forEach((avatar) => {
+    avatar.hidden = !account.avatarUrl;
+    avatar.src = account.avatarUrl || '';
+    avatar.alt = `${name} avatar`;
+  });
+  document.querySelectorAll('[data-account-avatar-fallback]').forEach((fallback) => {
+    fallback.hidden = Boolean(account.avatarUrl);
+    fallback.textContent = name.trim().charAt(0).toUpperCase();
+  });
+  element('.account-control summary').setAttribute('aria-label', `${name} — Open account menu`);
+  document.querySelectorAll('[data-account-login]').forEach((link) => { link.hidden = true; });
+  document.querySelectorAll('[data-account-profile]').forEach((item) => { item.hidden = false; });
+  document.querySelectorAll('[data-account-admin]').forEach((link) => {
+    link.hidden = account.role !== 'admin';
+  });
+  document.querySelectorAll('[data-account-logout]').forEach((button) => { button.hidden = false; });
+  document.querySelectorAll('[data-account-logout]').forEach((button) => {
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      try {
+        const csrf = await fetch('/api/v1/auth/csrf', { credentials: 'same-origin' });
+        if (!csrf.ok) throw new Error(`Cannot load CSRF token: HTTP ${csrf.status}`);
+        const { token } = await csrf.json();
+        if (typeof token !== 'string' || !token) throw new Error('Invalid CSRF token response');
+        const signOut = await fetch('/api/v1/auth/logout', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'X-CSRF-Token': token },
+        });
+        if (!signOut.ok) throw new Error(`Cannot sign out: HTTP ${signOut.status}`);
+        window.location.replace('/');
+      } catch {
+        button.textContent = 'Sign out failed';
+        button.disabled = false;
+      }
+    });
   });
 }
 
@@ -429,22 +527,31 @@ function prepareCodeBlock(pre) {
   pre.prepend(toolbar);
 }
 
-function initializeTools() {
-  const toggle = element('#toggle-dark');
-  const savedTheme = localStorage.getItem('wkn-color-theme')
-    ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  if (savedTheme === 'dark') document.body.dataset.theme = 'dark';
+function initializeTheme() {
   const updateToggle = () => {
-    const dark = document.body.dataset.theme === 'dark';
+    const dark = document.documentElement.dataset.theme === 'dark';
     element('#theme-icon').setAttribute('href', iconHref(dark ? 'sun' : 'moon'));
-    toggle.querySelector('span').textContent = dark ? 'Light Mode' : 'Dark Mode';
+    element('#toggle-dark span').textContent = dark ? 'Light Mode' : 'Dark Mode';
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+      const action = dark ? 'Switch to light theme' : 'Switch to dark theme';
+      button.setAttribute('aria-label', action);
+      button.title = action;
+      button.querySelector('[data-theme-icon]').textContent = dark ? '☀' : '☾';
+      const label = button.querySelector('[data-theme-label]');
+      if (label) label.textContent = dark ? 'Light theme' : 'Dark theme';
+    });
   };
-  updateToggle();
-  toggle.addEventListener('click', () => {
-    document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('wkn-color-theme', document.body.dataset.theme);
-    updateToggle();
+  document.querySelectorAll('[data-theme-toggle], #toggle-dark').forEach((button) => {
+    button.addEventListener('click', () => {
+      document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('wkn-color-theme', document.documentElement.dataset.theme);
+      updateToggle();
+    });
   });
+  updateToggle();
+}
+
+function initializeTools() {
   element('#print-note').addEventListener('click', () => window.print());
   let printClosedSolutions = [];
   window.addEventListener('beforeprint', () => {
@@ -467,7 +574,10 @@ function initializeTools() {
 
 async function main() {
   initializeFooter();
-  await initializeAccountMenu();
+  initializeSiteLinks();
+  initializeDropdowns();
+  initializeTheme();
+  initializeAccountMenu().catch((error) => console.error('Cannot load account navigation', error));
   const path = notePath();
   const response = await fetch(`/api/v1/notes/source?${new URLSearchParams({ path })}`);
   if (!response.ok) throw new Error(`Cannot load note: HTTP ${response.status}`);

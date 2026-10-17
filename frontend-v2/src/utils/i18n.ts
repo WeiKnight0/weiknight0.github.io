@@ -22,6 +22,9 @@ export const clientI18nPaths = [
 const clientI18nPathSet = new Set<string>(clientI18nPaths);
 
 export const localizedRouteGroups = [
+  { base: '/about/', localizedBase: '/about/zh-cn/' },
+  { base: '/about-me/', localizedBase: '/about-me/zh-cn/' },
+  { base: '/profile/', localizedBase: '/profile/zh-cn/' },
   { base: '/worldbuilding/', localizedBase: '/worldbuilding/zh-cn/' },
   { base: '/projects/', localizedBase: '/projects/zh-cn/' },
 ] as const;
@@ -44,7 +47,7 @@ export const i18n = {
   en: {
     nav: {
       home: 'Home',
-      about: 'About',
+      about: 'About me',
       projects: 'Projects',
       notes: 'Notes',
       ocs: 'OCs',
@@ -57,14 +60,14 @@ export const i18n = {
     },
     footer: {
       tagline: 'A personal archive for projects, notes and fictional worlds.',
-      about: 'About',
+      about: 'About this site',
       privacy: 'Privacy',
     },
   },
   'zh-cn': {
     nav: {
       home: '首页',
-      about: '关于',
+      about: '关于我',
       projects: '项目',
       notes: '笔记',
       ocs: '原创角色',
@@ -77,7 +80,7 @@ export const i18n = {
     },
     footer: {
       tagline: '记录项目、笔记与幻想世界的个人档案。',
-      about: '关于',
+      about: '关于本站',
       privacy: '隐私',
     },
   },

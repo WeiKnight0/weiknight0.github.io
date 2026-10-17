@@ -89,7 +89,8 @@ button, input, textarea, select { font: inherit; }
   text-decoration: none;
   transition: color 140ms ease;
 }
-.site-nav-links a:hover, .site-nav-actions > a:hover, .language-control summary:hover { color: rgb(var(--page-text)); }
+.site-nav-links a:hover, .site-nav-links a[aria-current='page'], .site-nav-actions > a:hover, .language-control summary:hover { color: rgb(var(--page-text)); }
+.site-nav-links a:hover, .site-nav-links a[aria-current='page'] { text-decoration: underline; text-decoration-color: rgb(var(--real-accent)); text-decoration-thickness: 2px; text-underline-offset: 0.4em; }
 .site-nav-actions { gap: 1rem; }
 .site-nav-actions > a { color: rgb(var(--real-accent)); }
 .nav-icon-button, .mobile-nav summary {
@@ -113,7 +114,7 @@ button, input, textarea, select { font: inherit; }
 .language-control summary:focus-visible, .account-control summary:focus-visible, .mobile-nav summary:focus-visible, .site-nav a:focus-visible, .account-menu button:focus-visible, .account-menu a:focus-visible, .language-menu a:focus-visible { outline: 2px solid rgb(var(--real-accent)); outline-offset: 3px; }
 .language-menu, .account-menu {
   position: absolute;
-  top: calc(100% + 0.7rem);
+  top: calc(100% + 0.55rem);
   right: 0;
   z-index: 50;
   display: grid;
@@ -125,6 +126,7 @@ button, input, textarea, select { font: inherit; }
   background: rgb(var(--page-surface));
   box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
 }
+.account-menu { min-width: max-content; right: -0.25rem; }
 .language-menu a, .account-menu a, .account-menu button {
   padding: 0.55rem 0.7rem;
   border: 0;
@@ -135,6 +137,7 @@ button, input, textarea, select { font: inherit; }
   text-decoration: none;
   cursor: pointer;
 }
+.account-menu a, .account-menu button { white-space: nowrap; }
 .language-menu a:hover, .account-menu a:hover, .account-menu button:hover { background: rgb(var(--page-border) / 0.06); }
 .account-avatar { display: grid; width: 2rem; height: 2rem; overflow: visible; place-items: center; border-radius: 50%; background: rgb(var(--real-accent) / 0.14); color: rgb(var(--real-accent)); text-decoration: none; }
 .account-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
@@ -225,7 +228,8 @@ body.site-body main .prose-invert { --tw-prose-body: rgb(var(--page-text) / 0.82
   .mobile-nav summary { display: flex; min-height: 2.4rem; align-items: center; padding-inline: 0.8rem; list-style: none; font-size: 0.82rem; }
   .mobile-nav-panel { position: absolute; top: calc(100% + 0.4rem); right: 0; left: 0; z-index: 50; display: grid; gap: 0.25rem; padding: 0.6rem; border: 1px solid rgb(var(--page-border) / 0.12); border-radius: 0.85rem; background: rgb(var(--page-surface)); box-shadow: 0 14px 32px rgb(0 0 0 / 0.12); }
   .mobile-nav-panel a, .mobile-nav-panel button { padding: 0.7rem; border: 0; border-radius: 0.5rem; background: transparent; color: rgb(var(--page-text)); text-align: left; text-decoration: none; }
-  .mobile-nav-panel a:hover, .mobile-nav-panel button:hover { background: rgb(var(--page-border) / 0.06); }
+  .mobile-nav-panel a:hover, .mobile-nav-panel button:hover, .mobile-nav-panel a[aria-current='page'] { background: rgb(var(--page-border) / 0.06); }
+  .mobile-nav-panel a[aria-current='page'] { color: rgb(var(--real-accent)); text-decoration: underline; text-underline-offset: 0.22em; }
   .home-projects { grid-template-columns: 1fr; }
   .home-hero { min-height: auto; padding-block: 3rem; }
   .home-contact, .home-section-heading { align-items: flex-start; flex-direction: column; }
