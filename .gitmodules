@@ -1,4 +1,0 @@
-[submodule "notes/docs"]
-	path = notes/docs
-	url = ../wkn-notes.git
-	branch = main

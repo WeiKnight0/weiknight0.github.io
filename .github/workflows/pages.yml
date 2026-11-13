@@ -1,0 +1,78 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Resolve site URL
+        id: site
+        env:
+          PAGES_ORIGIN: ${{ steps.pages.outputs.origin }}
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const [owner, repository] = process.env.GITHUB_REPOSITORY.split('/');
+          const isPullRequest = process.env.GITHUB_EVENT_NAME === 'pull_request';
+          const origin = isPullRequest ? `https://${owner.toLowerCase()}.github.io` : process.env.PAGES_ORIGIN;
+          const base = isPullRequest
+            ? (repository.toLowerCase() === `${owner.toLowerCase()}.github.io` ? '/' : `/${repository}/`)
+            : (process.env.PAGES_BASE_PATH || '/');
+          if (!origin) throw new Error('Pages URL is unavailable. Set Settings > Pages > Source to GitHub Actions.');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `origin=${origin}\nbase=${base}\n`);
+          NODE
+      - run: npm ci
+      - run: npm run check
+      - name: Build static site
+        run: npm run build
+        env:
+          SITE_URL: ${{ steps.site.outputs.origin }}
+          SITE_BASE_PATH: ${{ steps.site.outputs.base }}
+      - run: npm run verify
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

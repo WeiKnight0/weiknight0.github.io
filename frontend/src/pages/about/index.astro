@@ -1,18 +1,22 @@
 ---
+import { sitePath } from '@/utils/paths.mjs';
 import Base from '@/templates/Base.astro';
 ---
 
-<Base head={{ title: 'About | WeiKnight', description: 'About WeiKnight and this personal knowledge archive.' }} theme='real'>
-  <main class='mx-auto w-full max-w-4xl px-5 py-12 font-formal-sans text-real-text sm:py-16'>
-    <a href='/' class='text-sm text-real-accent hover:underline'>← Home</a>
-    <article class='prose prose-base prose-invert prose-slate mt-10 max-w-none prose-headings:font-black prose-a:text-real-accent prose-strong:text-white md:prose-lg'>
-      <h1>About WeiKnight</h1>
-      <p>Welcome to my digital den. I am a wolf programmer with a passion for code, systems, and lifelong learning.</p>
-      <p>This site collects my technical notes, projects, writing, and discoveries. The Notes area is organized as a directory-based knowledge archive so related subjects stay together and remain easy to browse.</p>
-      <p>Whether you are a fellow furry, a curious human, or simply wandering through the forest of knowledge, you are welcome to explore. Constructive feedback is always appreciated.</p>
+<Base head={{ title: 'About this site | WeiKnight', description: 'The purpose and contents of WeiKnight’s personal site.' }} theme='real'>
+  <main class='mx-auto w-full max-w-4xl px-5 py-14 text-real-text sm:py-20'>
+    <article class='prose prose-base prose-invert prose-slate max-w-none prose-headings:font-black prose-a:text-real-accent prose-strong:text-white md:prose-lg'>
+      <p class='not-prose text-xs font-bold uppercase tracking-[.2em] text-real-accent'>Site notes</p>
+      <h1>About this site</h1>
+      <p class='lead'>This is my personal archive for projects, study notes, and original fiction.</p>
+      <p>I made this site to keep the things I work on and learn in one place. It brings together software projects, notes from my computer science studies, and the characters and settings I create.</p>
+      <p>The notes are organized by subject so related material is easy to follow. The fiction section is kept separate, with pages for original characters and worldbuilding. Both areas grow as I add and revise material.</p>
+      <p>The site is maintained by WeiKnight and published as static pages on GitHub Pages. Projects and fiction are generated from Markdown at build time; language and theme preferences are saved in your browser.</p>
+      <p>Some sections are still being expanded, so their contents and organization may change over time.</p>
+      <h2>Explore</h2>
+      <p>Browse the <a href={sitePath("/projects/")}>projects</a>, read the <a href={sitePath("/notes/")}>study notes</a>, or visit the <a href={sitePath("/worldbuilding/")}>worldbuilding archive</a>.</p>
       <h2>Contact</h2>
-      <p>You can reach me at <a href='mailto:weiknight0@outlook.com'>weiknight0@outlook.com</a> or follow my work on <a href='https://www.github.com/weiknight0'>GitHub</a>.</p>
-      <p>Thanks for visiting. May your learning journey be wild and rewarding. 🐾</p>
+      <p>For questions or feedback, email <a href='mailto:weiknight0@outlook.com'>weiknight0@outlook.com</a> or find me on <a href='https://github.com/WeiKnight0' target='_blank' rel='noopener noreferrer'>GitHub</a>.</p>
     </article>
   </main>
 </Base>

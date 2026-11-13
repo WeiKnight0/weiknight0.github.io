@@ -1,0 +1,27 @@
+---
+import { type Locale, getLocalizedPath, i18n } from '@/utils/i18n';
+import { sitePath } from '@/utils/paths.mjs';
+
+interface Props { locale: Locale; icpRecordNumber?: string }
+const { locale, icpRecordNumber } = Astro.props;
+---
+
+<footer class="site-footer border-t px-5 py-8 text-sm lg:px-8">
+  <div class="site-footer-inner mx-auto max-w-7xl">
+    <div class="site-footer-main">
+      <div class="site-footer-copy">
+        <p class="site-footer-owner">© {new Date().getFullYear()} WeiKnight</p>
+        <p data-footer-i18n="tagline">{i18n[locale].footer.tagline}</p>
+      </div>
+      <nav class="site-footer-links" aria-label="Footer">
+        <a href={getLocalizedPath('/about/', locale)} data-localized-path="/about/" data-footer-i18n="about">{i18n[locale].footer.about}</a>
+        <a href={sitePath('/privacy/')} target="_blank" rel="noopener noreferrer" data-footer-i18n="privacy">{i18n[locale].footer.privacy}</a>
+      </nav>
+    </div>
+    {icpRecordNumber && (
+      <div class="site-footer-records">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">{icpRecordNumber}</a>
+      </div>
+    )}
+  </div>
+</footer>

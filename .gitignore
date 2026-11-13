@@ -1,45 +1,21 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
-
-# Other files and folders
-.settings/
-
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
-
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
-.astro/
-dist/
+# Dependencies and static builds
 node_modules/
-backend/target/
-data/
-notes/assets/
+dist/
+.astro/
 
-# Local secrets. Keep the safe, documented template under version control.
+# Local configuration and secrets
 .env
 .env.*
 !.env.example
-nginx/certs/
 
-# Local tooling and generated diagnostics
+# Local tooling
 .DS_Store
 .idea/
 .vscode/
-*.iml
 *.log
-__pycache__/
-*.py[cod]
-.pytest_cache/
-
 AGENTS.md
-
-# Local reference notes
 Note/
+/temp/
+
+# Existing server data is never part of the static site
+data/

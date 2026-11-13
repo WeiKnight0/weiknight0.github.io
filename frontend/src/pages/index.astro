@@ -1,181 +1,167 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '@/templates/Base.astro';
+import { sitePath } from '@/utils/paths.mjs';
 import { AppConfig } from '@/utils/AppConfig';
 import { Profile } from '@/utils/Profile';
 
 const { title, description } = AppConfig;
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
 ---
 
 <Base head={{ title, description }} theme='home'>
-  <main class="home-canvas bg-black text-white font-sans selection:bg-white/20">
-    {/* 顶部巨幕区 - 强烈的阵营色彩对比与清晰的日文排版 */}
-    <section class='home-hero relative min-h-[85vh] flex flex-col justify-center overflow-hidden bg-black border-b border-white/10'>
-      {/* 复杂的背景光效 - 增强饱和度和对比 */}
-      <div class='pointer-events-none absolute inset-0'>
-        <div class='absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px]'></div>
-        
-        {/* Real 侧环境光 (青紫交织) */}
-        <div class='absolute left-[-10%] top-0 w-[60%] h-[100%] bg-real-surface/80 blur-[100px] mix-blend-screen'></div>
-        <div class='absolute left-[5%] top-[10%] w-[30%] h-[40%] bg-real-accent/20 rounded-full blur-[120px] mix-blend-screen'></div>
-        
-        {/* Fiction 侧环境光 (紫红交织) */}
-        <div class='absolute right-[-10%] top-0 w-[60%] h-[100%] bg-fiction-surface/80 blur-[100px] mix-blend-screen'></div>
-        <div class='absolute right-[5%] bottom-[10%] w-[30%] h-[40%] bg-fiction-accent/20 rounded-full blur-[120px] mix-blend-screen'></div>
+  <main class="home-page resume-home">
+    <header class="resume-intro">
+      <div class="resume-identity">
+        <p class="home-label" data-home-i18n="hero.greeting">A little about me</p>
+        <h1>{Profile.handle}<span class="resume-dot">.</span></h1>
+        <p class="resume-role" data-home-i18n="hero.headline">Computer science student at Southeast University</p>
+        <p class="resume-summary" data-home-i18n="hero.description">I like understanding how software works, recording what I learn, and building things of my own.</p>
+        <div class="resume-contact">
+          <span data-home-i18n="profile.locationValue">Nanjing, China</span>
+          <a href="mailto:weiknight0@outlook.com">weiknight0@outlook.com</a>
+          <a href={Profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        </div>
       </div>
+      <img src={Profile.avatar} alt={`${Profile.handle} avatar`} class="resume-avatar" width="160" height="160" />
+    </header>
 
-      <div class='relative z-10 mx-auto w-full max-w-7xl px-6 py-20 text-center drop-shadow-xl'>
-        {/* 中心化身 - 绝对无滤镜 */}
-        <div class="mb-12 flex justify-center relative">
-           <div class="absolute inset-0 bg-white/10 blur-3xl rounded-full scale-150"></div>
-           <img
-              src={Profile.avatar}
-              alt={`${Profile.name} avatar`}
-              class='relative h-32 w-32 md:h-40 md:w-40 rounded-full border-[3px] border-white/30 shadow-[0_0_50px_rgba(255,255,255,0.15)] object-cover'
-              style="filter: none !important;"
-            />
+    <section class="resume-section" aria-labelledby="education-heading">
+      <div class="resume-section-label"><h2 id="education-heading" data-home-i18n="education.heading">Education</h2></div>
+      <div class="resume-section-content">
+        <div class="resume-entry-heading">
+          <h3 data-home-i18n="education.school">Southeast University</h3>
+          <span class="resume-meta" data-home-i18n="education.location">Nanjing, China</span>
         </div>
-
-        {/* 主标题 - 专属日文 Ruby 排版 */}
-        <h1 class='max-w-5xl mx-auto text-4xl font-black leading-[1.3] tracking-widest text-white md:text-6xl drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]'>
-          <span class='block font-jp-display-sans text-lg font-bold tracking-[0.3em] text-white/90 md:text-xl mb-6'>
-            ― <ruby>二<rt class="font-jp-display-sans text-[0.5em] tracking-widest text-white/80">ふた</rt></ruby>つの<ruby>世界<rt class="font-jp-display-sans text-[0.5em] tracking-widest text-white/80">せかい</rt></ruby>を<ruby>渡<rt class="font-jp-display-sans text-[0.5em] tracking-widest text-white/80">わた</rt></ruby>る<ruby>者<rt class="font-jp-display-sans text-[0.5em] tracking-widest text-white/80">もの</rt></ruby> ―
-          </span>
-          <span class='block mt-2'>
-            <span class="font-jp-display-sans text-real-accent drop-shadow-[0_0_15px_rgba(0,245,255,0.5)]"><ruby>三次元<rt class="font-jp-display-sans text-[0.4em] tracking-widest text-real-text">さんじげん</rt></ruby></span>
-            <span class="font-jp-display-sans text-white/80 mx-2 tracking-normal drop-shadow-none">と</span>
-            <span class="font-jp-display-serif text-fiction-accent drop-shadow-[0_0_15px_rgba(255,215,0,0.5)]"><ruby>二次元<rt class="font-jp-display-serif text-[0.4em] tracking-widest text-fiction-text">にじげん</rt></ruby></span>
-            <span class="text-white/80 font-real-mono mx-2 tracking-normal drop-shadow-none">、</span>
-            <br class="md:hidden" />
-            <span class="font-jp-display-sans text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]"><ruby>二<rt class="font-jp-display-sans text-[0.4em] tracking-widest text-white/70">ふた</rt></ruby>つの<ruby>記録<rt class="font-jp-display-sans text-[0.4em] tracking-widest text-white/70">アーカイブ</rt></ruby></span>
-          </span>
-        </h1>
-
-        {/* 个人简介区 */}
-        <div class="home-intro-card mt-16 max-w-3xl mx-auto bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-2xl shadow-2xl">
-          <h2 class="text-3xl font-black mb-4 text-white drop-shadow-md">{Profile.name}</h2>
-          
-          {/* 中二感日文 Tagline */}
-          <p class="mx-auto mb-8 max-w-2xl font-jp-display-serif text-lg leading-relaxed tracking-wide text-white/90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] md:whitespace-nowrap md:text-xl">
-            論理の三次元と異能の二次元、その境界を駆ける狼プログラマー。
-          </p>
-          
-          <div class="flex flex-wrap justify-center gap-3 mb-8">
-            {Profile.techStack.map((tech) => (
-              <span class='px-4 py-1.5 border border-white/20 bg-black/50 text-xs font-real-mono uppercase tracking-widest text-white/90 shadow-inner'>
-                {tech}
-              </span>
-            ))}
-          </div>
-
-          <div class="flex justify-center gap-8 font-real-mono text-sm uppercase tracking-widest">
-            <a href={Profile.github} class="text-real-accent hover:text-white transition-colors drop-shadow-[0_0_8px_rgba(0,245,255,0.4)]">GitHub_</a>
-          </div>
-        </div>
+        <p class="resume-subtitle" data-home-i18n="education.subject">Computer science · Student</p>
+        <p class="resume-description" data-home-i18n="education.description">Learning how programs run, how data moves, and how the layers of a computer system fit together.</p>
       </div>
     </section>
 
-    {/* 高密度信息面板区 (Bento Box 风格) - 增强对比 */}
-    <section class='mx-auto max-w-7xl px-6 py-24'>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        
-        {/* --- REAL 面板 --- */}
-        <div class="border border-real-accent/30 bg-real-surface relative overflow-hidden group shadow-[0_0_30px_rgba(0,245,255,0.05)] rounded-xl">
-          <div class="absolute inset-0 bg-[linear-gradient(rgba(0,245,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,245,255,0.1)_1px,transparent_1px)] bg-[size:24px_24px] opacity-30"></div>
-          <div class="absolute top-0 right-0 w-64 h-64 bg-real-accentSecondary/10 blur-[80px] rounded-full"></div>
-          
-          <div class="relative z-10 p-8 md:p-10 flex flex-col h-full">
-            <div class="flex items-center justify-between mb-8">
-               <h3 class="font-real-mono text-3xl font-black text-real-text drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"><span class="text-real-accent mr-2">A/</span><span data-home-i18n="home.real.sideTitle">REAL SIDE</span></h3>
-               <span data-home-i18n="home.real.badge" class="text-xs font-real-mono text-real-accent uppercase tracking-widest px-3 py-1.5 bg-real-accent/15 border border-real-accent/50 shadow-[0_0_10px_rgba(0,245,255,0.2)]">System.out</span>
-            </div>
-            
-            <p data-home-i18n="home.real.description" class="text-real-text text-base mb-10 font-real-mono leading-relaxed bg-black/30 p-4 rounded-lg border border-white/5 shadow-inner">
-              Engineering records, project architectures, and technical logs. The mechanical reality where ideas are built into systems.
-            </p>
-
-            {/* 现实侧目录预览 */}
-            <div class="mb-10 flex-grow">
-               <h4 data-home-i18n="home.real.directories" class="text-xs font-real-mono text-real-accent uppercase tracking-[0.2em] mb-6 drop-shadow-[0_0_5px_rgba(0,245,255,0.3)]">System Directories</h4>
-               <div class="flex flex-col gap-6 pl-2">
-                  <a href="/real/resume/" class="group/item flex justify-between items-end border-b border-white/5 pb-2 hover:border-real-accent/30 transition-colors">
-                    <span data-home-i18n="home.real.resumeLabel" class="text-xl text-real-text font-zh font-bold group-hover/item:text-real-accent transition-colors tracking-widest">Resume</span>
-                    <span data-home-i18n="home.real.resumeSub" class="text-xs text-white/40 font-real-mono uppercase tracking-widest group-hover/item:text-real-accent/80 transition-colors">Profile</span>
-                  </a>
-                  <a href="/real/projects/" class="group/item flex justify-between items-end border-b border-white/5 pb-2 hover:border-real-accent/30 transition-colors">
-                    <span data-home-i18n="home.real.projectsLabel" class="text-xl text-real-text font-zh font-bold group-hover/item:text-real-accent transition-colors tracking-widest">Projects</span>
-                    <span data-home-i18n="home.real.projectsSub" class="text-xs text-white/40 font-real-mono uppercase tracking-widest group-hover/item:text-real-accent/80 transition-colors">Deployments</span>
-                  </a>
-                  <a href="/real/notes/" class="group/item flex justify-between items-end border-b border-white/5 pb-2 hover:border-real-accent/30 transition-colors">
-                    <span data-home-i18n="home.real.notesLabel" class="text-xl text-real-text font-zh font-bold group-hover/item:text-real-accent transition-colors tracking-widest">Notes</span>
-                    <span data-home-i18n="home.real.notesSub" class="text-xs text-white/40 font-real-mono uppercase tracking-widest group-hover/item:text-real-accent/80 transition-colors">Study Logs</span>
-                  </a>
-               </div>
-               
-               <div class="mt-8 p-4 bg-black/20 border-l-2 border-real-accent/30 font-real-mono text-xs text-white/30 space-y-1">
-                 <p>&gt; <span data-home-i18n="home.real.compile">Compile Status:</span> <span class="text-real-accent/60">stable</span></p>
-                 <p>&gt; <span data-home-i18n="home.real.mount">Local records mounted...</span></p>
-                 <p>&gt; <span data-home-i18n="home.real.ready" class="text-real-accentSecondary/60 animate-pulse">Engineer ready.</span></p>
-               </div>
-            </div>
-
-            <a href="/real/" data-home-i18n="home.real.cta" class="block w-full py-5 bg-real-accent/15 text-real-accent border border-real-accent/50 text-center font-real-mono uppercase tracking-[0.2em] text-base hover:bg-real-accent hover:text-black transition-colors font-bold shadow-[0_0_15px_rgba(0,245,255,0.2)]">
-              Initialize Real Environment &rarr;
-            </a>
-          </div>
-        </div>
-
-        {/* --- FICTION 面板 --- */}
-        <div class="border border-fiction-accent/30 bg-fiction-surface relative overflow-hidden group shadow-[0_0_30px_rgba(255,215,0,0.05)] rounded-xl">
-          <div class="absolute inset-0 opacity-[0.08] mix-blend-overlay" style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"></div>
-          <div class="absolute bottom-0 left-0 w-64 h-64 bg-fiction-accentSecondary/10 blur-[80px] rounded-full"></div>
-          
-          <div class="relative z-10 p-8 md:p-10 h-full flex flex-col">
-            <div class="flex items-center justify-between mb-8">
-               <h3 class="font-fiction-serif text-3xl font-black text-fiction-text italic drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"><span class="text-fiction-accent mr-2 not-italic">B/</span><span data-home-i18n="home.fiction.sideTitle">FICTION SIDE</span></h3>
-               <span data-home-i18n="home.fiction.badge" class="text-xs font-real-mono text-fiction-accent uppercase tracking-widest px-3 py-1.5 bg-fiction-accent/15 border border-fiction-accent/50 shadow-[0_0_10px_rgba(255,215,0,0.2)]">Archive.log</span>
-            </div>
-            
-            <p data-home-i18n="home.fiction.description" class="text-fiction-text text-base mb-10 font-fiction-serif leading-relaxed bg-black/30 p-4 rounded-lg border border-white/5 shadow-inner">
-              Narratives, character entities, and worldbuilding fragments. The creative archive where imagination takes form.
-            </p>
-
-            {/* 档案分区预览 - 无边框纯排版 */}
-            <div class="mb-10 flex-grow">
-               <h4 data-home-i18n="home.fiction.directories" class="text-xs font-real-mono text-fiction-accent uppercase tracking-[0.2em] mb-6 drop-shadow-[0_0_5px_rgba(255,215,0,0.3)]">Archive Directories</h4>
-               <div class="flex flex-col gap-6 pl-2">
-                  <a href="/fiction/world/" class="group/item flex justify-between items-end border-b border-white/5 pb-2 hover:border-fiction-accent/30 transition-colors">
-                    <span data-home-i18n="home.fiction.world" class="text-xl text-fiction-text font-zh font-bold group-hover/item:text-fiction-accent transition-colors tracking-widest">Worldbuilding</span>
-                    <span data-home-i18n="home.fiction.worldSub" class="text-xs text-white/40 font-real-mono uppercase tracking-widest group-hover/item:text-fiction-accent/80 transition-colors">Worldbuilding</span>
-                  </a>
-                  <a href="/fiction/oc/" class="group/item flex justify-between items-end border-b border-white/5 pb-2 hover:border-fiction-accent/30 transition-colors">
-                    <span data-home-i18n="home.fiction.characters" class="text-xl text-fiction-text font-zh font-bold group-hover/item:text-fiction-accent transition-colors tracking-widest">Characters</span>
-                    <span data-home-i18n="home.fiction.charactersSub" class="text-xs text-white/40 font-real-mono uppercase tracking-widest group-hover/item:text-fiction-accent/80 transition-colors">Characters</span>
-                  </a>
-                  <a href="/fiction/novels/" class="group/item flex justify-between items-end border-b border-white/5 pb-2 hover:border-fiction-accent/30 transition-colors">
-                    <span data-home-i18n="home.fiction.stories" class="text-xl text-fiction-text font-zh font-bold group-hover/item:text-fiction-accent transition-colors tracking-widest">Novels</span>
-                    <span data-home-i18n="home.fiction.storiesSub" class="text-xs text-white/40 font-real-mono uppercase tracking-widest group-hover/item:text-fiction-accent/80 transition-colors">Novels</span>
-                  </a>
-                  <a href="/fiction/commissions/" class="group/item flex justify-between items-end border-b border-white/5 pb-2 hover:border-fiction-accent/30 transition-colors">
-                    <span data-home-i18n="home.fiction.gallery" class="text-xl text-fiction-text font-zh font-bold group-hover/item:text-fiction-accent transition-colors tracking-widest">Gallery</span>
-                    <span data-home-i18n="home.fiction.gallerySub" class="text-xs text-white/40 font-real-mono uppercase tracking-widest group-hover/item:text-fiction-accent/80 transition-colors">Gallery</span>
-                  </a>
-               </div>
-               
-               {/* 补齐高度的氛围文本 */}
-               <div class="mt-8 p-4 bg-black/20 border-l-2 border-fiction-accent/30 font-real-mono text-xs text-white/30 space-y-1">
-                 <p>&gt; <span data-home-i18n="home.fiction.sync">Sync Rate:</span> <span class="text-fiction-accent/60">98.4%</span></p>
-                 <p>&gt; <span data-home-i18n="home.fiction.memory">Accessing deeper memory layers...</span></p>
-                 <p>&gt; <span data-home-i18n="home.fiction.observer" class="text-fiction-accentSecondary/60 animate-pulse">Observer ready.</span></p>
-               </div>
-            </div>
-
-            <a href="/fiction/" data-home-i18n="home.fiction.cta" class="mt-auto block w-full py-5 bg-fiction-accent/15 text-fiction-accent border border-fiction-accent/50 text-center font-real-mono uppercase tracking-[0.2em] text-base hover:bg-fiction-accent hover:text-black transition-colors font-bold shadow-[0_0_15px_rgba(255,215,0,0.2)]">
-              Open Story Nexus &rarr;
-            </a>
-          </div>
-        </div>
-
+    <section class="resume-section" aria-labelledby="skills-heading">
+      <div class="resume-section-label"><h2 id="skills-heading" data-home-i18n="skills.heading">Skills & interests</h2></div>
+      <div class="resume-section-content">
+        <dl class="resume-skills">
+          <div><dt data-home-i18n="skills.languages">Languages</dt><dd>{Profile.techStack.join(' · ')}</dd></div>
+          <div><dt data-home-i18n="skills.interests">Interested in</dt><dd data-home-i18n="skills.interestsValue">Computer systems · Software development</dd></div>
+        </dl>
+        <p class="resume-description" data-home-i18n="skills.description">I learn by taking ideas apart, writing notes, and turning them into working projects.</p>
       </div>
     </section>
+
+    <section class="resume-section" aria-labelledby="projects-heading">
+      <div class="resume-section-label">
+        <h2 id="projects-heading" data-home-i18n="projects.heading">Selected projects</h2>
+        <a class="home-inline-link" href={sitePath('/projects/')} data-localized-path="/projects/" data-home-i18n="projects.all">All projects ↗</a>
+      </div>
+      <div class="resume-section-content resume-projects">
+        {projects.length === 0 ? (
+          <p class="resume-description" data-home-i18n="projects.empty">No projects published yet.</p>
+        ) : projects.map((project) => (
+          <article class="resume-project">
+            <div class="resume-entry-heading">
+              <h3><a href={sitePath(`/projects/${project.slug}/`)} data-localized-path={`/projects/${project.slug}/`} data-home-i18n={`project.${project.slug}.title`}>{project.data.title}</a></h3>
+              <div class="resume-project-links">
+                <a href={sitePath(`/projects/${project.slug}/`)} data-localized-path={`/projects/${project.slug}/`} data-home-i18n="projects.details">Details ↗</a>
+                {project.data.repo && <a href={project.data.repo} target="_blank" rel="noopener noreferrer" data-home-i18n="projects.source">Source ↗</a>}
+              </div>
+            </div>
+            <div class="project-tags">{project.data.tags.map((tag) => <span class="project-tag">{tag}</span>)}</div>
+            <p class="resume-description" data-home-i18n={`project.${project.slug}.description`}>{project.slug === 'homepage' ? 'A personal site bringing together my projects, study notes, and original worlds.' : project.data.description}</p>
+            {project.slug === 'homepage' && (
+              <ul class="resume-project-points">
+                <li data-home-i18n="project.homepage.structure">Static pages built with Astro, with Markdown content and support for GitHub Pages deployment.</li>
+                <li data-home-i18n="project.homepage.reader">A dedicated notes reader with formulas, code highlighting, and a table of contents, alongside a searchable algorithm reference.</li>
+              </ul>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="resume-section" aria-labelledby="beyond-heading">
+      <div class="resume-section-label"><h2 id="beyond-heading" data-home-i18n="beyond.heading">Learning & creating</h2></div>
+      <div class="resume-section-content resume-interests">
+        <article>
+          <h3><a href={sitePath('/notes/')} data-home-i18n="notes.heading">Study notes <span aria-hidden="true">↗</span></a></h3>
+          <p class="resume-description" data-home-i18n="notes.description">An ongoing record of algorithms, operating systems, networks, computer architecture, and AI.</p>
+          <a class="home-inline-link" href={sitePath('/notes/algorithm-templates/')} data-home-i18n="notes.templates">Algorithm reference ↗</a>
+        </article>
+        <article class="resume-creative">
+          <h3><a href={sitePath('/worldbuilding/')} data-localized-path="/worldbuilding/" data-home-i18n="creative.heading">Original worlds <span aria-hidden="true">↗</span></a></h3>
+          <p class="resume-description" data-home-i18n="creative.description">Outside of code, I build fictional worlds and explore the rules, histories, and characters within them.</p>
+          <a class="home-inline-link" href={sitePath('/ocs/')} data-home-i18n="creative.characters">Character archive ↗</a>
+        </article>
+      </div>
+    </section>
+
+    <div class="resume-closing">
+      <p data-home-i18n="closing.text">More of what I learn, build, and imagine lives here.</p>
+    </div>
   </main>
 </Base>
+
+<style>
+  .resume-home { width: min(100% - 3rem, 64rem); margin-inline: auto; padding-block: 3.5rem 2rem; }
+  .resume-intro { display: grid; grid-template-columns: minmax(0, 1fr) 10rem; align-items: center; gap: 3rem; padding-bottom: 2.75rem; }
+  .resume-identity h1 { margin: 0; font-size: clamp(2.7rem, 6vw, 4rem); font-weight: 740; line-height: 1.1; letter-spacing: -0.065em; }
+  .resume-dot { color: rgb(var(--real-accent)); }
+  .resume-role { margin: 0.85rem 0 0; font-size: 1.08rem; font-weight: 600; line-height: 1.6; }
+  .resume-summary { max-width: 38rem; margin: 0.65rem 0 0; color: rgb(var(--page-muted)); font-size: 0.95rem; line-height: 1.8; }
+  .resume-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; margin-top: 1.25rem; color: rgb(var(--page-muted)); font-size: 0.82rem; line-height: 1.7; }
+  .resume-contact a { color: rgb(var(--real-accent)); text-decoration: none; overflow-wrap: anywhere; }
+  .resume-contact a:hover { text-decoration: underline; }
+  .resume-avatar { width: 10rem; height: 10rem; border: 1px solid rgb(var(--page-border) / 0.1); border-radius: 1rem; object-fit: cover; background: rgb(var(--page-surface)); }
+  .resume-section { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 2.5rem; padding-block: 2rem; border-top: 1px solid rgb(var(--page-border) / 0.1); scroll-margin-top: 6rem; }
+  .resume-section-label h2 { margin: 0.2rem 0 0; color: rgb(var(--real-accent)); font-size: 0.8rem; font-weight: 650; letter-spacing: 0.035em; line-height: 1.6; }
+  .resume-section-label > a { display: inline-block; margin-top: 0.7rem; font-size: 0.76rem; }
+  .resume-section-content { min-width: 0; }
+  .resume-entry-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.45rem 1.5rem; }
+  .resume-home h3 { margin: 0; font-size: 1.05rem; font-weight: 680; line-height: 1.6; }
+  .resume-home h3 a { text-decoration: none; }
+  .resume-home h3 a:hover { color: rgb(var(--real-accent)); }
+  .resume-meta { color: rgb(var(--page-muted)); font-size: 0.8rem; }
+  .resume-subtitle { margin: 0.25rem 0 0; color: rgb(var(--page-text) / 0.8); font-size: 0.9rem; }
+  .resume-description { margin: 0.65rem 0 0; color: rgb(var(--page-muted)); font-size: 0.9rem; line-height: 1.8; }
+  .resume-skills { display: grid; gap: 0.65rem; margin: 0; font-size: 0.9rem; line-height: 1.7; }
+  .resume-skills > div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1rem; }
+  .resume-skills dt { color: rgb(var(--page-muted)); }
+  .resume-skills dd { margin: 0; font-weight: 550; }
+  .resume-project + .resume-project { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgb(var(--page-border) / 0.08); }
+  .resume-project-links { display: flex; gap: 1.15rem; font-size: 0.78rem; font-weight: 600; color: rgb(var(--real-accent)); }
+  .resume-project-links a { text-decoration: none; }
+  .resume-project-links a:hover { text-decoration: underline; }
+  .resume-project .project-tags { margin: 0.55rem 0 0; }
+  .resume-project-points { display: grid; gap: 0.35rem; margin: 0.65rem 0 0; padding-left: 1.1rem; list-style: disc; color: rgb(var(--page-muted)); font-size: 0.88rem; line-height: 1.8; }
+  .resume-project-points li::marker { color: rgb(var(--real-accent) / 0.7); }
+  .resume-interests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+  .resume-interests .home-inline-link { display: inline-block; margin-top: 0.7rem; font-size: 0.8rem; }
+  .resume-creative h3 a:hover, .resume-creative .home-inline-link { color: rgb(var(--fiction-accent)); }
+  .resume-closing { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem 2rem; padding-block: 1.5rem; border-top: 1px solid rgb(var(--page-border) / 0.1); }
+  .resume-closing p { margin: 0; color: rgb(var(--page-muted)); font-size: 0.82rem; }
+  .resume-home a:focus-visible { outline: 2px solid rgb(var(--real-accent)); outline-offset: 4px; border-radius: 0.2rem; }
+  @media (max-width: 760px) {
+    .resume-home { width: min(100% - 2rem, 64rem); padding-top: 2rem; }
+    .resume-intro { grid-template-columns: minmax(0, 1fr) 5rem; align-items: start; gap: 1rem; padding-bottom: 2rem; }
+    .resume-avatar { width: 5rem; height: 5rem; border-radius: 0.8rem; }
+    .resume-identity h1 { font-size: clamp(2rem, 7vw, 3rem); }
+    .resume-role { font-size: 0.98rem; }
+    .resume-summary { font-size: 0.9rem; }
+    .resume-contact { column-gap: 1rem; }
+    .resume-section { grid-template-columns: 1fr; gap: 1rem; padding-block: 1.5rem; }
+    .resume-section-label { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+    .resume-section-label > a { margin: 0; }
+    .resume-interests { gap: 1.5rem; }
+  }
+  @media (max-width: 480px) {
+    .resume-intro { position: relative; grid-template-columns: 1fr; }
+    .resume-identity > .home-label { max-width: calc(100% - 5rem); }
+    .resume-identity h1 { max-width: calc(100% - 4.5rem); font-size: 2.2rem; }
+    .resume-avatar { position: absolute; top: 0; right: 0; width: 4rem; height: 4rem; }
+    .resume-role { margin-top: 1rem; }
+    .resume-skills > div { grid-template-columns: 6rem minmax(0, 1fr); gap: 0.75rem; }
+    .resume-interests { grid-template-columns: 1fr; }
+  }
+</style>

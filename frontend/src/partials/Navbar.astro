@@ -1,0 +1,56 @@
+---
+import { type Locale, getLanguagePath, getLocalizedPath, i18n, localeLabels, locales, normalizePath, stripLocaleFromPath } from '@/utils/i18n';
+import { Profile } from '@/utils/Profile';
+
+interface Props { locale: Locale; pathname: string; showLanguageSelector?: boolean }
+const { locale, pathname, showLanguageSelector = true } = Astro.props;
+const text = i18n[locale].nav;
+const links = [
+  { path: '/', key: 'home' },
+  { path: '/projects/', key: 'projects' },
+  { path: '/notes/', key: 'notes' },
+  { path: '/ocs/', key: 'ocs' },
+  { path: '/worldbuilding/', key: 'worldbuilding' },
+] as const;
+const currentPath = stripLocaleFromPath(normalizePath(pathname));
+const currentSection = (path: string) => path === '/' ? currentPath === '/' : currentPath.startsWith(path);
+---
+
+<header class="site-header">
+  <nav class="site-nav" aria-label="Primary navigation" data-dropdown-scope>
+    <a href={getLocalizedPath('/', locale)} class="site-brand" data-home-link="home" data-localized-path="/">
+      <img src={Profile.avatar} alt="" />
+      <span>WeiKnight</span>
+    </a>
+    <div class="site-nav-links">
+      {links.map(({ path, key }) => (
+        <a href={getLocalizedPath(path, locale)} data-home-i18n={`nav.${key}`} data-localized-path={path} aria-current={currentSection(path) ? 'page' : undefined}>{text[key]}</a>
+      ))}
+    </div>
+    <div class="site-nav-actions">
+      <button type="button" data-theme-toggle class="nav-icon-button" aria-label="Switch color theme"><span data-theme-icon aria-hidden="true">☼</span></button>
+      {showLanguageSelector && (
+        <details data-dropdown class="language-control">
+          <summary aria-label="Language" aria-expanded="false"><span data-language-current>{localeLabels[locale]}</span></summary>
+          <div class="language-menu">
+            {locales.map((target) => (
+              <a href={getLanguagePath(pathname, target)} data-language-link data-target-locale={target} aria-current={target === locale ? 'true' : undefined}>{localeLabels[target]}</a>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+    <details data-dropdown class="mobile-nav">
+      <summary data-home-i18n="nav.menu" aria-expanded="false">{text.menu}</summary>
+      <div class="mobile-nav-panel">
+        {links.map(({ path, key }) => (
+          <a href={getLocalizedPath(path, locale)} data-localized-path={path} data-home-i18n={`nav.${key}`} aria-current={currentSection(path) ? 'page' : undefined}>{text[key]}</a>
+        ))}
+        {showLanguageSelector && locales.map((target) => (
+          <a href={getLanguagePath(pathname, target)} data-language-link data-target-locale={target} aria-current={target === locale ? 'true' : undefined}>{localeLabels[target]}</a>
+        ))}
+        <button type="button" data-theme-toggle><span data-theme-icon aria-hidden="true">☼</span> <span data-theme-label>Theme</span></button>
+      </div>
+    </details>
+  </nav>
+</header>

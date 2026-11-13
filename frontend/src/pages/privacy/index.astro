@@ -1,40 +1,27 @@
 ---
 import Base from '@/templates/Base.astro';
+import { sitePath } from '@/utils/paths.mjs';
 ---
 
 <Base head={{ title: 'Privacy | WeiKnight', description: 'Privacy information for the WeiKnight personal site.' }} theme='real'>
   <main class='mx-auto w-full max-w-4xl px-5 py-12 font-formal-sans text-real-text sm:py-16'>
-    <a href='/' class='text-sm text-real-accent hover:underline'>← Home</a>
+    <a href={sitePath('/')} class='text-sm text-real-accent hover:underline'>← Home</a>
     <article class='prose prose-base prose-invert prose-slate mt-10 max-w-none prose-headings:font-black prose-a:text-real-accent prose-strong:text-white md:prose-lg'>
       <h1>Privacy Policy</h1>
-      <p><strong>Last updated: August 25, 2026</strong></p>
-      <p>This page explains the limited information processed when you use this personal website.</p>
+      <p><strong>Last updated: November 13, 2026</strong></p>
+      <p>This personal website publishes static pages generated from source files and Markdown content, hosted on GitHub Pages.</p>
 
-      <h2>Information processed</h2>
-      <p>Accounts are created by the administrator; public registration is not available. The server stores the username, display name, optional biography, authorization role, password hash, account status, and optional uploaded avatar needed to provide authenticated access and account profiles.</p>
-      <p>After login, the site uses a session cookie to keep you signed in. The cookie is used only for authentication and is not used for advertising or cross-site tracking.</p>
-      <p>The web server may record ordinary technical logs such as request time, requested path, IP address, browser information, and response status for operation and security troubleshooting.</p>
+      <h2>Browser preferences</h2>
+      <p>The site stores your language and color theme choices in your browser’s local storage. These preferences stay on your device and are used to display the site as you prefer. You can remove them by clearing this site’s browser data.</p>
 
-      <h2>How information is used</h2>
-      <ul>
-        <li>To authenticate users and protect restricted content.</li>
-        <li>To operate, secure, diagnose, and maintain the website.</li>
-        <li>To manage content uploaded by administrators.</li>
-      </ul>
-      <p>This site does not sell personal information and does not use personal information for targeted advertising.</p>
+      <h2>Hosting and external resources</h2>
+      <p>GitHub Pages processes requests to deliver these pages and may collect technical information such as IP addresses and request logs under <a href='https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement' target='_blank' rel='noopener noreferrer'>GitHub’s privacy statement</a>.</p>
+      <p>Pages load fonts from Google Fonts. Your browser contacts Google to retrieve the font styles and files; Google’s privacy policy applies to those requests.</p>
+      <p>The site does not add analytics, advertising trackers, or application cookies.</p>
 
-      <h2>Storage and security</h2>
-      <p>Account data and managed content are stored on the site server. Passwords are stored as one-way hashes rather than plain text. Access is limited according to account roles.</p>
-      <p>No internet service can guarantee absolute security. Software, access controls, and deployment configuration are maintained to reduce avoidable risk.</p>
-
-      <h2>Third-party links</h2>
-      <p>This site may link to external services. Their own privacy policies apply when you leave this site.</p>
-
-      <h2>Your choices</h2>
-      <p>You may ask the administrator to review, disable, or delete your account. Session data can also be removed from your browser by logging out or clearing site cookies.</p>
-
-      <h2>Changes and contact</h2>
-      <p>This policy may be updated when site functionality or hosting practices change. Questions can be sent to <a href='mailto:weiknight0@outlook.com'>weiknight0@outlook.com</a>.</p>
+      <h2>Links and contact</h2>
+      <p>External links lead to services with their own privacy policies. If you contact me by email, your message is handled by the email providers involved and used to respond to your inquiry.</p>
+      <p>This policy may be updated when the site or its hosting changes. Questions can be sent to <a href='mailto:weiknight0@outlook.com'>weiknight0@outlook.com</a>.</p>
     </article>
   </main>
 </Base>

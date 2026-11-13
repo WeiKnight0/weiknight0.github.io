@@ -1,0 +1,22 @@
+---
+import { sitePath } from '@/utils/paths.mjs';
+import Base from '@/templates/Base.astro';
+---
+
+<Base head={{ title: '关于本站 | WeiKnight', description: '介绍 WeiKnight 个人网站的用途与内容。' }} theme='real' locale='zh-cn'>
+  <main class='mx-auto w-full max-w-4xl px-5 py-14 text-real-text sm:py-20'>
+    <article class='prose prose-base prose-invert prose-slate max-w-none prose-headings:font-black prose-a:text-real-accent prose-strong:text-white md:prose-lg'>
+      <p class='not-prose text-xs font-bold uppercase tracking-[.2em] text-real-accent'>本站说明</p>
+      <h1>关于本站</h1>
+      <p class='lead'>这里整理我的项目、学习笔记与原创创作。</p>
+      <p>我建立这个网站，是想把平时制作和学习的内容放在同一个地方。这里收录软件项目、计算机专业课程的笔记，以及我创作的角色与世界观。</p>
+      <p>笔记按照主题整理，方便循序阅读和查找；原创内容则分为角色档案与世界观设定。随着新内容加入，这些部分也会持续补充和调整。</p>
+      <p>本站由 WeiKnight 维护，以静态页面形式发布在 GitHub Pages。项目与原创内容在构建时从 Markdown 生成，语言与主题偏好保存在浏览器中。</p>
+      <p>部分栏目仍在完善中，内容与组织方式可能会随着整理进度变化。</p>
+      <h2>开始浏览</h2>
+      <p>可以查看<a href={sitePath("/projects/zh-cn/")}>项目</a>、阅读<a href={sitePath("/notes/")}>学习笔记</a>，或进入<a href={sitePath("/worldbuilding/zh-cn/")}>世界观档案</a>。</p>
+      <h2>联系</h2>
+      <p>如果有问题或建议，欢迎通过 <a href='mailto:weiknight0@outlook.com'>weiknight0@outlook.com</a> 联系我，也可以在 <a href='https://github.com/WeiKnight0' target='_blank' rel='noopener noreferrer'>GitHub</a> 找到我。</p>
+    </article>
+  </main>
+</Base>

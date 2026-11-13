@@ -1,31 +1,20 @@
 module.exports = {
   content: [
-    './src/**/*.{astro,html,js,jsx,svelte,ts,tsx,vue}',
-  ],
-  // These states are applied by the static admin script at runtime.
-  safelist: [
-    'text-amber-200',
-    'border-red-300/40',
-    'bg-red-300/10',
-    'text-red-100',
-    'border-transparent',
-    'hover:border-white/30',
-    'hover:bg-white/5',
-    'text-white/85',
+    './src/**/*.{astro,html,js,mjs,ts}',
   ],
   theme: {
     extend: {
       fontFamily: {
         // Chinese is the default CJK shape; Japanese is opt-in via jp-display-*.
-        'real-sans': ['Inter', '"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'sans-serif'],
+        'real-sans': ['Manrope', '"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'sans-serif'],
         'real-mono': ['"JetBrains Mono"', 'Consolas', 'Courier New', '"Noto Sans SC"', '"Microsoft YaHei"', 'monospace'],
         'fiction-serif': ['Georgia', '"Noto Serif SC"', '"Source Han Serif SC"', '"Songti SC"', 'SimSun', 'serif'],
         'fiction-sans': ['"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'sans-serif'],
-        'formal-sans': ['Arial', '"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'SimHei', 'sans-serif'],
+        'formal-sans': ['Manrope', '"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'SimHei', 'sans-serif'],
         'formal-serif': ['"Times New Roman"', '"Noto Serif SC"', '"Songti SC"', 'SimSun', 'serif'],
         fiction: ['Georgia', '"Noto Serif SC"', '"Source Han Serif SC"', '"Songti SC"', 'SimSun', 'serif'],
         'readable-mono': ['"JetBrains Mono"', 'Consolas', 'Courier New', '"Noto Sans SC"', '"Microsoft YaHei"', 'monospace'],
-        zh: ['Inter', '"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'sans-serif'],
+        zh: ['Manrope', '"Noto Sans SC"', '"Microsoft YaHei"', '"PingFang SC"', 'sans-serif'],
         // Japanese display fonts are only for explicitly marked Japanese text.
         'jp-display-sans': ['"Noto Sans JP"', '"Hiragino Sans"', '"Yu Gothic"', 'sans-serif'],
         'jp-display-serif': ['"Noto Serif JP"', '"Yu Mincho"', '"Hiragino Mincho ProN"', 'serif'],
@@ -73,7 +62,6 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/aspect-ratio'),
     require('@tailwindcss/typography'),
   ],
 };
