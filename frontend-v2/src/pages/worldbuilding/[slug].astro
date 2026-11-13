@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '@/utils/paths.mjs';
 import { getCollection } from 'astro:content';
 
 import FictionPage from '@/templates/FictionPage.astro';
@@ -20,7 +21,7 @@ const { Content } = await item.render();
 
 <FictionPage title={`${item.data.title} | Worldbuilding | My Homepage`} description={item.data.description}>
   <article class='mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8'>
-    <a href='/worldbuilding/' class='text-base font-bold text-fiction-gold transition hover:text-fiction-ink'>← Back to worldbuilding</a>
+    <a href={sitePath("/worldbuilding/")} class='text-base font-bold text-fiction-gold transition hover:text-fiction-ink'>← Back to worldbuilding</a>
     <p class='mt-10 text-base font-black uppercase tracking-[0.28em] text-fiction-gold md:text-lg'>Worldbuilding</p>
     <h1 class='mt-6 font-fiction text-3xl font-black leading-tight tracking-[-0.035em] text-fiction-ink md:text-5xl'>{item.data.title}</h1>
     <p class='mt-6 text-lg leading-8 text-fiction-muted'>{item.data.description}</p>

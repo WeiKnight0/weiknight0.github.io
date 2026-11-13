@@ -190,7 +190,7 @@ body {
 .site-nav-links { gap: 1.4rem; }
 .site-nav-actions { gap: 1rem; }
 
-.site-nav-links a, .site-nav-actions > a, .language-control summary {
+.site-nav-links a, .language-control summary {
     color: rgb(var(--shell-muted));
     font-size: 0.875rem;
     text-decoration: none;
@@ -198,7 +198,7 @@ body {
     transition: color 140ms ease;
 }
 
-.site-nav-links a:hover, .site-nav-actions > a:hover, .language-control summary:hover,
+.site-nav-links a:hover, .language-control summary:hover,
 .site-nav-links a[aria-current="page"] { color: rgb(var(--shell-text)); }
 .site-nav-links a:hover, .site-nav-links a[aria-current="page"] {
     text-decoration: underline;
@@ -206,7 +206,6 @@ body {
     text-decoration-thickness: 2px;
     text-underline-offset: 0.4em;
 }
-.site-nav-actions > a { color: rgb(var(--shell-accent)); }
 
 .nav-icon-button, .mobile-nav summary {
     display: grid;
@@ -220,13 +219,13 @@ body {
     cursor: pointer;
 }
 
-.account-control, .language-control { position: relative; }
-.account-control summary, .language-control summary, .mobile-nav summary { cursor: pointer; list-style: none; }
-.account-control summary::-webkit-details-marker, .language-control summary::-webkit-details-marker, .mobile-nav summary::-webkit-details-marker { display: none; }
+.language-control { position: relative; }
+.language-control summary, .mobile-nav summary { cursor: pointer; list-style: none; }
+.language-control summary::-webkit-details-marker, .mobile-nav summary::-webkit-details-marker { display: none; }
 .language-control summary, .mobile-nav summary { display: flex; align-items: center; gap: 0.35rem; }
 .language-control summary::after, .mobile-nav summary::after { content: '⌄'; color: rgb(var(--shell-muted)); transition: transform 140ms ease; }
 .language-control[open] summary::after, .mobile-nav[open] summary::after { transform: rotate(180deg); }
-.account-control:not([open]) > .account-menu, .language-control:not([open]) > .language-menu, .mobile-nav:not([open]) > .mobile-nav-panel { display: none; }
+.language-control:not([open]) > .language-menu, .mobile-nav:not([open]) > .mobile-nav-panel { display: none; }
 
 .navbar a:focus-visible, .navbar button:focus-visible, .navbar summary:focus-visible,
 .tool-btn:focus-visible, .footer a:focus-visible {
@@ -234,37 +233,7 @@ body {
     outline-offset: 3px;
 }
 
-.account-avatar {
-    display: grid;
-    width: 2rem;
-    height: 2rem;
-    place-items: center;
-    color: rgb(var(--shell-accent));
-    background: rgb(var(--shell-accent) / 0.14);
-    border-radius: 50%;
-    font-size: 0.85rem;
-    font-weight: 700;
-}
-
-.account-avatar img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.account-chevron {
-    position: absolute;
-    top: 1.15rem;
-    right: -0.45rem;
-    color: rgb(var(--shell-muted));
-    font-size: 0.8rem;
-    transition: transform 140ms ease;
-}
-
-.account-control[open] .account-chevron { transform: rotate(180deg); }
-
-.account-menu, .language-menu {
+.language-menu {
     position: absolute;
     top: calc(100% + 0.55rem);
     right: 0;
@@ -278,9 +247,8 @@ body {
     border-radius: 0.75rem;
     box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
 }
-.account-menu { min-width: max-content; right: -0.25rem; }
 
-.account-menu a, .account-menu button, .language-menu a {
+.language-menu a {
     padding: 0.55rem 0.7rem;
     color: rgb(var(--shell-text));
     background: transparent;
@@ -294,7 +262,7 @@ body {
     cursor: pointer;
 }
 
-.account-menu a:hover, .account-menu button:hover, .language-menu a:hover { background: rgb(var(--shell-border) / 0.06); }
+.language-menu a:hover { background: rgb(var(--shell-border) / 0.06); }
 .mobile-nav { display: none; }
 
 .outline-parent-link {
@@ -1012,8 +980,6 @@ figure.highlight figcaption a:hover {
     }
     .mobile-nav-panel a:hover, .mobile-nav-panel button:hover, .mobile-nav-panel a[aria-current="page"] { background: rgb(var(--shell-border) / 0.06); }
     .mobile-nav-panel a[aria-current="page"] { color: rgb(var(--shell-accent)); text-decoration: underline; text-underline-offset: 0.22em; }
-    .mobile-account { display: flex; align-items: center; gap: 0.65rem; }
-    .mobile-account img { width: 1.8rem; height: 1.8rem; border-radius: 50%; object-fit: cover; }
     .mobile-language { display: flex; gap: 0.25rem; border-top: 1px solid rgb(var(--shell-border) / 0.1); padding-top: 0.35rem; }
     .mobile-language a[aria-current="true"] { color: rgb(var(--shell-accent)); }
 

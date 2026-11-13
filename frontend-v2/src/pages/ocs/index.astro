@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '@/utils/paths.mjs';
 import { getCollection } from 'astro:content';
 import FictionPage from '@/templates/FictionPage.astro';
 
@@ -21,8 +22,8 @@ const characters = (await getCollection('ocs'))
     <div class='mt-14 grid gap-5'>
       {characters.length === 0 ? (
         <p data-page-i18n='oc.empty' class='text-fiction-text/60'>No original characters yet.</p>
-      ) : characters.map(({ id, data }) => (
-        <a href={`/ocs/${encodeURIComponent(id)}/`} class='group border border-fiction-accent/25 bg-fiction-surface/80 p-7 transition hover:border-fiction-accent/60 hover:bg-fiction-accent/10'>
+      ) : characters.map(({ slug, data }) => (
+        <a href={sitePath(`/ocs/${slug}/`)} class='group border border-fiction-accent/25 bg-fiction-surface/80 p-7 transition hover:border-fiction-accent/60 hover:bg-fiction-accent/10'>
           <h2 class='font-fiction-serif text-3xl font-black text-fiction-text transition group-hover:text-fiction-accent'>{data.title}</h2>
           <p class='mt-4 font-fiction-serif text-base leading-7 text-fiction-text/75'>{data.description}</p>
         </a>

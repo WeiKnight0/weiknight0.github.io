@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '@/utils/paths.mjs';
 import { getCollection } from 'astro:content';
 
 import FictionPage from '@/templates/FictionPage.astro';
@@ -40,7 +41,7 @@ const settingItems = items.filter((item) =>
       <div class='mt-7 grid gap-5 md:grid-cols-3'>
         {theoryItems.map((item) => (
           <a
-            href={`/worldbuilding/${getWorldSlug(item.slug)}/`}
+            href={sitePath(`/worldbuilding/${getWorldSlug(item.slug)}/`)}
             class="group border border-fiction-accent/25 bg-fiction-surface/80 p-7 shadow-md transition hover:border-fiction-accent/60 hover:bg-fiction-accent/10"
           >
             <h3 class="font-fiction-serif text-3xl font-black text-fiction-text transition group-hover:text-fiction-accent">
@@ -61,7 +62,7 @@ const settingItems = items.filter((item) =>
       <div class='mt-7 grid gap-5 md:grid-cols-3'>
         {settingItems.map((item) => (
           <a
-            href={`/worldbuilding/${getWorldSlug(item.slug)}/`}
+            href={sitePath(`/worldbuilding/${getWorldSlug(item.slug)}/`)}
             class="group border border-fiction-accent/25 bg-fiction-surface/80 p-7 shadow-md transition hover:border-fiction-accent/60 hover:bg-fiction-accent/10"
           >
             <h3 class="font-fiction-serif text-3xl font-black text-fiction-text transition group-hover:text-fiction-accent">

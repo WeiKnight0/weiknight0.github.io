@@ -11,6 +11,12 @@ const outputDirectory = path.join(root, 'dist');
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const sourcePattern = /^---\r?\n([\s\S]*?)\r?\n---\r?\n+```([a-z0-9+#-]+)\r?\n([\s\S]*?)\r?\n```(?:\r?\n+([\s\S]*?))?\s*$/;
 const assetFiles = ['app.js', 'color-theme.js', 'jszip.min.js', 'styles.css'];
+const baseInput = (process.env.SITE_BASE_PATH ?? '/').trim() || '/';
+if (!baseInput.startsWith('/') || baseInput.startsWith('//') || /[?#\\]/.test(baseInput)
+    || baseInput.split('/').some((part) => part === '.' || part === '..')) {
+  throw new Error('SITE_BASE_PATH must be / or a root-relative path such as /repo/');
+}
+const siteBasePath = `${baseInput.replace(/\/+$/, '')}/`;
 
 const escapeHtml = (value) => String(value)
   .replaceAll('&', '&amp;')
@@ -24,7 +30,7 @@ const strings = (value) => Array.isArray(value)
 
 const parseTemplate = (filename, source) => {
   const slug = path.basename(filename, '.md');
-  const match = source.match(sourcePattern);
+  const match = source.replace(/\r\n?/g, '\n').match(sourcePattern);
   if (!match) throw new Error(`${filename}: expected front matter followed by one template code block`);
   const metadata = YAML.parse(match[1]);
   if (!slugPattern.test(slug)
@@ -49,7 +55,7 @@ const parseTemplate = (filename, source) => {
   };
 };
 
-const renderLayout = (layout, values) => layout.replace(/{{([A-Z]+)}}/g, (_, key) => {
+const renderLayout = (layout, values) => layout.replace(/{{([A-Z_]+)}}/g, (_, key) => {
   if (!(key in values)) throw new Error(`Missing layout value: ${key}`);
   return values[key];
 });
@@ -78,7 +84,10 @@ const build = async () => {
   await fs.rm(outputDirectory, { recursive: true, force: true });
   await fs.mkdir(path.join(outputDirectory, 'assets'), { recursive: true });
   await fs.mkdir(path.join(outputDirectory, 'templates'), { recursive: true });
-  await fs.copyFile(path.join(root, 'layouts/index.html'), path.join(outputDirectory, 'index.html'));
+  const indexLayout = await fs.readFile(path.join(root, 'layouts/index.html'), 'utf8');
+  await fs.writeFile(path.join(outputDirectory, 'index.html'), renderLayout(indexLayout, {
+    SITE_BASE_PATH: escapeHtml(siteBasePath),
+  }));
   await Promise.all(assetFiles.map((filename) => fs.copyFile(
     path.join(root, 'assets', filename),
     path.join(outputDirectory, 'assets', filename),
@@ -86,6 +95,7 @@ const build = async () => {
   await Promise.all(templates.map((template) => fs.writeFile(
     path.join(outputDirectory, template.path),
     renderLayout(templateLayout, {
+      SITE_BASE_PATH: escapeHtml(siteBasePath),
       TITLE: escapeHtml(template.title),
       CATEGORY: escapeHtml(template.category),
       HEADING: escapeHtml(template.title),

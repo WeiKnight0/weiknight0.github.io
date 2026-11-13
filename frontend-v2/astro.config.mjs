@@ -1,37 +1,25 @@
 import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
-import sitemap from '@astrojs/sitemap';
-import robotsTxt from 'astro-robots-txt';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
 import remarkOcNames from './src/utils/remark-oc-names.mjs';
 import remarkEnv from './src/utils/remark-env.mjs';
+import remarkSitePaths from './src/utils/remark-site-paths.mjs';
+import { sitePath } from './src/utils/paths.mjs';
 
-// https://astro.build/config
+const base = sitePath('', process.env.SITE_BASE_PATH?.trim() || '/');
+
 export default defineConfig({
-  // base: '.', // Set a path prefix.
-  // Set SITE_URL to the public domain when building for production.
-  site: process.env.SITE_URL ?? 'http://localhost:4321/',
-  trailingSlash: 'ignore', // Allow both slash and non-slash URLs
-  server: {
-    // In local development Astro serves the static site and forwards API calls
-    // to Spring Boot, so the browser always uses the same /api origin.
-    proxy: {
-      '/api': {
-        target: process.env.BACKEND_URL ?? 'http://localhost:8080',
-        changeOrigin: true,
-      },
-    },
-  },
+  site: process.env.SITE_URL?.trim() || 'https://weiknight0.github.io',
+  base,
+  output: 'static',
+  trailingSlash: 'always',
   markdown: {
-    remarkPlugins: [remarkEnv, remarkMath, remarkOcNames],
+    remarkPlugins: [remarkEnv, remarkMath, remarkOcNames, [remarkSitePaths, { base }]],
     rehypePlugins: [rehypeKatex],
     shikiConfig: {
-      // Choose from Shiki's built-in themes (or add your own)
-      // https://github.com/shikijs/shiki/blob/main/docs/themes.md
       theme: 'github-light',
     },
   },
-  integrations: [react(), tailwind({}), sitemap(), robotsTxt()],
+  integrations: [tailwind({})],
 });

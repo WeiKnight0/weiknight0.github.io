@@ -1,5 +1,9 @@
 ---
+import { getCollection } from 'astro:content';
 import RealPage from '@/templates/RealPage.astro';
+import { sitePath } from '@/utils/paths.mjs';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <RealPage
@@ -16,9 +20,19 @@ import RealPage from '@/templates/RealPage.astro';
         Projects
       </h1>
     </div>
-    <div class='mt-14 grid gap-5 md:grid-cols-3' data-project-list><p class="text-real-text/70 font-real-mono">Loading projects...</p></div>
+    <div class='mt-14 grid gap-5 md:grid-cols-3'>
+      {projects.length === 0 ? (
+        <p class="project-empty">No projects published yet.</p>
+      ) : projects.map((project) => (
+        <a href={sitePath(`/projects/${project.slug}/`)} class="project-card">
+          <h2 class="text-xl font-bold">{project.data.title}</h2>
+          <p>{project.data.description}</p>
+          <div class="project-tags">
+            {project.data.tags.map((tag) => <span class="project-tag">{tag}</span>)}
+          </div>
+          <span class="project-card-link">View project ↗</span>
+        </a>
+      ))}
+    </div>
   </section>
-  <script>
-    import '@/scripts/project-list';
-  </script>
 </RealPage>

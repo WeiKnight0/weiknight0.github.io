@@ -1,116 +1,98 @@
 # WKN Personal Site
 
-前后端分离的个人网站：Astro 提供静态页面，Spring Boot 与 PostgreSQL 提供动态内容 API。生产环境由 Nginx 提供静态文件并将 `/api/` 反向代理到后端。
-
-主导航直接列出 Resume、Projects、Notes、OCs 和 Worldbuilding，并提供浅色/深色主题切换。Notes 是不经过 Astro 的独立阅读器。
+个人展示、项目、世界观、原创角色和学习笔记组成的纯静态网站，部署到 GitHub Pages。内容直接维护在 Markdown 中，不需要后端、数据库、登录、Docker 或服务器。
 
 ## 目录
 
-- `frontend-v2/`：新版 Astro 主站源码，负责生产镜像中的主站静态页面。
-- `frontend/`：旧版 Astro 前端保留目录，不参与当前生产镜像构建。
-- `notes/docs/`：指向独立 `wkn-notes` 仓库的 Git Submodule，是 Notes 唯一的 Markdown 与图片数据源。
-- `notes/reader/`：独立 Vite 阅读器，复用旧站 Notes 样式与 Markdown 扩展。
-- `notes/algorithm-templates/`：独立的算法模板静态工具。
-- `backend/`：Spring Boot API 服务。
-- `data/postgres/`：PostgreSQL 持久化数据（已忽略，不提交 Git）。
-- `data/user-avatars/`：用户头像持久化目录（已忽略，不提交 Git）。
-- `data/fiction-assets/`：委托图片持久化目录（已忽略，不提交 Git）。
-- `nginx/wkn-personal-site.conf`：生产 Nginx 示例配置。
+- `frontend-v2/`：Astro 主站，包含页面、主题、语言切换和内容集合。
+- `notes/content/`：笔记 Markdown 和配图，直接随网站一起维护。
+- `notes/reader/`：独立笔记阅读器，保留公式、代码高亮与复制、目录、折叠解答和打印。
+- `notes/algorithm-templates/`：可检索、复制和下载的算法模板工具。
+- `scripts/`：统一构建、静态预览和链接验证。
+- `.github/workflows/pages.yml`：GitHub Pages 自动部署。
 
-## 克隆仓库
+## 本地使用
 
-首次克隆时同时初始化笔记 Submodule：
+需要 Node.js 22.12 或更高版本。所有依赖使用根目录的一个 lockfile 管理。
 
 ```bash
-git clone --recurse-submodules <网站仓库地址>
+git clone <网站仓库地址>
+cd <网站目录>
+npm ci
+npm run build
+npm run preview
 ```
 
-已有工作目录可执行：
+预览地址：`http://127.0.0.1:4321/`。`npm run dev` 会先构建整站再启动预览；修改内容后重新构建即可。只开发主站且需要热更新时使用 `npm run dev:site`，这个开发服务不包含独立笔记和算法模板的构建产物。
+
+笔记已从原子模块并入 `notes/content/`。普通克隆即可获得全部内容，部署不再需要访问 GitLab 或配置额外凭据。
+
+常用检查：
 
 ```bash
-git submodule update --init --recursive
+npm run check       # Astro/TypeScript 检查和路径/笔记链接测试
+npm run build       # 生成可部署的 dist/
+npm run verify      # 检查所有 HTML、318 篇现有笔记的渲染结果和本地链接/资源
 ```
 
-更新网站时按外层仓库记录的版本同步笔记：
+笔记缺失、元数据无效或笔记路由冲突会使构建失败，避免发布不完整站点。笔记数量会随内容更新变化。
+
+## GitHub Pages 部署
+
+1. 将本项目推送到你的 GitHub 仓库的 `main` 分支。本地现有的 GitLab remote 不会自动改动；需要时自行添加 GitHub remote 并推送。
+2. 在 GitHub 仓库的 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
+3. 在 **Actions** 中运行 `Deploy GitHub Pages`，或向 `main` 推送新提交。
+4. 等待 build 和 deploy 成功，Pages 地址会显示在部署结果中。
+
+工作流自动读取 Pages 的域名和路径：
+
+- 用户主页仓库 `WeiKnight0.github.io`：`https://weiknight0.github.io/`。
+- 项目仓库 `wkn-personal-site`：`https://weiknight0.github.io/wkn-personal-site/`。
+- 配置自定义域名后，工作流同样读取 Pages 设置，无需在源码中写死地址。
+
+工作流通过 `npm ci` 安装，运行检查和构建，再验证链接，将 `dist/` 上传为 Pages artifact。只有 deploy job 具有 Pages 写权限。
+
+本地默认构建目标为 `https://weiknight0.github.io/`。测试项目路径时，可在 Git Bash 中设置环境变量：
 
 ```bash
-git pull --ff-only
-git submodule sync --recursive
-git submodule update --init --recursive
+MSYS_NO_PATHCONV=1 SITE_URL=https://weiknight0.github.io SITE_BASE_PATH=/wkn-personal-site/ npm run build
+npm run verify
+npm run preview
 ```
 
-## Docker 启动
+此时预览地址为 `http://127.0.0.1:4321/wkn-personal-site/`。`SITE_URL` 只填写协议和域名，仓库路径单独放在 `SITE_BASE_PATH`。`.env.example` 仅说明这两个构建变量；根构建通过命令行/CI 环境变量读取配置。
 
-服务器仅需 Docker 与 Docker Compose 插件，无需安装 Node.js、Java、Maven 或 Nginx。
+## 编辑内容
 
-```bash
-mkdir -p data/postgres data/user-avatars data/fiction-assets
-sudo chown -R 1000:1000 data/postgres data/user-avatars data/fiction-assets
-docker compose up -d --build
-```
+### 主站
 
-默认通过 `https://localhost` 访问网站。首次启动前生成仅供本地测试的自签证书（证书目录已被 Git 忽略）：
+- 个人资料：`frontend-v2/src/utils/Profile.ts`。
+- 项目列表和详情：`frontend-v2/src/content/projects/*.md`。
+- 世界观：`frontend-v2/src/content/world/en/` 和 `zh-cn/`。
+- 原创角色：`frontend-v2/src/content/ocs/*.md`，填写 `title`、`description`、`order`；`draft: true` 的内容不发布。
 
-```bash
-mkdir -p nginx/certs
-openssl req -x509 -newkey rsa:2048 -nodes -days 365 \
-  -keyout nginx/certs/localhost.key \
-  -out nginx/certs/localhost.crt \
-  -subj '/CN=localhost' \
-  -addext 'subjectAltName=DNS:localhost,IP:127.0.0.1,IP:::1'
-chmod 600 nginx/certs/localhost.key
-```
+页面在构建时从内容集合生成，修改 Markdown 后重新构建部署。项目列表与详情使用同一份静态内容。
 
-浏览器会显示不受信任警告；请手动继续访问，或将该证书导入本机信任库。`http://localhost` 会永久重定向至 HTTPS。`https://localhost/api/health` 可验证 Nginx 到 Spring Boot 的路由。可通过 `HTTP_PORT=8088 HTTPS_PORT=8443 docker compose up -d --build` 同时变更对外端口。
+### 笔记
 
-Nginx、Spring Boot 和 PostgreSQL 的运行进程均固定使用 UID/GID `1000:1000`。持久化目录必须属于该用户；已有数据升级时也需要先停止服务并执行上面的 `chown`。Nginx 在容器内监听非特权端口 8080，对外端口仍默认为 80。
+直接编辑 `notes/content/`。`index.md` 对应目录首页，其他 `.md` 文件对应同名目录路由，例如：
 
-运行时仅包含 Nginx（上限 128MB）、Spring Boot 后端（上限 512MB）和 PostgreSQL（上限 256MB）。Node 和 Maven 仅用于镜像构建，不会驻留在服务器内存中，适合 2GB 服务器。
+| 笔记源文件 | 公开路径（省略站点前缀） |
+| --- | --- |
+| `index.md` | `/notes/` |
+| `CSAPP/index.md` | `/notes/CSAPP/` |
+| `CSAPP/01-computer-systems-tour.md` | `/notes/CSAPP/01-computer-systems-tour/` |
 
-首次启动会自动创建动态内容所需的 PostgreSQL 数据表并导入现有项目列表。笔记不进入数据库，也没有网页编辑器；Spring Boot 只读地返回 `notes/docs/` 中的 Markdown，独立阅读器在浏览器中渲染。该目录同时以只读方式挂载到 Nginx 和后端，因此修改 Markdown 或图片后无需重新构建或重启。Nginx 会对所有 `/notes/**` 请求执行登录鉴权，并在读取页面前确认对应文件真实存在。About 与 Privacy 是 `/about/`、`/privacy/` 独立静态页面，不属于笔记数据。生产部署前必须设置强密码：`POSTGRES_PASSWORD='your-strong-password' docker compose up -d --build`。
+Markdown 相对链接、图片、公式、代码和现有阅读工具继续可用。每个笔记地址都有实际的 `index.html`，可以直接打开或刷新。`/notes/algorithm-templates/` 与 `/notes/_sources/` 是保留路径。
 
-编辑笔记前进入 Submodule 并切换到 `main`。先提交并推送笔记仓库，再回到网站仓库提交新的 Submodule 指针：
+笔记和主站一起提交、构建、部署，无需单独更新仓库指针。
 
-```bash
-git -C notes/docs switch main
-git -C notes/docs pull --ff-only
+**发布的笔记、Markdown 原文和图片均公开可访问。** 静态站点没有账户或访问控制，请在发布前确认内容适合公开。
 
-# 编辑笔记后
-git -C notes/docs add .
-git -C notes/docs commit -m "docs: update notes"
-git -C notes/docs push
+### 算法模板
 
-git add notes/docs
-git commit -m "chore: update notes submodule"
-git push
-```
+在 `notes/algorithm-templates/content/` 中维护模板；元数据格式与工具说明见该目录的 README。统一构建会将工具发布到 `/notes/algorithm-templates/`。
 
-将 `.env.example` 复制为 `.env` 后设置 `POSTGRES_PASSWORD`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。后两个变量只在数据库中尚无该用户名时初始化管理员；管理员随后在个人中心修改的资料、头像和密码都会持久化，不会在重启时被环境变量覆盖。登录后可从管理后台维护用户。所有用户都可在 `/profile/` 修改显示名称、个人简介、头像和密码；公开注册入口不存在。
+## 迁移说明
 
-OC 页面由 Astro 静态生成。新增角色时，在 `frontend-v2/src/content/ocs/` 添加 Markdown 文件，例如 `nova.md`，并填写 `title`、`description` 和 `order` frontmatter；角色正文直接写在 Markdown 中。重新构建前端即可发布，无需写入数据库。
-
-停止服务：
-
-```bash
-docker compose down
-```
-
-## 生产部署
-
-从仍含博客功能的版本升级前，先在仓库外备份旧博客表；V16 数据库迁移会永久删除该表：
-
-```bash
-docker compose exec -T postgres pg_dump -U wkn -d wkn_site --no-owner --no-privileges --table=posts --table=posts_id_seq > ../wkn-posts-before-v16.sql
-```
-
-```bash
-SITE_URL=https://your-domain.example docker compose up -d --build
-```
-
-在 `.env` 中填写 `ICP_RECORD_NUMBER=京ICP备xxxxxxxx号` 并重新构建前端镜像后，主站与 Notes 页脚会显示指向工信部备案系统的备案号；该值留空时不显示。
-
-容器内的 [Nginx 配置](nginx/wkn-personal-site.conf) 已提供静态资源、长期缓存、`/api/` 到后端容器的反向代理，以及本地测试 HTTPS。生产环境不得使用镜像内的自签证书：应挂载受信任证书与私钥替换 `/etc/nginx/certs/localhost.crt`、`/etc/nginx/certs/localhost.key`，或在此 Compose 服务前放置证书终止代理。
-
-## 不使用 Docker 的前端开发
-
-安装 Node.js 后运行 `cd frontend-v2 && npm install && npm run dev` 可开发主站。Notes 阅读器可在 `notes/reader/` 中单独安装依赖并运行 `npm run dev`；完整的登录、文件映射与 404 行为请通过 Docker 中的 Nginx 验证。
+原 Java 后端、数据库、账户、头像上传、管理界面、旧版前端和 Docker 部署代码已移除。当前项目只发布仓库中的静态内容。运行中数据库里另外保存的内容不会自动转换为 Markdown；旧服务器数据和备份需要单独保留。

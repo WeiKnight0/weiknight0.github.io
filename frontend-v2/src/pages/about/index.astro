@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '@/utils/paths.mjs';
 import Base from '@/templates/Base.astro';
 ---
 
@@ -10,9 +11,10 @@ import Base from '@/templates/Base.astro';
       <p class='lead'>This is my personal archive for projects, study notes, and original fiction.</p>
       <p>I made this site to keep the things I work on and learn in one place. It brings together software projects, notes from my computer science studies, and the characters and settings I create.</p>
       <p>The notes are organized by subject so related material is easy to follow. The fiction section is kept separate, with pages for original characters and worldbuilding. Both areas grow as I add and revise material.</p>
-      <p>The site is maintained by WeiKnight. Some sections are still being expanded, so their contents and organization may change over time.</p>
+      <p>The site is maintained by WeiKnight and published as static pages on GitHub Pages. Projects and fiction are generated from Markdown at build time; language and theme preferences are saved in your browser.</p>
+      <p>Some sections are still being expanded, so their contents and organization may change over time.</p>
       <h2>Explore</h2>
-      <p>Browse the <a href='/projects/'>projects</a>, read the <a href='/notes/'>study notes</a>, or visit the <a href='/worldbuilding/'>worldbuilding archive</a>.</p>
+      <p>Browse the <a href={sitePath("/projects/")}>projects</a>, read the <a href={sitePath("/notes/")}>study notes</a>, or visit the <a href={sitePath("/worldbuilding/")}>worldbuilding archive</a>.</p>
       <h2>Contact</h2>
       <p>For questions or feedback, email <a href='mailto:weiknight0@outlook.com'>weiknight0@outlook.com</a> or find me on <a href='https://github.com/WeiKnight0' target='_blank' rel='noopener noreferrer'>GitHub</a>.</p>
     </article>

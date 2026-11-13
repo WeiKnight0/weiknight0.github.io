@@ -104,15 +104,15 @@ button, input, textarea, select { font: inherit; }
   color: rgb(var(--page-text));
   cursor: pointer;
 }
-.language-control, .account-control { position: relative; }
-.language-control summary, .account-control summary { cursor: pointer; list-style: none; }
-.language-control summary::-webkit-details-marker, .account-control summary::-webkit-details-marker, .mobile-nav summary::-webkit-details-marker { display: none; }
+.language-control { position: relative; }
+.language-control summary { cursor: pointer; list-style: none; }
+.language-control summary::-webkit-details-marker, .mobile-nav summary::-webkit-details-marker { display: none; }
 .language-control summary, .mobile-nav summary { display: flex; align-items: center; gap: 0.35rem; }
 .language-control summary::after, .mobile-nav summary::after { content: '⌄'; color: rgb(var(--page-muted)); transition: transform 140ms ease; }
 .language-control[open] summary::after, .mobile-nav[open] summary::after { transform: rotate(180deg); }
-.language-control:not([open]) > .language-menu, .account-control:not([open]) > .account-menu, .mobile-nav:not([open]) > .mobile-nav-panel { display: none; }
-.language-control summary:focus-visible, .account-control summary:focus-visible, .mobile-nav summary:focus-visible, .site-nav a:focus-visible, .account-menu button:focus-visible, .account-menu a:focus-visible, .language-menu a:focus-visible { outline: 2px solid rgb(var(--real-accent)); outline-offset: 3px; }
-.language-menu, .account-menu {
+.language-control:not([open]) > .language-menu, .mobile-nav:not([open]) > .mobile-nav-panel { display: none; }
+.language-control summary:focus-visible, .mobile-nav summary:focus-visible, .site-nav a:focus-visible, .language-menu a:focus-visible { outline: 2px solid rgb(var(--real-accent)); outline-offset: 3px; }
+.language-menu {
   position: absolute;
   top: calc(100% + 0.55rem);
   right: 0;
@@ -126,8 +126,7 @@ button, input, textarea, select { font: inherit; }
   background: rgb(var(--page-surface));
   box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
 }
-.account-menu { min-width: max-content; right: -0.25rem; }
-.language-menu a, .account-menu a, .account-menu button {
+.language-menu a{
   padding: 0.55rem 0.7rem;
   border: 0;
   border-radius: 0.45rem;
@@ -137,12 +136,7 @@ button, input, textarea, select { font: inherit; }
   text-decoration: none;
   cursor: pointer;
 }
-.account-menu a, .account-menu button { white-space: nowrap; }
-.language-menu a:hover, .account-menu a:hover, .account-menu button:hover { background: rgb(var(--page-border) / 0.06); }
-.account-avatar { display: grid; width: 2rem; height: 2rem; overflow: visible; place-items: center; border-radius: 50%; background: rgb(var(--real-accent) / 0.14); color: rgb(var(--real-accent)); text-decoration: none; }
-.account-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-.account-chevron { position: absolute; top: 1.15rem; right: -0.45rem; font-size: 0.8rem; color: rgb(var(--page-muted)); transition: transform 140ms ease; }
-.account-control[open] .account-chevron { transform: rotate(180deg); }
+.language-menu a:hover{ background: rgb(var(--page-border) / 0.06); }
 .mobile-nav { display: none; }
 
 .site-main { min-height: 65vh; font-family: Manrope, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif; }
@@ -207,8 +201,6 @@ body.site-body main button { border-radius: 0.65rem; }
 .home-feature-card .home-inline-link { margin-top: auto; }
 .home-feature-fiction .home-label, .home-feature-fiction .home-inline-link { color: rgb(var(--fiction-accent)); }
 .home-contact { align-items: center; padding-block: 2.5rem; }
-.mobile-account { display: flex; align-items: center; gap: 0.65rem; }
-.mobile-account img { width: 1.8rem; height: 1.8rem; border-radius: 50%; object-fit: cover; }
 body.site-body main .prose-invert { --tw-prose-body: rgb(var(--page-text) / 0.82); --tw-prose-headings: rgb(var(--page-text)); --tw-prose-bold: rgb(var(--page-text)); --tw-prose-links: rgb(var(--real-accent)); --tw-prose-counters: rgb(var(--page-muted)); --tw-prose-bullets: rgb(var(--page-muted)); --tw-prose-hr: rgb(var(--page-border) / 0.14); --tw-prose-quotes: rgb(var(--page-text)); --tw-prose-quote-borders: rgb(var(--page-border) / 0.14); --tw-prose-captions: rgb(var(--page-muted)); --tw-prose-code: rgb(var(--page-text)); --tw-prose-pre-code: rgb(var(--page-text)); --tw-prose-pre-bg: rgb(var(--page-surface)); }
 
 .site-footer { border-color: rgb(var(--page-border) / 0.09); background: rgb(var(--page-bg)); color: rgb(var(--page-muted)); }

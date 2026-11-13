@@ -1,9 +1,14 @@
 ---
+import { getCollection } from 'astro:content';
 import Base from '@/templates/Base.astro';
+import { sitePath } from '@/utils/paths.mjs';
 import { AppConfig } from '@/utils/AppConfig';
 import { Profile } from '@/utils/Profile';
 
 const { title, description } = AppConfig;
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
 ---
 
 <Base head={{ title, description }} theme='home'>
@@ -15,8 +20,8 @@ const { title, description } = AppConfig;
         <p class="home-lead" data-home-i18n="hero.headline">Computer science student at Southeast University, interested in systems, software, and original worlds.</p>
         <p class="home-copy" data-home-i18n="hero.description">I’m based in Nanjing, China. This site brings together the projects and notes I make, alongside characters and stories from my own fictional settings.</p>
         <div class="mt-8 flex flex-wrap gap-3">
-          <a class="home-button home-button-primary" href="/projects/" data-home-i18n="hero.projects">View projects</a>
-          <a class="home-button" href="/about-me/" data-localized-path="/about-me/" data-home-i18n="hero.about">About me</a>
+          <a class="home-button home-button-primary" href={sitePath("/projects/")} data-localized-path="/projects/" data-home-i18n="hero.projects">View projects</a>
+          <a class="home-button" href={sitePath("/about-me/")} data-localized-path="/about-me/" data-home-i18n="hero.about">About me</a>
         </div>
         <div class="home-socials mt-7 flex gap-5 text-sm">
           <a href={Profile.github}>GitHub ↗</a>
@@ -35,21 +40,34 @@ const { title, description } = AppConfig;
     <section class="home-section mx-auto max-w-6xl px-6 py-16">
       <div class="home-section-heading">
         <div><p class="home-label" data-home-i18n="projects.eyebrow">Selected work</p><h2 data-home-i18n="projects.heading">Things I’ve built</h2></div>
-        <a class="home-inline-link" href="/projects/" data-home-i18n="projects.all">All projects →</a>
+        <a class="home-inline-link" href={sitePath("/projects/")} data-localized-path="/projects/" data-home-i18n="projects.all">All projects →</a>
       </div>
-      <div data-project-list data-project-limit="3" class="home-projects"><p class="text-real-muted" data-home-i18n="projects.loading">Loading projects…</p></div>
+      <div class="home-projects">
+        {projects.length === 0 ? (
+          <p class="project-empty" data-home-i18n="projects.empty">No projects published yet.</p>
+        ) : projects.map((project) => (
+          <a href={sitePath(`/projects/${project.slug}/`)} data-localized-path={`/projects/${project.slug}/`} class="project-card">
+            <h3>{project.data.title}</h3>
+            <p>{project.data.description}</p>
+            <div class="project-tags">
+              {project.data.tags.map((tag) => <span class="project-tag">{tag}</span>)}
+            </div>
+            <span class="project-card-link" data-home-i18n="projects.view">View project ↗</span>
+          </a>
+        ))}
+      </div>
     </section>
 
     <section class="home-section mx-auto max-w-6xl border-t px-6 py-16">
       <div class="home-section-heading"><div><p class="home-label" data-home-i18n="archive.eyebrow">Outside of code</p><h2 data-home-i18n="archive.heading">A second kind of making</h2></div></div>
       <div class="grid gap-5 md:grid-cols-2">
-        <a href="/worldbuilding/" class="home-feature-card">
+        <a href={sitePath("/worldbuilding/")} data-localized-path="/worldbuilding/" class="home-feature-card">
           <span class="home-label" data-home-i18n="archive.worldLabel">Worldbuilding</span>
           <h3 data-home-i18n="archive.worldTitle">Worlds, characters, and their rules</h3>
           <p data-home-i18n="archive.worldDescription">A growing collection of settings and ideas behind my original fiction.</p>
           <span class="home-inline-link" data-home-i18n="archive.explore">Explore the archive →</span>
         </a>
-        <a href="/ocs/" class="home-feature-card home-feature-fiction">
+        <a href={sitePath("/ocs/")} class="home-feature-card home-feature-fiction">
           <span class="home-label" data-home-i18n="archive.ocsLabel">Original characters</span>
           <h3 data-home-i18n="archive.ocsTitle">Characters I’ve created</h3>
           <p data-home-i18n="archive.ocsDescription">Profiles and notes for the characters who live in my fictional worlds.</p>
@@ -63,7 +81,4 @@ const { title, description } = AppConfig;
       <a class="home-button home-button-primary" href="mailto:weiknight0@outlook.com">weiknight0@outlook.com ↗</a>
     </section>
   </main>
-  <script>
-    import '@/scripts/project-list';
-  </script>
 </Base>

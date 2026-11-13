@@ -1,10 +1,11 @@
 ---
+import { sitePath } from '@/utils/paths.mjs';
 import { getCollection } from 'astro:content';
 import FictionPage from '@/templates/FictionPage.astro';
 
 export async function getStaticPaths() {
   return (await getCollection('ocs')).filter((entry) => !entry.data.draft).map((entry) => ({
-    params: { slug: entry.id },
+    params: { slug: entry.slug },
     props: { entry },
   }));
 }
@@ -15,7 +16,7 @@ const { Content } = await entry.render();
 
 <FictionPage title={`${entry.data.title} | OCs | WeiKnight`} description={entry.data.description}>
   <article class='mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8'>
-    <a href='/ocs/' class='text-base font-bold text-fiction-accent transition hover:text-fiction-text'>← OCs</a>
+    <a href={sitePath("/ocs/")} class='text-base font-bold text-fiction-accent transition hover:text-fiction-text'>← OCs</a>
     <h1 class='mt-10 font-fiction-serif text-3xl font-black leading-tight text-fiction-text md:text-5xl'>{entry.data.title}</h1>
     <p class='mt-6 text-lg leading-8 text-fiction-text/75'>{entry.data.description}</p>
     <div class='prose prose-base prose-invert mt-14 max-w-none prose-headings:font-fiction-serif prose-headings:text-fiction-text prose-a:text-fiction-accent prose-strong:text-fiction-text md:prose-lg'>

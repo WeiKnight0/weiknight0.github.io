@@ -1,10 +1,3 @@
-interface AccountNavigation {
-  username: string;
-  displayName?: string;
-  avatarUrl?: string;
-  role: 'admin' | 'user';
-}
-
 const setupDropdowns = () => {
   document.querySelectorAll('[data-dropdown-scope]').forEach((scope) => {
     const dropdowns = Array.from(scope.querySelectorAll<HTMLDetailsElement>('details[data-dropdown]'));
@@ -44,52 +37,6 @@ const setupDropdowns = () => {
   });
 };
 
-const setupAccountNavigation = async () => {
-  try {
-    const response = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
-    if (!response.ok) return;
-    const account = await response.json() as AccountNavigation;
-    const accountName = account.displayName || account.username;
-    document.querySelectorAll<HTMLElement>('[data-account-login]')
-      .forEach((element) => { element.hidden = true; });
-    document.querySelectorAll<HTMLElement>('[data-account-profile]').forEach((element) => {
-      const image = element.querySelector('[data-account-avatar-image]') as HTMLImageElement;
-      const fallback = element.querySelector('[data-account-avatar-fallback]') as HTMLElement;
-      element.hidden = false;
-      const trigger = element.querySelector<HTMLElement>('[data-account-trigger]') ?? element;
-      trigger.title = `${accountName} — Open account menu`;
-      trigger.setAttribute('aria-label', `${accountName} — Open account menu`);
-      fallback.textContent = accountName.trim().charAt(0).toUpperCase();
-      image.hidden = !account.avatarUrl;
-      fallback.hidden = Boolean(account.avatarUrl);
-      if (account.avatarUrl) image.src = account.avatarUrl;
-    });
-    document.querySelectorAll<HTMLElement>('[data-account-admin]')
-      .forEach((element) => { element.hidden = account.role !== 'admin'; });
-    document.querySelectorAll<HTMLElement>('[data-account-logout]')
-      .forEach((element) => { element.hidden = false; });
-  } catch {
-    // Network failure leaves the navigation in its signed-out state.
-  }
-};
-
-const setupLogout = () => {
-  document.querySelectorAll<HTMLButtonElement>('[data-account-logout]').forEach((button) => {
-    if (button.dataset.logoutReady === 'true') return;
-    button.dataset.logoutReady = 'true';
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      try {
-        await siteApi('/auth/logout', { method: 'POST' });
-        location.replace('/');
-      } catch {
-        button.textContent = 'Sign out failed';
-        button.disabled = false;
-      }
-    });
-  });
-};
-
 const setupThemeControls = () => {
   const root = document.documentElement;
   const buttons = document.querySelectorAll<HTMLElement>('[data-theme-toggle]');
@@ -121,12 +68,8 @@ const setupThemeControls = () => {
 
 const setupNavigation = () => {
   setupDropdowns();
-  void setupAccountNavigation();
-  setupLogout();
   setupThemeControls();
 };
 
 setupNavigation();
 document.addEventListener('astro:page-load', setupNavigation);
-window.addEventListener('account-profile-change', setupAccountNavigation);
-import { siteApi } from '@/utils/site-api';

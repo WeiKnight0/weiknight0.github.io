@@ -29,4 +29,6 @@ void solve() {
 Optional usage notes can be written here.
 ````
 
-Run `npm run build` to validate the content and generate `dist/`. The build fails on malformed metadata, duplicate order values, invalid slugs, or missing code.
+From the repository root, run `npm run build --workspace notes/algorithm-templates` after the root workspace install to validate the content and generate `dist/`. The build fails on malformed metadata, duplicate order values, invalid slugs, or missing code. Both LF and CRLF content files are supported.
+
+The parent assembler copies `dist/` to `${SITE_BASE_PATH}notes/algorithm-templates/`. `SITE_BASE_PATH` defaults to `/`; pass `/repo/` for a GitHub Pages repository site. The build substitutes `{{SITE_BASE_PATH}}` in both layouts for the favicon and navigation to the main notes site. Links and assets within the algorithm templates remain relative, including downloadable pages. No separate install or lockfile update is needed in this directory.

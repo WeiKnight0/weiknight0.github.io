@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '@/utils/paths.mjs';
 import Base from '@/templates/Base.astro';
 import { Profile } from '@/utils/Profile';
 const location = '中国江苏省南京市';
@@ -32,7 +33,7 @@ const school = '东南大学';
         <article>
           <h3 class='text-xl font-bold'>原创世界</h3>
           <p class='mt-3 leading-7 text-white/60'>我也创作原创角色并构建他们生活的世界，整理其中的规则、历史与人物关系。</p>
-          <a href='/worldbuilding/zh-cn/' class='mt-4 inline-flex text-sm font-bold text-real-accent hover:underline'>浏览设定档案 ↗</a>
+          <a href={sitePath("/worldbuilding/zh-cn/")} class='mt-4 inline-flex text-sm font-bold text-real-accent hover:underline'>浏览设定档案 ↗</a>
         </article>
       </div>
     </section>

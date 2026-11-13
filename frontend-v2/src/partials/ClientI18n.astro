@@ -9,6 +9,8 @@
     normalizePath,
   } from '@/utils/i18n';
 
+  import { sitePath } from '@/utils/paths.mjs';
+
   const pages: Record<'en' | 'zh-cn', Record<string, { title: string; description: string; text: Record<string, string>; links: Record<string, string> }>> = {
     en: {
       '/': {
@@ -27,7 +29,8 @@
           'projects.eyebrow': 'Selected work',
           'projects.heading': 'Things I’ve built',
           'projects.all': 'All projects →',
-          'projects.loading': 'Loading projects…',
+          'projects.empty': 'No projects published yet.',
+          'projects.view': 'View project ↗',
           'archive.eyebrow': 'Outside of code',
           'archive.heading': 'A second kind of making',
           'archive.worldLabel': 'Worldbuilding',
@@ -70,7 +73,8 @@
           'projects.eyebrow': '部分项目',
           'projects.heading': '做过的东西',
           'projects.all': '全部项目 →',
-          'projects.loading': '正在加载项目…',
+          'projects.empty': '暂时没有已发布的项目。',
+          'projects.view': '查看项目 ↗',
           'archive.eyebrow': '代码之外',
           'archive.heading': '另一种创作',
           'archive.worldLabel': '世界观',
@@ -132,7 +136,7 @@
     document.querySelectorAll<HTMLElement>('[data-home-link], [data-page-href]').forEach((element) => {
       const key = element.dataset.pageHref || element.dataset.homeLink;
       const href = key && page?.links[key as keyof typeof page.links];
-      if (href) element.setAttribute('href', href);
+      if (href) element.setAttribute('href', sitePath(href));
     });
 
     document.querySelectorAll<HTMLElement>('[data-localized-path]').forEach((element) => {
@@ -144,17 +148,13 @@
       const target = element.dataset.targetLocale;
       if (target) element.href = getLanguagePath(pathname, target as 'en' | 'zh-cn');
     });
-    document.querySelector('link[rel="canonical"]')?.setAttribute('href', new URL(pathname, window.location.origin).toString());
-    if (!hasDistinctLocalePaths(pathname)) {
-      document.querySelector('link[hreflang="x-default"]')?.setAttribute('href', new URL(pathname, window.location.origin).toString());
-    }
   };
 
   const setupClientI18n = () => {
     const pathname = normalizePath(window.location.pathname);
     const routeLocale = getLocaleFromPath(pathname);
     const localizedRoute = routeLocale === 'zh-cn';
-    const locale = localizedRoute ? routeLocale : getStoredLocale();
+    const locale = hasDistinctLocalePaths(pathname) ? routeLocale : getStoredLocale();
     if (localizedRoute) localStorage.setItem(storageKey, locale);
     applyLocale(locale);
 
@@ -165,7 +165,7 @@
         const target = link.dataset.targetLocale;
         if (!target) return;
         localStorage.setItem(storageKey, target);
-        if (getLanguagePath(window.location.pathname, target as 'en' | 'zh-cn') !== pathname) return;
+        if (getLanguagePath(window.location.pathname, target as 'en' | 'zh-cn') !== sitePath(pathname)) return;
         event.preventDefault();
         applyLocale(target as 'en' | 'zh-cn');
       });

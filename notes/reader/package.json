@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "node --test src/note-links.test.mjs"
   },
   "dependencies": {
     "highlight.js": "^11.12.0",

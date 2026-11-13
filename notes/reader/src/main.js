@@ -1,13 +1,4 @@
-import rehypeKatex from 'rehype-katex';
 import 'katex/dist/katex.min.css';
-import rehypeRaw from 'rehype-raw';
-import rehypeStringify from 'rehype-stringify';
-import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import remarkParse from 'remark-parse';
-import remarkRehype from 'remark-rehype';
-import { unified } from 'unified';
 import hljs from 'highlight.js/lib/core';
 import bash from 'highlight.js/lib/languages/bash';
 import c from 'highlight.js/lib/languages/c';
@@ -22,11 +13,10 @@ import typescript from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
 import yaml from 'highlight.js/lib/languages/yaml';
 
-import remarkCodeLanguageMarker from './remark-code-language-marker.mjs';
-import remarkEnv from './remark-env.mjs';
-import remarkNoteLinks from './remark-note-links.mjs';
+import { renderMarkdown } from './render-markdown.mjs';
 
-const NOTE_ROUTE = /^\/notes(?:\/(.*?))?\/?$/;
+const SITE_BASE_PATH = import.meta.env.SITE_BASE_PATH;
+const siteHref = (path) => `${SITE_BASE_PATH}${path.replace(/^\//, '')}`;
 const FRONT_MATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 const CODE_LANGUAGE_LABELS = {
   asm: 'Assembly',
@@ -107,11 +97,11 @@ function initializeFooter() {
 
 const SHELL_TEXT = {
   en: {
-    nav: { home: 'Home', about: 'About me', projects: 'Projects', notes: 'Notes', ocs: 'OCs', worldbuilding: 'Worldbuilding', login: 'Login', profile: 'Personal center', administration: 'Administration', signOut: 'Sign out', menu: 'Menu' },
+    nav: { home: 'Home', about: 'About me', projects: 'Projects', notes: 'Notes', ocs: 'OCs', worldbuilding: 'Worldbuilding', menu: 'Menu' },
     footer: { tagline: 'A personal archive for projects, notes and fictional worlds.', about: 'About this site', privacy: 'Privacy' },
   },
   'zh-cn': {
-    nav: { home: '首页', about: '关于我', projects: '项目', notes: '笔记', ocs: '原创角色', worldbuilding: '世界观', login: '登录', profile: '个人中心', administration: '管理后台', signOut: '退出登录', menu: '菜单' },
+    nav: { home: '首页', about: '关于我', projects: '项目', notes: '笔记', ocs: '原创角色', worldbuilding: '世界观', menu: '菜单' },
     footer: { tagline: '记录项目、笔记与幻想世界的个人档案。', about: '关于本站', privacy: '隐私' },
   },
 };
@@ -127,8 +117,8 @@ function applyShellLocale(locale) {
   });
   document.querySelectorAll('[data-localized-path]').forEach((link) => {
     const path = link.dataset.localizedPath;
-    link.href = locale === 'zh-cn' && /^\/(about|about-me|profile|worldbuilding|projects)\/$/.test(path)
-      ? `${path}zh-cn/` : path;
+    link.href = siteHref(locale === 'zh-cn' && /^\/(about|about-me|worldbuilding|projects)\/$/.test(path)
+      ? `${path}zh-cn/` : path);
   });
   document.querySelectorAll('[data-language-current]').forEach((item) => {
     item.textContent = locale === 'zh-cn' ? '简体中文' : 'English';
@@ -167,7 +157,7 @@ function initializeDropdowns() {
     });
   });
   document.addEventListener('click', (event) => {
-    if (!(event.target instanceof Element) || event.target.closest('summary, [data-account-logout]')) return;
+    if (!(event.target instanceof Element) || event.target.closest('summary')) return;
     event.target.closest('details[data-dropdown]')?.removeAttribute('open');
   });
   document.addEventListener('keydown', (event) => {
@@ -179,61 +169,21 @@ function initializeDropdowns() {
   });
 }
 
-async function initializeAccountMenu() {
-  const response = await fetch('/api/v1/auth/me', { credentials: 'same-origin' });
-  if (!response.ok) return;
-  const account = await response.json();
-  if (typeof account.username !== 'string'
-    || typeof account.displayName !== 'string'
-    || (account.avatarUrl !== null && typeof account.avatarUrl !== 'string')
-    || (account.role !== 'admin' && account.role !== 'user')) {
-    throw new Error('Invalid account response');
+function noteSource() {
+  const source = element('meta[name="note-source"]')?.content?.trim();
+  const path = element('meta[name="note-path"]')?.content?.trim();
+  if (!source || !path) {
+    throw new Error('This note page is missing its source information. Please return to the notes index.');
   }
-
-  const name = account.displayName || account.username;
-  document.querySelectorAll('[data-account-avatar-image]').forEach((avatar) => {
-    avatar.hidden = !account.avatarUrl;
-    avatar.src = account.avatarUrl || '';
-    avatar.alt = `${name} avatar`;
-  });
-  document.querySelectorAll('[data-account-avatar-fallback]').forEach((fallback) => {
-    fallback.hidden = Boolean(account.avatarUrl);
-    fallback.textContent = name.trim().charAt(0).toUpperCase();
-  });
-  element('.account-control summary').setAttribute('aria-label', `${name} — Open account menu`);
-  document.querySelectorAll('[data-account-login]').forEach((link) => { link.hidden = true; });
-  document.querySelectorAll('[data-account-profile]').forEach((item) => { item.hidden = false; });
-  document.querySelectorAll('[data-account-admin]').forEach((link) => {
-    link.hidden = account.role !== 'admin';
-  });
-  document.querySelectorAll('[data-account-logout]').forEach((button) => { button.hidden = false; });
-  document.querySelectorAll('[data-account-logout]').forEach((button) => {
-    button.addEventListener('click', async () => {
-      button.disabled = true;
-      try {
-        const csrf = await fetch('/api/v1/auth/csrf', { credentials: 'same-origin' });
-        if (!csrf.ok) throw new Error(`Cannot load CSRF token: HTTP ${csrf.status}`);
-        const { token } = await csrf.json();
-        if (typeof token !== 'string' || !token) throw new Error('Invalid CSRF token response');
-        const signOut = await fetch('/api/v1/auth/logout', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { 'X-CSRF-Token': token },
-        });
-        if (!signOut.ok) throw new Error(`Cannot sign out: HTTP ${signOut.status}`);
-        window.location.replace('/');
-      } catch {
-        button.textContent = 'Sign out failed';
-        button.disabled = false;
-      }
-    });
-  });
+  return { source, path };
 }
 
-function notePath() {
-  const match = NOTE_ROUTE.exec(decodeURIComponent(window.location.pathname));
-  if (!match) throw new Error('Invalid note route');
-  return match[1] ?? '';
+function noteParent(path) {
+  const directory = path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : '';
+  const parent = /(^|\/)index\.(md|mdx)$/i.test(path)
+    ? directory.split('/').slice(0, -1).join('/') : directory;
+  if (/^index\.(md|mdx)$/i.test(path)) return SITE_BASE_PATH;
+  return siteHref(`notes/${parent ? `${parent}/` : ''}`);
 }
 
 function scalar(frontMatter, name) {
@@ -285,22 +235,6 @@ function parseMarkdown(markdown) {
     tags: tags(match[1]),
     body: markdown.slice(match[0].length),
   };
-}
-
-async function renderMarkdown(sourcePath, markdown) {
-  return String(await unified()
-    .use(remarkParse)
-    .use(remarkGfm)
-    .use(remarkCjkFriendly)
-    .use(remarkEnv)
-    .use(remarkMath)
-    .use(remarkNoteLinks)
-    .use(remarkCodeLanguageMarker)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeRaw)
-    .use(rehypeKatex)
-    .use(rehypeStringify)
-    .process({ path: `/notes/docs/${sourcePath}`, value: markdown }));
 }
 
 function languageLabel(lang) {
@@ -366,8 +300,8 @@ function renderMetadata(note, path) {
     return item;
   }));
   document.querySelectorAll('[data-notes-back]').forEach((link) => {
-    link.href = '../';
-    const rootNote = path === '';
+    link.href = noteParent(path);
+    const rootNote = /^(?:index\.(?:md|mdx))$/i.test(path);
     link.hidden = false;
     link.title = rootNote ? 'Back to Home' : 'Back to parent';
     link.querySelector('.outline-parent-label').textContent = rootNote ? 'Back to Home' : 'Back to parent';
@@ -577,18 +511,52 @@ async function main() {
   initializeSiteLinks();
   initializeDropdowns();
   initializeTheme();
-  initializeAccountMenu().catch((error) => console.error('Cannot load account navigation', error));
-  const path = notePath();
-  const response = await fetch(`/api/v1/notes/source?${new URLSearchParams({ path })}`);
-  if (!response.ok) throw new Error(`Cannot load note: HTTP ${response.status}`);
-  const source = await response.json();
-  const note = parseMarkdown(source.markdown);
+  const { source, path } = noteSource();
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 20000);
+  let markdown;
+  try {
+    const response = await fetch(source, { signal: controller.signal });
+    if (!response.ok) {
+      throw new Error(response.status === 404
+        ? 'The Markdown source for this note could not be found.'
+        : `The note could not be downloaded (HTTP ${response.status}).`);
+    }
+    markdown = await response.text();
+  } finally {
+    window.clearTimeout(timeout);
+  }
+  const note = parseMarkdown(markdown);
   element('.content-section').classList.toggle('wide-content', note.wide);
   element('#note-layout').classList.toggle('wide-content', note.wide);
   renderMetadata(note, path);
-  element('#note-body').innerHTML = await renderMarkdown(source.path, note.body);
+  element('#note-body').innerHTML = await renderMarkdown(path, note.body, SITE_BASE_PATH);
   initializeOutline(note.page);
   initializeTools();
 }
 
-main();
+function showNoteError(error) {
+  console.error('Cannot display note', error);
+  document.title = 'Note unavailable | Notes | WeiKnight';
+  element('#note-title').textContent = 'Unable to display this note / 暂时无法显示笔记';
+  element('.chapter-meta').hidden = true;
+  element('#note-outline').hidden = true;
+  element('#print-note').disabled = true;
+  const message = document.createElement('p');
+  message.textContent = error?.name === 'AbortError'
+    ? 'The download timed out. Please check your connection and try again. / 下载超时，请检查网络后重试。'
+    : 'The note could not be loaded or rendered. Please try again or return to the notes index. / 笔记加载或渲染失败，请重试或返回笔记首页。';
+  const retry = document.createElement('button');
+  retry.className = 'tool-btn';
+  retry.type = 'button';
+  retry.textContent = 'Try again / 重试';
+  retry.addEventListener('click', () => window.location.reload());
+  const back = document.createElement('a');
+  back.className = 'tool-btn';
+  back.href = siteHref('/notes/');
+  back.textContent = 'Notes index / 笔记首页';
+  element('#note-body').setAttribute('role', 'alert');
+  element('#note-body').replaceChildren(message, retry, document.createTextNode(' '), back);
+}
+
+main().catch(showNoteError);
