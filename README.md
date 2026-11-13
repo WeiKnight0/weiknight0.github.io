@@ -4,7 +4,7 @@
 
 ## 目录
 
-- `frontend-v2/`：Astro 主站，包含页面、主题、语言切换和内容集合。
+- `frontend/`：Astro 主站，包含页面、主题、语言切换和内容集合。
 - `notes/content/`：笔记 Markdown 和配图，直接随网站一起维护。
 - `notes/reader/`：独立笔记阅读器，保留公式、代码高亮与复制、目录、折叠解答和打印。
 - `notes/algorithm-templates/`：可检索、复制和下载的算法模板工具。
@@ -39,7 +39,7 @@ npm run verify      # 检查所有 HTML、318 篇现有笔记的渲染结果和�
 
 ## GitHub Pages 部署
 
-1. 将本项目推送到你的 GitHub 仓库的 `main` 分支。本地现有的 GitLab remote 不会自动改动；需要时自行添加 GitHub remote 并推送。
+1. 将包含 `.github/workflows/pages.yml` 的改动合并并推送到 GitHub 仓库的 `main` 分支。只保存在本地或推送到其他分支时，不会自动发布。
 2. 在 GitHub 仓库的 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
 3. 在 **Actions** 中运行 `Deploy GitHub Pages`，或向 `main` 推送新提交。
 4. 等待 build 和 deploy 成功，Pages 地址会显示在部署结果中。
@@ -50,7 +50,9 @@ npm run verify      # 检查所有 HTML、318 篇现有笔记的渲染结果和�
 - 项目仓库 `wkn-personal-site`：`https://weiknight0.github.io/wkn-personal-site/`。
 - 配置自定义域名后，工作流同样读取 Pages 设置，无需在源码中写死地址。
 
-工作流通过 `npm ci` 安装，运行检查和构建，再验证链接，将 `dist/` 上传为 Pages artifact。只有 deploy job 具有 Pages 写权限。
+工作流通过 `npm ci` 安装，运行检查和构建，再验证链接，将 `dist/` 上传为 Pages artifact。向 `main` 提交的 Pull Request 也会运行构建和验证，但不会发布；向 `main` 推送或在 `main` 手动运行工作流才会部署。只有 deploy job 具有 Pages 写权限。
+
+若 GitHub Actions 中没有出现工作流，先检查 GitHub 的 `main` 分支是否已包含 `.github/workflows/pages.yml`；仅在本地分支创建该文件不会同步到 GitHub。
 
 本地默认构建目标为 `https://weiknight0.github.io/`。测试项目路径时，可在 Git Bash 中设置环境变量：
 
@@ -66,10 +68,10 @@ npm run preview
 
 ### 主站
 
-- 个人资料：`frontend-v2/src/utils/Profile.ts`。
-- 项目列表和详情：`frontend-v2/src/content/projects/*.md`。
-- 世界观：`frontend-v2/src/content/world/en/` 和 `zh-cn/`。
-- 原创角色：`frontend-v2/src/content/ocs/*.md`，填写 `title`、`description`、`order`；`draft: true` 的内容不发布。
+- 个人资料：`frontend/src/utils/Profile.ts`。
+- 项目列表和详情：`frontend/src/content/projects/*.md`。
+- 世界观：`frontend/src/content/world/en/` 和 `zh-cn/`。
+- 原创角色：`frontend/src/content/ocs/*.md`，填写 `title`、`description`、`order`；`draft: true` 的内容不发布。
 
 页面在构建时从内容集合生成，修改 Markdown 后重新构建部署。项目列表与详情使用同一份静态内容。
 

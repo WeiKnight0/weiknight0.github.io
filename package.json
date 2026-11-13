@@ -7,16 +7,16 @@
     "node": ">=22.12.0"
   },
   "workspaces": [
-    "frontend-v2",
+    "frontend",
     "notes/reader",
     "notes/algorithm-templates"
   ],
   "scripts": {
     "dev": "npm run build && npm run preview",
-    "dev:site": "npm run dev --workspace frontend-v2",
+    "dev:site": "npm run dev --workspace frontend",
     "build": "node scripts/build.mjs",
     "preview": "node scripts/preview.mjs",
-    "check": "npm run build-types --workspace frontend-v2 && npm test",
+    "check": "npm run build-types --workspace frontend && npm test",
     "test": "node --test scripts/*.test.mjs && npm test --workspace notes/reader",
     "verify": "node scripts/verify.mjs"
   },

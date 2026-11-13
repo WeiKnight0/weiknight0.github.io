@@ -33,7 +33,7 @@ for (const base of ['/', '/repo/']) {
     assert.equal(rewrite('/notes/algorithm-templates/?q=1#top'), `${base}notes/algorithm-templates/?q=1#top`);
     assert.equal(rewrite('/notes/AI/index.md?x=1#top'), `${base}notes/AI/?x=1#top`);
     assert.equal(rewrite('/notes/index.md'), `${base}notes/`);
-    assert.equal(rewrite('/about-me/'), `${base}about-me/`);
+    assert.equal(rewrite('/about/'), `${base}about/`);
     assert.equal(rewrite('/favicon.ico'), `${base}favicon.ico`);
     assert.equal(rewrite('/'), base);
     assert.equal(rewrite(`${base}notes/AI/?q=1#top`), `${base}notes/AI/?q=1#top`);

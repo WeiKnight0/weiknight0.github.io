@@ -97,11 +97,11 @@ function initializeFooter() {
 
 const SHELL_TEXT = {
   en: {
-    nav: { home: 'Home', about: 'About me', projects: 'Projects', notes: 'Notes', ocs: 'OCs', worldbuilding: 'Worldbuilding', menu: 'Menu' },
+    nav: { home: 'Home', projects: 'Projects', notes: 'Notes', ocs: 'OCs', worldbuilding: 'Worldbuilding', menu: 'Menu' },
     footer: { tagline: 'A personal archive for projects, notes and fictional worlds.', about: 'About this site', privacy: 'Privacy' },
   },
   'zh-cn': {
-    nav: { home: '首页', about: '关于我', projects: '项目', notes: '笔记', ocs: '原创角色', worldbuilding: '世界观', menu: '菜单' },
+    nav: { home: '首页', projects: '项目', notes: '笔记', ocs: '原创角色', worldbuilding: '世界观', menu: '菜单' },
     footer: { tagline: '记录项目、笔记与幻想世界的个人档案。', about: '关于本站', privacy: '隐私' },
   },
 };
@@ -117,7 +117,7 @@ function applyShellLocale(locale) {
   });
   document.querySelectorAll('[data-localized-path]').forEach((link) => {
     const path = link.dataset.localizedPath;
-    link.href = siteHref(locale === 'zh-cn' && /^\/(about|about-me|worldbuilding|projects)\/$/.test(path)
+    link.href = siteHref(locale === 'zh-cn' && /^\/(about|worldbuilding|projects)\/$/.test(path)
       ? `${path}zh-cn/` : path);
   });
   document.querySelectorAll('[data-language-current]').forEach((item) => {

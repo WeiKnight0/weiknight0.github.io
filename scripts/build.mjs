@@ -41,7 +41,7 @@ for (const source of noteFiles.filter((file) => /\.md$/i.test(file))) {
 }
 
 const environment = { ...process.env, SITE_URL: site.origin, SITE_BASE_PATH: base };
-for (const workspace of ['frontend-v2', 'notes/reader', 'notes/algorithm-templates']) {
+for (const workspace of ['frontend', 'notes/reader', 'notes/algorithm-templates']) {
   const result = spawnSync(process.execPath, [process.env.npm_execpath, 'run', 'build', '--workspace', workspace], {
     cwd: root, env: environment, stdio: 'inherit',
   });
@@ -50,7 +50,7 @@ for (const workspace of ['frontend-v2', 'notes/reader', 'notes/algorithm-templat
 }
 
 await fs.rm(output, { recursive: true, force: true });
-await fs.cp(path.join(root, 'frontend-v2/dist'), output, { recursive: true });
+await fs.cp(path.join(root, 'frontend/dist'), output, { recursive: true });
 const readerRoot = path.join(root, 'notes/reader/dist');
 await fs.cp(readerRoot, path.join(output, 'notes-reader'), { recursive: true });
 const reader = await fs.readFile(path.join(readerRoot, 'index.html'), 'utf8');

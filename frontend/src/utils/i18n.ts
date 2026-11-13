@@ -12,7 +12,6 @@ const clientI18nPathSet = new Set<string>(clientI18nPaths);
 
 export const localizedRouteGroups = [
   { base: '/about/', localizedBase: '/about/zh-cn/' },
-  { base: '/about-me/', localizedBase: '/about-me/zh-cn/' },
   { base: '/worldbuilding/', localizedBase: '/worldbuilding/zh-cn/' },
   { base: '/projects/', localizedBase: '/projects/zh-cn/' },
 ] as const;
@@ -25,7 +24,7 @@ export const worldCategoryLabels: Record<Locale, Record<'theory' | 'setting', st
 export const i18n = {
   en: {
     nav: {
-      home: 'Home', about: 'About me', projects: 'Projects', notes: 'Notes',
+      home: 'Home', projects: 'Projects', notes: 'Notes',
       ocs: 'OCs', worldbuilding: 'Worldbuilding', menu: 'Menu',
     },
     footer: {
@@ -35,7 +34,7 @@ export const i18n = {
   },
   'zh-cn': {
     nav: {
-      home: '首页', about: '关于我', projects: '项目', notes: '笔记',
+      home: '首页', projects: '项目', notes: '笔记',
       ocs: '原创角色', worldbuilding: '世界观', menu: '菜单',
     },
     footer: {
