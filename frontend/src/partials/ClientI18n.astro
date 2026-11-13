@@ -1,3 +1,20 @@
+---
+import { projectExperience as projects } from '@/utils/ProjectExperience';
+const projectText = Object.fromEntries(['en', 'zh-cn'].map((locale) => [
+  locale,
+  Object.fromEntries(projects.flatMap((project) => {
+    const content = project[locale as 'en' | 'zh-cn'];
+    return [
+      [`project.${project.id}.title`, content.title],
+      [`project.${project.id}.description`, content.description],
+      ...content.highlights.map((highlight, index) => [`project.${project.id}.highlight.${index}`, highlight]),
+    ];
+  })),
+]));
+---
+
+<script type="application/json" id="project-translations" set:html={JSON.stringify(projectText).replaceAll('<', '\\u003c')} />
+
 <script>
   import {
     getLanguagePath,
@@ -31,15 +48,11 @@
           'skills.interests': 'Interested in',
           'skills.interestsValue': 'Computer systems · Software development',
           'skills.description': 'I learn by taking ideas apart, writing notes, and turning them into working projects.',
-          'projects.heading': 'Selected projects',
-          'projects.all': 'All projects ↗',
+          'projects.heading': 'Project Experience',
+          'projects.all': 'More on GitHub ↗',
           'projects.empty': 'No projects published yet.',
           'projects.details': 'Details ↗',
           'projects.source': 'Source ↗',
-          'project.homepage.title': 'Personal website',
-          'project.homepage.description': 'A personal site bringing together my projects, study notes, and original worlds.',
-          'project.homepage.structure': 'Static pages built with Astro, with Markdown content and support for GitHub Pages deployment.',
-          'project.homepage.reader': 'A dedicated notes reader with formulas, code highlighting, and a table of contents, alongside a searchable algorithm reference.',
           'beyond.heading': 'Learning & creating',
           'notes.heading': 'Study notes ↗',
           'notes.description': 'An ongoing record of algorithms, operating systems, networks, computer architecture, and AI.',
@@ -82,14 +95,10 @@
           'skills.interestsValue': '计算机系统 · 软件开发',
           'skills.description': '通过拆解想法、整理笔记和动手实践，把理解逐步变成可以运行的项目。',
           'projects.heading': '项目经历',
-          'projects.all': '全部项目 ↗',
+          'projects.all': '更多 GitHub 项目 ↗',
           'projects.empty': '暂时没有已发布的项目。',
           'projects.details': '项目详情 ↗',
           'projects.source': '源码 ↗',
-          'project.homepage.title': '个人网站',
-          'project.homepage.description': '整理项目与学习笔记，也收录原创角色和世界观的个人网站。',
-          'project.homepage.structure': '使用 Astro 静态生成页面，以 Markdown 维护内容，支持部署到 GitHub Pages。',
-          'project.homepage.reader': '独立笔记阅读器支持公式、代码高亮与目录，并提供可检索的算法模板工具。',
           'beyond.heading': '学习与创作',
           'notes.heading': '学习笔记 ↗',
           'notes.description': '持续整理算法、操作系统、计算机网络、计算机组成与 AI 等方向的学习记录。',
@@ -113,6 +122,13 @@
       },
     },
   };
+
+  const projectTranslations: Record<string, Record<string, string>> = JSON.parse(
+    document.getElementById('project-translations')?.textContent ?? '{}'
+  );
+  for (const locale of ['en', 'zh-cn'] as const) {
+    Object.assign(pages[locale]['/']!.text, projectTranslations[locale]);
+  }
 
   const storageKey = 'site-locale';
   const getStoredLocale = () => localStorage.getItem(storageKey) === 'zh-cn' ? 'zh-cn' : 'en';

@@ -1,14 +1,12 @@
 ---
-import { getCollection } from 'astro:content';
+import { projectExperience } from '@/utils/ProjectExperience';
 import Base from '@/templates/Base.astro';
 import { sitePath } from '@/utils/paths.mjs';
 import { AppConfig } from '@/utils/AppConfig';
 import { Profile } from '@/utils/Profile';
 
 const { title, description } = AppConfig;
-const projects = (await getCollection('projects'))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 3);
+const projects = projectExperience;
 ---
 
 <Base head={{ title, description }} theme='home'>
@@ -53,29 +51,25 @@ const projects = (await getCollection('projects'))
 
     <section class="resume-section" aria-labelledby="projects-heading">
       <div class="resume-section-label">
-        <h2 id="projects-heading" data-home-i18n="projects.heading">Selected projects</h2>
-        <a class="home-inline-link" href={sitePath('/projects/')} data-localized-path="/projects/" data-home-i18n="projects.all">All projects ↗</a>
+        <h2 id="projects-heading" data-home-i18n="projects.heading">Project Experience</h2>
+        <a class="home-inline-link" href={`${Profile.github}?tab=repositories`} target="_blank" rel="noopener noreferrer" data-home-i18n="projects.all">More on GitHub ↗</a>
       </div>
       <div class="resume-section-content resume-projects">
-        {projects.length === 0 ? (
-          <p class="resume-description" data-home-i18n="projects.empty">No projects published yet.</p>
-        ) : projects.map((project) => (
+        {projects.map((project) => (
           <article class="resume-project">
             <div class="resume-entry-heading">
-              <h3><a href={sitePath(`/projects/${project.slug}/`)} data-localized-path={`/projects/${project.slug}/`} data-home-i18n={`project.${project.slug}.title`}>{project.data.title}</a></h3>
+              <h3><a href={project.repo} target="_blank" rel="noopener noreferrer" data-home-i18n={`project.${project.id}.title`}>{project.en.title}</a></h3>
               <div class="resume-project-links">
-                <a href={sitePath(`/projects/${project.slug}/`)} data-localized-path={`/projects/${project.slug}/`} data-home-i18n="projects.details">Details ↗</a>
-                {project.data.repo && <a href={project.data.repo} target="_blank" rel="noopener noreferrer" data-home-i18n="projects.source">Source ↗</a>}
+                <a href={project.repo} target="_blank" rel="noopener noreferrer" data-home-i18n="projects.source">Source ↗</a>
               </div>
             </div>
-            <div class="project-tags">{project.data.tags.map((tag) => <span class="project-tag">{tag}</span>)}</div>
-            <p class="resume-description" data-home-i18n={`project.${project.slug}.description`}>{project.slug === 'homepage' ? 'A personal site bringing together my projects, study notes, and original worlds.' : project.data.description}</p>
-            {project.slug === 'homepage' && (
-              <ul class="resume-project-points">
-                <li data-home-i18n="project.homepage.structure">Static pages built with Astro, with Markdown content and support for GitHub Pages deployment.</li>
-                <li data-home-i18n="project.homepage.reader">A dedicated notes reader with formulas, code highlighting, and a table of contents, alongside a searchable algorithm reference.</li>
-              </ul>
-            )}
+            <div class="project-tags">{project.tags.map((tag) => <span class="project-tag">{tag}</span>)}</div>
+            <p class="resume-description" data-home-i18n={`project.${project.id}.description`}>{project.en.description}</p>
+            <ul class="resume-project-points">
+              {project.en.highlights.map((highlight, index) => (
+                <li data-home-i18n={`project.${project.id}.highlight.${index}`}>{highlight}</li>
+              ))}
+            </ul>
           </article>
         ))}
       </div>
