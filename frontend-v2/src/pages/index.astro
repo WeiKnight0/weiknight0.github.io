@@ -12,73 +12,157 @@ const projects = (await getCollection('projects'))
 ---
 
 <Base head={{ title, description }} theme='home'>
-  <main class="home-page">
-    <section class="home-hero mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1fr_300px] md:py-24">
-      <div>
-        <p class="home-eyebrow" data-home-i18n="hero.greeting">Hello, I'm</p>
-        <h1 class="home-title">{Profile.handle}</h1>
-        <p class="home-lead" data-home-i18n="hero.headline">Computer science student at Southeast University, interested in systems, software, and original worlds.</p>
-        <p class="home-copy" data-home-i18n="hero.description">I’m based in Nanjing, China. This site brings together the projects and notes I make, alongside characters and stories from my own fictional settings.</p>
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a class="home-button home-button-primary" href={sitePath("/projects/")} data-localized-path="/projects/" data-home-i18n="hero.projects">View projects</a>
-          <a class="home-button" href={sitePath("/about-me/")} data-localized-path="/about-me/" data-home-i18n="hero.about">About me</a>
-        </div>
-        <div class="home-socials mt-7 flex gap-5 text-sm">
-          <a href={Profile.github}>GitHub ↗</a>
-          <a href="mailto:weiknight0@outlook.com" data-home-i18n="hero.contact">Get in touch ↗</a>
+  <main class="home-page resume-home">
+    <header class="resume-intro">
+      <div class="resume-identity">
+        <p class="home-label" data-home-i18n="hero.greeting">A little about me</p>
+        <h1>{Profile.handle}<span class="resume-dot">.</span></h1>
+        <p class="resume-role" data-home-i18n="hero.headline">Computer science student at Southeast University</p>
+        <p class="resume-summary" data-home-i18n="hero.description">I like understanding how software works, recording what I learn, and building things of my own.</p>
+        <div class="resume-contact">
+          <span data-home-i18n="profile.locationValue">Nanjing, China</span>
+          <a href="mailto:weiknight0@outlook.com">weiknight0@outlook.com</a>
+          <a href={Profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
         </div>
       </div>
-      <img src={Profile.avatar} alt={`${Profile.name} avatar`} class="home-avatar mx-auto h-56 w-56 rounded-2xl object-cover md:h-72 md:w-72" />
-    </section>
+      <img src={Profile.avatar} alt={`${Profile.handle} avatar`} class="resume-avatar" width="160" height="160" />
+    </header>
 
-    <section class="home-facts mx-auto grid max-w-6xl gap-8 border-y px-6 py-8 sm:grid-cols-3" aria-label="Profile">
-      <div><h2 class="home-label" data-home-i18n="profile.location">Location</h2><p>{Profile.location}</p></div>
-      <div><h2 class="home-label" data-home-i18n="profile.education">Education</h2><p>{Profile.school}</p></div>
-      <div><h2 class="home-label" data-home-i18n="profile.languages">Languages</h2><p>{Profile.techStack.join(' · ')}</p></div>
-    </section>
-
-    <section class="home-section mx-auto max-w-6xl px-6 py-16">
-      <div class="home-section-heading">
-        <div><p class="home-label" data-home-i18n="projects.eyebrow">Selected work</p><h2 data-home-i18n="projects.heading">Things I’ve built</h2></div>
-        <a class="home-inline-link" href={sitePath("/projects/")} data-localized-path="/projects/" data-home-i18n="projects.all">All projects →</a>
+    <section class="resume-section" aria-labelledby="education-heading">
+      <div class="resume-section-label"><h2 id="education-heading" data-home-i18n="education.heading">Education</h2></div>
+      <div class="resume-section-content">
+        <div class="resume-entry-heading">
+          <h3 data-home-i18n="education.school">Southeast University</h3>
+          <span class="resume-meta" data-home-i18n="education.location">Nanjing, China</span>
+        </div>
+        <p class="resume-subtitle" data-home-i18n="education.subject">Computer science · Student</p>
+        <p class="resume-description" data-home-i18n="education.description">Learning how programs run, how data moves, and how the layers of a computer system fit together.</p>
       </div>
-      <div class="home-projects">
+    </section>
+
+    <section class="resume-section" aria-labelledby="skills-heading">
+      <div class="resume-section-label"><h2 id="skills-heading" data-home-i18n="skills.heading">Skills & interests</h2></div>
+      <div class="resume-section-content">
+        <dl class="resume-skills">
+          <div><dt data-home-i18n="skills.languages">Languages</dt><dd>{Profile.techStack.join(' · ')}</dd></div>
+          <div><dt data-home-i18n="skills.interests">Interested in</dt><dd data-home-i18n="skills.interestsValue">Computer systems · Software development</dd></div>
+        </dl>
+        <p class="resume-description" data-home-i18n="skills.description">I learn by taking ideas apart, writing notes, and turning them into working projects.</p>
+      </div>
+    </section>
+
+    <section class="resume-section" aria-labelledby="projects-heading">
+      <div class="resume-section-label">
+        <h2 id="projects-heading" data-home-i18n="projects.heading">Selected projects</h2>
+        <a class="home-inline-link" href={sitePath('/projects/')} data-localized-path="/projects/" data-home-i18n="projects.all">All projects ↗</a>
+      </div>
+      <div class="resume-section-content resume-projects">
         {projects.length === 0 ? (
-          <p class="project-empty" data-home-i18n="projects.empty">No projects published yet.</p>
+          <p class="resume-description" data-home-i18n="projects.empty">No projects published yet.</p>
         ) : projects.map((project) => (
-          <a href={sitePath(`/projects/${project.slug}/`)} data-localized-path={`/projects/${project.slug}/`} class="project-card">
-            <h3>{project.data.title}</h3>
-            <p>{project.data.description}</p>
-            <div class="project-tags">
-              {project.data.tags.map((tag) => <span class="project-tag">{tag}</span>)}
+          <article class="resume-project">
+            <div class="resume-entry-heading">
+              <h3><a href={sitePath(`/projects/${project.slug}/`)} data-localized-path={`/projects/${project.slug}/`} data-home-i18n={`project.${project.slug}.title`}>{project.data.title}</a></h3>
+              <div class="resume-project-links">
+                <a href={sitePath(`/projects/${project.slug}/`)} data-localized-path={`/projects/${project.slug}/`} data-home-i18n="projects.details">Details ↗</a>
+                {project.data.repo && <a href={project.data.repo} target="_blank" rel="noopener noreferrer" data-home-i18n="projects.source">Source ↗</a>}
+              </div>
             </div>
-            <span class="project-card-link" data-home-i18n="projects.view">View project ↗</span>
-          </a>
+            <div class="project-tags">{project.data.tags.map((tag) => <span class="project-tag">{tag}</span>)}</div>
+            <p class="resume-description" data-home-i18n={`project.${project.slug}.description`}>{project.slug === 'homepage' ? 'A personal site bringing together my projects, study notes, and original worlds.' : project.data.description}</p>
+            {project.slug === 'homepage' && (
+              <ul class="resume-project-points">
+                <li data-home-i18n="project.homepage.structure">Static pages built with Astro, with Markdown content and support for GitHub Pages deployment.</li>
+                <li data-home-i18n="project.homepage.reader">A dedicated notes reader with formulas, code highlighting, and a table of contents, alongside a searchable algorithm reference.</li>
+              </ul>
+            )}
+          </article>
         ))}
       </div>
     </section>
 
-    <section class="home-section mx-auto max-w-6xl border-t px-6 py-16">
-      <div class="home-section-heading"><div><p class="home-label" data-home-i18n="archive.eyebrow">Outside of code</p><h2 data-home-i18n="archive.heading">A second kind of making</h2></div></div>
-      <div class="grid gap-5 md:grid-cols-2">
-        <a href={sitePath("/worldbuilding/")} data-localized-path="/worldbuilding/" class="home-feature-card">
-          <span class="home-label" data-home-i18n="archive.worldLabel">Worldbuilding</span>
-          <h3 data-home-i18n="archive.worldTitle">Worlds, characters, and their rules</h3>
-          <p data-home-i18n="archive.worldDescription">A growing collection of settings and ideas behind my original fiction.</p>
-          <span class="home-inline-link" data-home-i18n="archive.explore">Explore the archive →</span>
-        </a>
-        <a href={sitePath("/ocs/")} class="home-feature-card home-feature-fiction">
-          <span class="home-label" data-home-i18n="archive.ocsLabel">Original characters</span>
-          <h3 data-home-i18n="archive.ocsTitle">Characters I’ve created</h3>
-          <p data-home-i18n="archive.ocsDescription">Profiles and notes for the characters who live in my fictional worlds.</p>
-          <span class="home-inline-link" data-home-i18n="archive.explore">Explore the archive →</span>
-        </a>
+    <section class="resume-section" aria-labelledby="beyond-heading">
+      <div class="resume-section-label"><h2 id="beyond-heading" data-home-i18n="beyond.heading">Learning & creating</h2></div>
+      <div class="resume-section-content resume-interests">
+        <article>
+          <h3><a href={sitePath('/notes/')} data-home-i18n="notes.heading">Study notes <span aria-hidden="true">↗</span></a></h3>
+          <p class="resume-description" data-home-i18n="notes.description">An ongoing record of algorithms, operating systems, networks, computer architecture, and AI.</p>
+          <a class="home-inline-link" href={sitePath('/notes/algorithm-templates/')} data-home-i18n="notes.templates">Algorithm reference ↗</a>
+        </article>
+        <article class="resume-creative">
+          <h3><a href={sitePath('/worldbuilding/')} data-localized-path="/worldbuilding/" data-home-i18n="creative.heading">Original worlds <span aria-hidden="true">↗</span></a></h3>
+          <p class="resume-description" data-home-i18n="creative.description">Outside of code, I build fictional worlds and explore the rules, histories, and characters within them.</p>
+          <a class="home-inline-link" href={sitePath('/ocs/')} data-home-i18n="creative.characters">Character archive ↗</a>
+        </article>
       </div>
     </section>
 
-    <section class="home-contact mx-auto max-w-6xl border-t px-6 py-12">
-      <div><p class="home-label" data-home-i18n="contact.eyebrow">Say hello</p><h2 data-home-i18n="contact.heading">Have a question or an idea?</h2></div>
-      <a class="home-button home-button-primary" href="mailto:weiknight0@outlook.com">weiknight0@outlook.com ↗</a>
-    </section>
+    <div class="resume-closing">
+      <p data-home-i18n="closing.text">More of what I learn, build, and imagine lives here.</p>
+      <a class="home-inline-link" href={sitePath('/about-me/')} data-localized-path="/about-me/" data-home-i18n="hero.about">More about me ↗</a>
+    </div>
   </main>
 </Base>
+
+<style>
+  .resume-home { width: min(100% - 3rem, 64rem); margin-inline: auto; padding-block: 3.5rem 2rem; }
+  .resume-intro { display: grid; grid-template-columns: minmax(0, 1fr) 10rem; align-items: center; gap: 3rem; padding-bottom: 2.75rem; }
+  .resume-identity h1 { margin: 0; font-size: clamp(2.7rem, 6vw, 4rem); font-weight: 740; line-height: 1.1; letter-spacing: -0.065em; }
+  .resume-dot { color: rgb(var(--real-accent)); }
+  .resume-role { margin: 0.85rem 0 0; font-size: 1.08rem; font-weight: 600; line-height: 1.6; }
+  .resume-summary { max-width: 38rem; margin: 0.65rem 0 0; color: rgb(var(--page-muted)); font-size: 0.95rem; line-height: 1.8; }
+  .resume-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; margin-top: 1.25rem; color: rgb(var(--page-muted)); font-size: 0.82rem; line-height: 1.7; }
+  .resume-contact a { color: rgb(var(--real-accent)); text-decoration: none; overflow-wrap: anywhere; }
+  .resume-contact a:hover { text-decoration: underline; }
+  .resume-avatar { width: 10rem; height: 10rem; border: 1px solid rgb(var(--page-border) / 0.1); border-radius: 1rem; object-fit: cover; background: rgb(var(--page-surface)); }
+  .resume-section { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 2.5rem; padding-block: 2rem; border-top: 1px solid rgb(var(--page-border) / 0.1); scroll-margin-top: 6rem; }
+  .resume-section-label h2 { margin: 0.2rem 0 0; color: rgb(var(--real-accent)); font-size: 0.8rem; font-weight: 650; letter-spacing: 0.035em; line-height: 1.6; }
+  .resume-section-label > a { display: inline-block; margin-top: 0.7rem; font-size: 0.76rem; }
+  .resume-section-content { min-width: 0; }
+  .resume-entry-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.45rem 1.5rem; }
+  .resume-home h3 { margin: 0; font-size: 1.05rem; font-weight: 680; line-height: 1.6; }
+  .resume-home h3 a { text-decoration: none; }
+  .resume-home h3 a:hover { color: rgb(var(--real-accent)); }
+  .resume-meta { color: rgb(var(--page-muted)); font-size: 0.8rem; }
+  .resume-subtitle { margin: 0.25rem 0 0; color: rgb(var(--page-text) / 0.8); font-size: 0.9rem; }
+  .resume-description { margin: 0.65rem 0 0; color: rgb(var(--page-muted)); font-size: 0.9rem; line-height: 1.8; }
+  .resume-skills { display: grid; gap: 0.65rem; margin: 0; font-size: 0.9rem; line-height: 1.7; }
+  .resume-skills > div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1rem; }
+  .resume-skills dt { color: rgb(var(--page-muted)); }
+  .resume-skills dd { margin: 0; font-weight: 550; }
+  .resume-project + .resume-project { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgb(var(--page-border) / 0.08); }
+  .resume-project-links { display: flex; gap: 1.15rem; font-size: 0.78rem; font-weight: 600; color: rgb(var(--real-accent)); }
+  .resume-project-links a { text-decoration: none; }
+  .resume-project-links a:hover { text-decoration: underline; }
+  .resume-project .project-tags { margin: 0.55rem 0 0; }
+  .resume-project-points { display: grid; gap: 0.35rem; margin: 0.65rem 0 0; padding-left: 1.1rem; list-style: disc; color: rgb(var(--page-muted)); font-size: 0.88rem; line-height: 1.8; }
+  .resume-project-points li::marker { color: rgb(var(--real-accent) / 0.7); }
+  .resume-interests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
+  .resume-interests .home-inline-link { display: inline-block; margin-top: 0.7rem; font-size: 0.8rem; }
+  .resume-creative h3 a:hover, .resume-creative .home-inline-link { color: rgb(var(--fiction-accent)); }
+  .resume-closing { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem 2rem; padding-block: 1.5rem; border-top: 1px solid rgb(var(--page-border) / 0.1); }
+  .resume-closing p { margin: 0; color: rgb(var(--page-muted)); font-size: 0.82rem; }
+  .resume-home a:focus-visible { outline: 2px solid rgb(var(--real-accent)); outline-offset: 4px; border-radius: 0.2rem; }
+  @media (max-width: 760px) {
+    .resume-home { width: min(100% - 2rem, 64rem); padding-top: 2rem; }
+    .resume-intro { grid-template-columns: minmax(0, 1fr) 5rem; align-items: start; gap: 1rem; padding-bottom: 2rem; }
+    .resume-avatar { width: 5rem; height: 5rem; border-radius: 0.8rem; }
+    .resume-identity h1 { font-size: clamp(2rem, 7vw, 3rem); }
+    .resume-role { font-size: 0.98rem; }
+    .resume-summary { font-size: 0.9rem; }
+    .resume-contact { column-gap: 1rem; }
+    .resume-section { grid-template-columns: 1fr; gap: 1rem; padding-block: 1.5rem; }
+    .resume-section-label { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+    .resume-section-label > a { margin: 0; }
+    .resume-interests { gap: 1.5rem; }
+  }
+  @media (max-width: 480px) {
+    .resume-intro { position: relative; grid-template-columns: 1fr; }
+    .resume-identity > .home-label { max-width: calc(100% - 5rem); }
+    .resume-identity h1 { max-width: calc(100% - 4.5rem); font-size: 2.2rem; }
+    .resume-avatar { position: absolute; top: 0; right: 0; width: 4rem; height: 4rem; }
+    .resume-role { margin-top: 1rem; }
+    .resume-skills > div { grid-template-columns: 6rem minmax(0, 1fr); gap: 0.75rem; }
+    .resume-interests { grid-template-columns: 1fr; }
+  }
+</style>

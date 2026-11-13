@@ -15,6 +15,7 @@ dist/
 *.log
 AGENTS.md
 Note/
+/temp/
 
 # Existing server data is never part of the static site
 data/
