@@ -15,5 +15,4 @@ export const collections = {
     }),
   }),
   world: defineCollection({ schema: orderedItem }),
-  ocs: defineCollection({ schema: orderedItem.extend({ draft: z.boolean().default(false) }) }),
 };
