@@ -1,6 +1,7 @@
 ---
 import { type Locale, getLanguagePath, getLocalizedPath, i18n, localeLabels, locales, normalizePath, stripLocaleFromPath } from '@/utils/i18n';
 import { Profile } from '@/utils/Profile';
+import { notesHref } from '@/utils/NotesSite';
 
 interface Props { locale: Locale; pathname: string; showLanguageSelector?: boolean }
 const { locale, pathname, showLanguageSelector = true } = Astro.props;
@@ -23,9 +24,12 @@ const currentSection = (path: string) => path === '/' ? currentPath === '/' : cu
       <span>WeiKnight</span>
     </a>
     <div class="site-nav-links">
-      {links.map(({ path, key }) => (
+      {links.map(({ path, key }) => key === 'notes' ? (
+        <a href={notesHref()} target="_blank" rel="noopener noreferrer" data-home-i18n="nav.notes">{text.notes}</a>
+      ) : (
         <a href={getLocalizedPath(path, locale)} data-home-i18n={`nav.${key}`} data-localized-path={path} aria-current={currentSection(path) ? 'page' : undefined}>{text[key]}</a>
       ))}
+      <span class="nav-unavailable" data-home-i18n="nav.others">{text.others}</span>
     </div>
     <div class="site-nav-actions">
       <button type="button" data-theme-toggle class="nav-icon-button" aria-label="Switch color theme"><span data-theme-icon aria-hidden="true">☼</span></button>
@@ -43,9 +47,12 @@ const currentSection = (path: string) => path === '/' ? currentPath === '/' : cu
     <details data-dropdown class="mobile-nav">
       <summary data-home-i18n="nav.menu" aria-expanded="false">{text.menu}</summary>
       <div class="mobile-nav-panel">
-        {links.map(({ path, key }) => (
+        {links.map(({ path, key }) => key === 'notes' ? (
+          <a href={notesHref()} target="_blank" rel="noopener noreferrer" data-home-i18n="nav.notes">{text.notes}</a>
+        ) : (
           <a href={getLocalizedPath(path, locale)} data-localized-path={path} data-home-i18n={`nav.${key}`} aria-current={currentSection(path) ? 'page' : undefined}>{text[key]}</a>
         ))}
+        <span class="nav-unavailable" data-home-i18n="nav.others">{text.others}</span>
         {showLanguageSelector && locales.map((target) => (
           <a href={getLanguagePath(pathname, target)} data-language-link data-target-locale={target} aria-current={target === locale ? 'true' : undefined}>{localeLabels[target]}</a>
         ))}
