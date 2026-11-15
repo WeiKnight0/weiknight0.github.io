@@ -1,0 +1,48 @@
+---
+import { projectExperience } from '@/utils/ProjectExperience';
+import type { Locale } from '@/utils/i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const projects = [
+  ...projectExperience,
+  {
+    id: 'nyakomcl',
+    repo: 'https://github.com/WeiKnight0/NyakoMCL',
+    tags: ['C++', 'QML', 'CMake', 'Qt'],
+    en: {
+      title: 'NyakoMCL',
+      description: 'A Minecraft launcher built with Qt.',
+    },
+    'zh-cn': {
+      title: 'NyakoMCL',
+      description: '使用 Qt 开发的 Minecraft 启动器。',
+    },
+  },
+];
+const sourceLabel = locale === 'zh-cn' ? '查看源码' : 'View source';
+---
+
+<div class="project-list">
+  {projects.map((project) => (
+    <article class="project-list-item">
+      <h2><a href={project.repo} target="_blank" rel="noopener noreferrer">{project[locale].title} <span aria-hidden="true">↗</span></a></h2>
+      <p>{project[locale].description}</p>
+      <div class="project-tags">{project.tags.map((tag) => <span class="project-tag">{tag}</span>)}</div>
+      <a class="project-source" href={project.repo} target="_blank" rel="noopener noreferrer">{sourceLabel} <span aria-hidden="true">↗</span></a>
+    </article>
+  ))}
+</div>
+
+<style>
+  .project-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+  .project-list-item { display: flex; min-width: 0; flex-direction: column; padding: 1.5rem; border: 1px solid rgb(var(--page-border) / 0.12); border-radius: 0.5rem; background: rgb(var(--page-surface)); }
+  .project-list-item h2 { margin: 0; font-size: 1.15rem; font-weight: 680; line-height: 1.45; }
+  .project-list-item h2 a { overflow-wrap: anywhere; text-decoration: none; }
+  .project-list-item h2 a:hover, .project-source:hover { color: rgb(var(--real-accent)); text-decoration: underline; }
+  .project-list-item p { margin: 0.65rem 0 1rem; color: rgb(var(--page-muted)); font-size: 0.92rem; line-height: 1.65; }
+  .project-tags { margin: auto 0 1.25rem; }
+  .project-source { align-self: flex-start; color: rgb(var(--real-accent)); font-size: 0.85rem; font-weight: 600; text-decoration: none; }
+  .project-list-item a:focus-visible { outline: 2px solid rgb(var(--real-accent)); outline-offset: 4px; }
+  @media (max-width: 680px) { .project-list { grid-template-columns: 1fr; } }
+</style>
