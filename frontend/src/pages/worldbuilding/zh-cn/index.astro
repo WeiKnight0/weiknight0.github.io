@@ -16,9 +16,6 @@ const getWorldSlug = (slug: string) => slug.split('/').at(-1);
 const theoryItems = items.filter((item) =>
   item.slug.startsWith(`${locale}/theory/`)
 );
-const settingItems = items.filter((item) =>
-  item.slug.startsWith(`${locale}/setting/`)
-);
 ---
 
 <FictionPage
@@ -39,31 +36,10 @@ const settingItems = items.filter((item) =>
     </h1>
     <section class='mt-14'>
       <h2 class='font-fiction text-3xl font-black text-fiction-ink md:text-4xl'>
-        {labels.theory}
+        {labels}
       </h2>
       <div class='mt-7 grid gap-5 md:grid-cols-3'>
         {theoryItems.map((item) => (
-          <a
-            href={sitePath(`/worldbuilding/zh-cn/${getWorldSlug(item.slug)}/`)}
-            class="rounded-[2rem] border border-fiction-gold/30 bg-black/20 p-7 transition hover:bg-fiction-gold/10"
-          >
-            <h3 class="font-fiction text-3xl font-black text-fiction-ink">
-              {item.data.title}
-            </h3>
-            <p class="mt-4 text-base leading-7 text-fiction-muted">
-              {item.data.description}
-            </p>
-          </a>
-        ))}
-      </div>
-    </section>
-
-    <section class='mt-16'>
-      <h2 class='font-fiction text-3xl font-black text-fiction-ink md:text-4xl'>
-        {labels.setting}
-      </h2>
-      <div class='mt-7 grid gap-5 md:grid-cols-3'>
-        {settingItems.map((item) => (
           <a
             href={sitePath(`/worldbuilding/zh-cn/${getWorldSlug(item.slug)}/`)}
             class="rounded-[2rem] border border-fiction-gold/30 bg-black/20 p-7 transition hover:bg-fiction-gold/10"

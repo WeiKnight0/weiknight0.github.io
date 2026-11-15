@@ -1,6 +1,6 @@
 # WeiKnight Personal Site
 
-个人主页与作品档案，使用 Astro 构建并发布为 GitHub Pages 静态站点。本站包含个人介绍、项目、原创角色和世界观；学习笔记由独立的 Notes 仓库发布，本站只提供入口。
+个人主页与作品档案，使用 Astro 构建并发布为 GitHub Pages 静态站点。本站包含个人介绍、项目和世界观理论；学习笔记由独立的 Notes 仓库发布，本站只提供入口。
 
 ## 本地开发
 
@@ -22,8 +22,7 @@ npm run preview
 - `frontend/src/utils/Profile.ts`：个人资料。
 - `frontend/src/utils/ProjectExperience.ts`：首页项目经历。
 - `frontend/src/content/projects/`：项目详情。
-- `frontend/src/content/world/`：中英文世界观内容。
-- `frontend/src/content/ocs/`：原创角色内容；未发布条目可设置 `draft: true`。
+- `frontend/src/content/world/`：中英文世界观理论内容。
 - `scripts/`：构建、预览和校验脚本。
 
 笔记与算法模板在独立 Notes 仓库维护，不属于本仓库的构建产物。

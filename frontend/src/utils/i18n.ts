@@ -7,7 +7,7 @@ export const defaultLocale: Locale = 'en';
 export const localeLabels: Record<Locale, string> = { en: 'English', 'zh-cn': '简体中文' };
 export const htmlLangs: Record<Locale, string> = { en: 'en', 'zh-cn': 'zh-CN' };
 
-export const clientI18nPaths = ['/', '/ocs/'] as const;
+export const clientI18nPaths = ['/'] as const;
 const clientI18nPathSet = new Set<string>(clientI18nPaths);
 
 export const localizedRouteGroups = [
@@ -16,16 +16,16 @@ export const localizedRouteGroups = [
   { base: '/projects/', localizedBase: '/projects/zh-cn/' },
 ] as const;
 
-export const worldCategoryLabels: Record<Locale, Record<'theory' | 'setting', string>> = {
-  en: { theory: 'Theoretical Introduction', setting: 'Worldview Introduction' },
-  'zh-cn': { theory: '理论介绍', setting: '世界观介绍' },
+export const worldCategoryLabels: Record<Locale, string> = {
+  en: 'Theoretical Introduction',
+  'zh-cn': '理论介绍',
 };
 
 export const i18n = {
   en: {
     nav: {
       home: 'Home', projects: 'Projects', notes: 'Notes',
-      ocs: 'OCs', worldbuilding: 'Worldbuilding', others: 'Others', menu: 'Menu',
+      worldbuilding: 'Worldbuilding', others: 'Others', menu: 'Menu',
     },
     footer: {
       tagline: 'A personal archive for projects, notes and fictional worlds.',
@@ -35,7 +35,7 @@ export const i18n = {
   'zh-cn': {
     nav: {
       home: '首页', projects: '项目', notes: '笔记',
-      ocs: '原创角色', worldbuilding: '世界观', others: '其他', menu: '菜单',
+      worldbuilding: '世界观', others: '其他', menu: '菜单',
     },
     footer: {
       tagline: '记录项目、笔记与幻想世界的个人档案。',

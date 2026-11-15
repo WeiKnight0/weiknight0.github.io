@@ -87,7 +87,6 @@ const projects = projectExperience;
         <article class="resume-creative">
           <h3><a href={sitePath('/worldbuilding/')} data-localized-path="/worldbuilding/" data-home-i18n="creative.heading">Original worlds <span aria-hidden="true">↗</span></a></h3>
           <p class="resume-description" data-home-i18n="creative.description">Outside of code, I build fictional worlds and explore the rules, histories, and characters within them.</p>
-          <a class="home-inline-link" href={sitePath('/ocs/')} data-home-i18n="creative.characters">Character archive ↗</a>
         </article>
       </div>
     </section>
@@ -133,7 +132,7 @@ const projects = projectExperience;
   .resume-project-points li::marker { color: rgb(var(--real-accent) / 0.7); }
   .resume-interests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
   .resume-interests .home-inline-link { display: inline-block; margin-top: 0.7rem; font-size: 0.8rem; }
-  .resume-creative h3 a:hover, .resume-creative .home-inline-link { color: rgb(var(--fiction-accent)); }
+  .resume-creative h3 a:hover { color: rgb(var(--fiction-accent)); }
   .resume-closing { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem 2rem; padding-block: 1.5rem; border-top: 1px solid rgb(var(--page-border) / 0.1); }
   .resume-closing p { margin: 0; color: rgb(var(--page-muted)); font-size: 0.82rem; }
   .resume-home a:focus-visible { outline: 2px solid rgb(var(--real-accent)); outline-offset: 4px; border-radius: 0.2rem; }
