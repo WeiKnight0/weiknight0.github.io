@@ -164,25 +164,8 @@ body.site-body main button { border-radius: 0.65rem; }
 .home-label { margin: 0 0 0.65rem; color: rgb(var(--real-accent)); font-size: 0.78rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; }
 .home-inline-link { color: rgb(var(--real-accent)); font-size: 0.88rem; font-weight: 600; text-decoration: none; }
 .home-inline-link:hover { text-decoration: underline; }
-.project-card {
-  display: flex;
-  min-height: 15rem;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 1.35rem;
-  border: 1px solid rgb(var(--page-border) / 0.11);
-  border-radius: 0.9rem;
-  background: rgb(var(--page-surface));
-  text-decoration: none;
-  transition: border-color 150ms ease, transform 150ms ease;
-}
-.project-card:hover { transform: translateY(-2px); border-color: rgb(var(--real-accent) / 0.5); }
-.project-card h3 { margin: 0.35rem 0 0; font-size: 1.25rem; font-weight: 660; letter-spacing: -0.035em; }
-.project-card p { margin: 0.65rem 0 1rem; color: rgb(var(--page-muted)); font-size: 0.92rem; line-height: 1.65; }
-.project-card-link { margin-top: auto; color: rgb(var(--real-accent)); font-size: 0.86rem; font-weight: 600; }
 .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.25rem 0 1rem; }
 .project-tag { padding: 0.25rem 0.5rem; border-radius: 999px; background: rgb(var(--page-border) / 0.055); color: rgb(var(--page-muted)); font-size: 0.72rem; }
-.project-empty { grid-column: 1 / -1; padding: 1.2rem; border: 1px dashed rgb(var(--page-border) / 0.15); border-radius: 0.8rem; color: rgb(var(--page-muted)); }
 body.site-body main .prose-invert { --tw-prose-body: rgb(var(--page-text) / 0.82); --tw-prose-headings: rgb(var(--page-text)); --tw-prose-bold: rgb(var(--page-text)); --tw-prose-links: rgb(var(--real-accent)); --tw-prose-counters: rgb(var(--page-muted)); --tw-prose-bullets: rgb(var(--page-muted)); --tw-prose-hr: rgb(var(--page-border) / 0.14); --tw-prose-quotes: rgb(var(--page-text)); --tw-prose-quote-borders: rgb(var(--page-border) / 0.14); --tw-prose-captions: rgb(var(--page-muted)); --tw-prose-code: rgb(var(--page-text)); --tw-prose-pre-code: rgb(var(--page-text)); --tw-prose-pre-bg: rgb(var(--page-surface)); }
 
 .site-footer { border-color: rgb(var(--page-border) / 0.09); background: rgb(var(--page-bg)); color: rgb(var(--page-muted)); }
