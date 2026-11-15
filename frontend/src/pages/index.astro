@@ -4,6 +4,7 @@ import Base from '@/templates/Base.astro';
 import { sitePath } from '@/utils/paths.mjs';
 import { AppConfig } from '@/utils/AppConfig';
 import { Profile } from '@/utils/Profile';
+import { notesHref } from '@/utils/NotesSite';
 
 const { title, description } = AppConfig;
 const projects = projectExperience;
@@ -79,9 +80,9 @@ const projects = projectExperience;
       <div class="resume-section-label"><h2 id="beyond-heading" data-home-i18n="beyond.heading">Learning & creating</h2></div>
       <div class="resume-section-content resume-interests">
         <article>
-          <h3><a href={sitePath('/notes/')} data-home-i18n="notes.heading">Study notes <span aria-hidden="true">↗</span></a></h3>
+          <h3><a href={notesHref()} target="_blank" rel="noopener noreferrer" data-home-i18n="notes.heading">Study notes <span aria-hidden="true">↗</span></a></h3>
           <p class="resume-description" data-home-i18n="notes.description">An ongoing record of algorithms, operating systems, networks, computer architecture, and AI.</p>
-          <a class="home-inline-link" href={sitePath('/notes/algorithm-templates/')} data-home-i18n="notes.templates">Algorithm reference ↗</a>
+          <a class="home-inline-link" href={notesHref('algorithm-templates/')} target="_blank" rel="noopener noreferrer" data-home-i18n="notes.templates">Algorithm reference ↗</a>
         </article>
         <article class="resume-creative">
           <h3><a href={sitePath('/worldbuilding/')} data-localized-path="/worldbuilding/" data-home-i18n="creative.heading">Original worlds <span aria-hidden="true">↗</span></a></h3>

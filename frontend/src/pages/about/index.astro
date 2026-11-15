@@ -1,5 +1,6 @@
 ---
 import { sitePath } from '@/utils/paths.mjs';
+import { notesHref } from '@/utils/NotesSite';
 import Base from '@/templates/Base.astro';
 ---
 
@@ -14,7 +15,7 @@ import Base from '@/templates/Base.astro';
       <p>The site is maintained by WeiKnight and published as static pages on GitHub Pages. Projects and fiction are generated from Markdown at build time; language and theme preferences are saved in your browser.</p>
       <p>Some sections are still being expanded, so their contents and organization may change over time.</p>
       <h2>Explore</h2>
-      <p>Browse the <a href={sitePath("/projects/")}>projects</a>, read the <a href={sitePath("/notes/")}>study notes</a>, or visit the <a href={sitePath("/worldbuilding/")}>worldbuilding archive</a>.</p>
+      <p>Browse the <a href={sitePath("/projects/")}>projects</a>, read the <a href={notesHref()} target="_blank" rel="noopener noreferrer">study notes</a>, or visit the <a href={sitePath("/worldbuilding/")}>worldbuilding archive</a>.</p>
       <h2>Contact</h2>
       <p>For questions or feedback, email <a href='mailto:weiknight0@outlook.com'>weiknight0@outlook.com</a> or find me on <a href='https://github.com/WeiKnight0' target='_blank' rel='noopener noreferrer'>GitHub</a>.</p>
     </article>

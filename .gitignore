@@ -6,7 +6,6 @@ dist/
 # Local configuration and secrets
 .env
 .env.*
-!.env.example
 
 # Local tooling
 .DS_Store

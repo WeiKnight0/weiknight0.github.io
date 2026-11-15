@@ -18,11 +18,6 @@ export function publicPath(base, relative = '') {
   return base + relative.split('/').map(encodeURIComponent).join('/');
 }
 
-export function noteRoute(source) {
-  const route = source.replace(/\.md$/i, '').replace(/(^|\/)index$/i, '');
-  return route.replace(/\/$/, '');
-}
-
 export function escapeHtml(value) {
   return String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;')
     .replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll("'", '&#39;');
