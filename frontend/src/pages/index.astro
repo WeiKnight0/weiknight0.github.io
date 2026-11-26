@@ -14,10 +14,10 @@ const projects = projectExperience;
   <main class="home-page resume-home">
     <header class="resume-intro">
       <div class="resume-identity">
-        <p class="home-label" data-home-i18n="hero.greeting">A little about me</p>
+        <p class="home-label" data-home-i18n="hero.greeting">Profile & experience</p>
         <h1>{Profile.handle}<span class="resume-dot">.</span></h1>
-        <p class="resume-role" data-home-i18n="hero.headline">Computer science student at Southeast University</p>
-        <p class="resume-summary" data-home-i18n="hero.description">I like understanding how software works, recording what I learn, and building things of my own.</p>
+        <p class="resume-role" data-home-i18n="hero.headline">Computer Science undergraduate at Southeast University · Class of 2027</p>
+        <p class="resume-summary" data-home-i18n="hero.description">I’m interested in how software systems work, and enjoy building applications—from web services to desktop tools.</p>
         <div class="resume-contact">
           <span data-home-i18n="profile.locationValue">Nanjing, China</span>
           <a href="mailto:weiknight0@outlook.com">weiknight0@outlook.com</a>
@@ -32,21 +32,10 @@ const projects = projectExperience;
       <div class="resume-section-content">
         <div class="resume-entry-heading">
           <h3 data-home-i18n="education.school">Southeast University</h3>
-          <span class="resume-meta" data-home-i18n="education.location">Nanjing, China</span>
+          <span class="resume-meta" data-home-i18n="education.period">Aug 2023–Jun 2027</span>
         </div>
-        <p class="resume-subtitle" data-home-i18n="education.subject">Computer science · Student</p>
-        <p class="resume-description" data-home-i18n="education.description">Learning how programs run, how data moves, and how the layers of a computer system fit together.</p>
-      </div>
-    </section>
-
-    <section class="resume-section" aria-labelledby="skills-heading">
-      <div class="resume-section-label"><h2 id="skills-heading" data-home-i18n="skills.heading">Skills & interests</h2></div>
-      <div class="resume-section-content">
-        <dl class="resume-skills">
-          <div><dt data-home-i18n="skills.languages">Languages</dt><dd>{Profile.techStack.join(' · ')}</dd></div>
-          <div><dt data-home-i18n="skills.interests">Interested in</dt><dd data-home-i18n="skills.interestsValue">Computer systems · Software development</dd></div>
-        </dl>
-        <p class="resume-description" data-home-i18n="skills.description">I learn by taking ideas apart, writing notes, and turning them into working projects.</p>
+        <p class="resume-subtitle" data-home-i18n="education.subject">Computer Science and Technology · Undergraduate</p>
+        <p class="resume-description" data-home-i18n="education.description">Coursework includes data structures, algorithm design and analysis, computer networks, discrete mathematics, and artificial intelligence.</p>
       </div>
     </section>
 
@@ -64,15 +53,38 @@ const projects = projectExperience;
                 <a href={project.repo} target="_blank" rel="noopener noreferrer" data-home-i18n="projects.source">Source ↗</a>
               </div>
             </div>
+            <div class="resume-project-meta">
+              <span data-home-i18n={`project.${project.id}.role`}>{project.en.role}</span>
+              {project.en.period && <span data-home-i18n={`project.${project.id}.period`}>{project.en.period}</span>}
+            </div>
             <div class="project-tags">{project.tags.map((tag) => <span class="project-tag">{tag}</span>)}</div>
             <p class="resume-description" data-home-i18n={`project.${project.id}.description`}>{project.en.description}</p>
             <ul class="resume-project-points">
-              {project.en.highlights.map((highlight, index) => (
-                <li data-home-i18n={`project.${project.id}.highlight.${index}`}>{highlight}</li>
-              ))}
+              {project.en.highlights.map((highlight, index) => {
+                const boundary = highlight.indexOf(': ') + 2;
+                return (
+                  <li><strong data-home-i18n={`project.${project.id}.highlight.${index}.label`}>{highlight.slice(0, boundary)}</strong><span data-home-i18n={`project.${project.id}.highlight.${index}.body`}>{highlight.slice(boundary)}</span></li>
+                );
+              })}
             </ul>
           </article>
         ))}
+      </div>
+    </section>
+
+    <section class="resume-section resume-skills-section" aria-labelledby="skills-heading">
+      <div class="resume-section-label"><h2 id="skills-heading" data-home-i18n="skills.heading">Technical skills</h2></div>
+      <div class="resume-section-content">
+        <dl class="resume-skills">
+          <div><dt data-home-i18n="skills.languages">C/C++</dt><dd data-home-i18n="skills.languagesValue">Familiar with memory management, OOP, STL containers, and C++11 features.</dd></div>
+          <div><dt data-home-i18n="skills.linux">Linux & networking</dt><dd data-home-i18n="skills.linuxValue">Familiar with Linux development; understands sockets, I/O multiplexing, and epoll.</dd></div>
+          <div><dt data-home-i18n="skills.os">Operating systems</dt><dd data-home-i18n="skills.osValue">Familiar with IPC, synchronization, deadlocks, and memory management.</dd></div>
+          <div><dt data-home-i18n="skills.algorithms">Algorithms</dt><dd data-home-i18n="skills.algorithmsValue">Familiar with common data structures, sorting, greedy algorithms, and dynamic programming.</dd></div>
+          <div><dt data-home-i18n="skills.python">Python & deep learning</dt><dd data-home-i18n="skills.pythonValue">Familiar with PyTorch and NumPy; understands deep learning and D3QN/SACD fundamentals.</dd></div>
+          <div><dt data-home-i18n="skills.simulation">Network simulation</dt><dd data-home-i18n="skills.simulationValue">Familiar with OMNeT++ and INET-based network modeling and simulation.</dd></div>
+          <div><dt data-home-i18n="skills.engineering">Development tools</dt><dd data-home-i18n="skills.engineeringValue">Familiar with Git; experience with Docker, Nginx, and LaTeX.</dd></div>
+          <div><dt data-home-i18n="skills.english">English</dt><dd data-home-i18n="skills.englishValue">Good technical and academic reading comprehension; basic communication skills.</dd></div>
+        </dl>
       </div>
     </section>
 
@@ -91,50 +103,49 @@ const projects = projectExperience;
       </div>
     </section>
 
-    <div class="resume-closing">
-      <p data-home-i18n="closing.text">More of what I learn, build, and imagine lives here.</p>
-    </div>
   </main>
 </Base>
 
 <style>
-  .resume-home { width: min(100% - 3rem, 64rem); margin-inline: auto; padding-block: 3.5rem 2rem; }
-  .resume-intro { display: grid; grid-template-columns: minmax(0, 1fr) 10rem; align-items: center; gap: 3rem; padding-bottom: 2.75rem; }
-  .resume-identity h1 { margin: 0; font-size: clamp(2.7rem, 6vw, 4rem); font-weight: 740; line-height: 1.1; letter-spacing: -0.065em; }
+  .resume-home { width: min(100% - 3rem, 67rem); margin-inline: auto; padding-block: 3rem 2rem; font-family: Arial, "Microsoft YaHei", "PingFang SC", sans-serif; }
+  body.site-body main.resume-home :is(h1, h2, h3) { letter-spacing: normal; }
+  .resume-intro { display: grid; grid-template-columns: minmax(0, 1fr) 7rem; align-items: center; gap: 2rem; padding-bottom: 2.25rem; }
+  .resume-identity h1 { margin: 0; font-size: clamp(2.7rem, 6vw, 4rem); font-weight: 700; line-height: 1.1; }
   .resume-dot { color: rgb(var(--real-accent)); }
   .resume-role { margin: 0.85rem 0 0; font-size: 1.08rem; font-weight: 600; line-height: 1.6; }
   .resume-summary { max-width: 38rem; margin: 0.65rem 0 0; color: rgb(var(--page-muted)); font-size: 0.95rem; line-height: 1.8; }
-  .resume-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; margin-top: 1.25rem; color: rgb(var(--page-muted)); font-size: 0.82rem; line-height: 1.7; }
+  .resume-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; margin-top: 1.25rem; color: rgb(var(--page-muted)); font-size: 0.92rem; line-height: 1.7; }
   .resume-contact a { color: rgb(var(--real-accent)); text-decoration: none; overflow-wrap: anywhere; }
   .resume-contact a:hover { text-decoration: underline; }
-  .resume-avatar { width: 10rem; height: 10rem; border: 1px solid rgb(var(--page-border) / 0.1); border-radius: 1rem; object-fit: cover; background: rgb(var(--page-surface)); }
-  .resume-section { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 2.5rem; padding-block: 2rem; border-top: 1px solid rgb(var(--page-border) / 0.1); scroll-margin-top: 6rem; }
-  .resume-section-label h2 { margin: 0.2rem 0 0; color: rgb(var(--real-accent)); font-size: 0.8rem; font-weight: 650; letter-spacing: 0.035em; line-height: 1.6; }
-  .resume-section-label > a { display: inline-block; margin-top: 0.7rem; font-size: 0.76rem; }
+  .resume-avatar { width: 7rem; height: 7rem; border: 1px solid rgb(var(--page-border) / 0.1); border-radius: 0.6rem; object-fit: cover; background: rgb(var(--page-surface)); }
+  .resume-section { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 2rem; padding-block: 1.75rem; border-top: 1px solid rgb(var(--page-border) / 0.15); scroll-margin-top: 6rem; }
+  .resume-section-label h2 { margin: 0.2rem 0 0; color: rgb(var(--real-accent)); font-size: 0.9rem; font-weight: 650; letter-spacing: 0.035em; line-height: 1.6; white-space: nowrap; }
+  .resume-section-label > a { display: inline-block; margin-top: 0.7rem; font-size: 0.86rem; }
   .resume-section-content { min-width: 0; }
   .resume-entry-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.45rem 1.5rem; }
   .resume-home h3 { margin: 0; font-size: 1.05rem; font-weight: 680; line-height: 1.6; }
   .resume-home h3 a { text-decoration: none; }
   .resume-home h3 a:hover { color: rgb(var(--real-accent)); }
-  .resume-meta { color: rgb(var(--page-muted)); font-size: 0.8rem; }
+  .resume-meta { color: rgb(var(--page-muted)); font-size: 0.9rem; }
   .resume-subtitle { margin: 0.25rem 0 0; color: rgb(var(--page-text) / 0.8); font-size: 0.9rem; }
   .resume-description { margin: 0.65rem 0 0; color: rgb(var(--page-muted)); font-size: 0.9rem; line-height: 1.8; }
-  .resume-skills { display: grid; gap: 0.65rem; margin: 0; font-size: 0.9rem; line-height: 1.7; }
-  .resume-skills > div { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1rem; }
-  .resume-skills dt { color: rgb(var(--page-muted)); }
-  .resume-skills dd { margin: 0; font-weight: 550; }
+  .resume-skills { display: grid; gap: 0.6rem; margin: 0; padding-left: 1.1rem; list-style: disc; font-size: 0.9rem; line-height: 1.7; }
+  .resume-skills > div { display: list-item; padding-left: 0.15rem; }
+  .resume-skills > div::marker { color: rgb(var(--real-accent) / 0.7); }
+  .resume-skills dt { display: inline; color: rgb(var(--page-text)); font-weight: 700; }
+  .resume-skills dt::after { content: ': '; }
+  .resume-skills dd { display: inline; margin: 0; color: rgb(var(--page-text) / 0.88); font-weight: 400; }
+  .resume-project-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem 1.25rem; margin-top: 0.35rem; color: rgb(var(--page-muted)); font-size: 0.9rem; line-height: 1.7; }
   .resume-project + .resume-project { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgb(var(--page-border) / 0.08); }
-  .resume-project-links { display: flex; gap: 1.15rem; font-size: 0.78rem; font-weight: 600; color: rgb(var(--real-accent)); }
+  .resume-project-links { display: flex; gap: 1.15rem; font-size: 0.88rem; font-weight: 600; color: rgb(var(--real-accent)); }
   .resume-project-links a { text-decoration: none; }
   .resume-project-links a:hover { text-decoration: underline; }
   .resume-project .project-tags { margin: 0.55rem 0 0; }
-  .resume-project-points { display: grid; gap: 0.35rem; margin: 0.65rem 0 0; padding-left: 1.1rem; list-style: disc; color: rgb(var(--page-muted)); font-size: 0.88rem; line-height: 1.8; }
+  .resume-project-points { display: grid; gap: 0.65rem; margin: 0.85rem 0 0; padding-left: 1.1rem; list-style: disc; color: rgb(var(--page-text) / 0.86); font-size: 0.9rem; line-height: 1.85; }
   .resume-project-points li::marker { color: rgb(var(--real-accent) / 0.7); }
   .resume-interests { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem; }
-  .resume-interests .home-inline-link { display: inline-block; margin-top: 0.7rem; font-size: 0.8rem; }
+  .resume-interests .home-inline-link { display: inline-block; margin-top: 0.7rem; font-size: 0.9rem; }
   .resume-creative h3 a:hover { color: rgb(var(--fiction-accent)); }
-  .resume-closing { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem 2rem; padding-block: 1.5rem; border-top: 1px solid rgb(var(--page-border) / 0.1); }
-  .resume-closing p { margin: 0; color: rgb(var(--page-muted)); font-size: 0.82rem; }
   .resume-home a:focus-visible { outline: 2px solid rgb(var(--real-accent)); outline-offset: 4px; border-radius: 0.2rem; }
   @media (max-width: 760px) {
     .resume-home { width: min(100% - 2rem, 64rem); padding-top: 2rem; }
@@ -155,7 +166,6 @@ const projects = projectExperience;
     .resume-identity h1 { max-width: calc(100% - 4.5rem); font-size: 2.2rem; }
     .resume-avatar { position: absolute; top: 0; right: 0; width: 4rem; height: 4rem; }
     .resume-role { margin-top: 1rem; }
-    .resume-skills > div { grid-template-columns: 6rem minmax(0, 1fr); gap: 0.75rem; }
     .resume-interests { grid-template-columns: 1fr; }
   }
 </style>

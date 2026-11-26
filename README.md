@@ -20,8 +20,8 @@ npm run preview
 
 - `frontend/src/pages/`：主站页面。
 - `frontend/src/utils/Profile.ts`：个人资料。
-- `frontend/src/utils/ProjectExperience.ts`：首页项目经历，也是项目列表中前三项的数据来源。
-- `frontend/src/partials/ProjectList.astro`：中英文项目列表及 NyakoMCL 条目；项目直接链接到公开仓库，不设独立详情页。
+- `frontend/src/utils/ProjectExperience.ts`：首页项目经历与项目列表的数据来源。
+- `frontend/src/partials/ProjectList.astro`：中英文项目列表；项目直接链接到公开仓库，不设独立详情页。
 - `frontend/src/content/world/`：中英文世界观理论内容。
 - `scripts/`：构建、预览和校验脚本。
 
