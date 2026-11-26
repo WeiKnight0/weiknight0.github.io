@@ -5,7 +5,8 @@
   --academic-purple: 185 148 235;
   --academic-red: 237 137 147;
   --academic-orange: 237 164 111;
-  width: min(100% - 3rem, 49rem);
+  --proof-gray: 176 183 193;
+  width: min(100% - 3rem, 56rem);
   margin-inline: auto;
   padding-block: 3rem 5rem;
   color: rgb(var(--page-text));
@@ -21,6 +22,7 @@ html[data-color-theme='light'] .world-article {
   --academic-purple: 112 67 163;
   --academic-red: 170 58 76;
   --academic-orange: 160 83 31;
+  --proof-gray: 104 112 123;
 }
 
 .world-back {
@@ -61,10 +63,13 @@ body.site-body main .world-prose :is(h2, h3, h4, h5, h6) { color: rgb(var(--page
 .world-prose .env-body > :first-child { margin-top: 0; }
 .world-prose .env-body > :last-child { margin-bottom: 0; }
 .world-prose .env.theorem { --env-color: var(--academic-gold); }
-.world-prose .env.proof { --env-color: var(--page-muted); border-left: 0; background: transparent; padding-inline: 0.5em; }
-.world-prose .env.proof::after { content: '□'; display: block; text-align: right; line-height: 1; }
+.world-prose .env.proof { --env-color: var(--proof-gray); margin-block: 1.25em; padding: 0.35em 1em; border-block: 0; border-left: 2px solid rgb(var(--env-color) / 0.7); background: rgb(var(--env-color) / 0.07); }
+.world-prose .env.proof .env-body::before { content: 'Proof.'; display: block; margin-bottom: 0.35em; color: rgb(var(--env-color)); font-style: normal; font-weight: 700; }
+.world-article[lang='zh-CN'] .world-prose .env.proof .env-body::before { content: '证明：'; }
+.world-prose .env.proof::after { content: '□'; display: block; color: rgb(var(--env-color)); text-align: right; line-height: 1; }
 .world-prose .env.example { --env-color: var(--academic-green); }
-.world-prose .env.remark, .world-prose .env.lemma { --env-color: var(--academic-purple); }
+.world-prose .env.lemma { --env-color: var(--academic-gold); }
+.world-prose .env.remark { --env-color: var(--page-muted); }
 .world-prose .env.axiom { --env-color: var(--academic-red); }
 .world-prose .env.corollary { --env-color: var(--academic-orange); }
 .world-prose .katex { font-size: 1.02em; }

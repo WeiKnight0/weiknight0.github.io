@@ -292,7 +292,9 @@ $$\tilde{y}[n] = \sum_{m=0}^{N_f-1} \tilde{h}[m] \tilde{x}[(n-m) \mod N_f]$$
 设 $h_{ij}[n]$ 和 $r_j[n]$ 均为长度 $L$ 的因果序列（补零至 $N_f=2L$）。利用 FFT 计算线性卷积的复杂度为 $O(N_f \log N_f) = O(L \log L)$。相比之下，直接时域卷积的复杂度为 $O(L^2)$。
 \end{theorem}
 
-**证明**：两次 FFT（计算 $H_{ij}[k]$ 和 $R_j[k]$）的复杂度为 $2 \times O(N_f \log N_f)$；一次频域点乘的复杂度为 $O(N_f)$；一次 IFFT 的复杂度为 $O(N_f \log N_f)$。故总复杂度为 $O(N_f \log N_f) = O(L \log L)$。
+\begin{proof}
+两次 FFT（计算 $H_{ij}[k]$ 和 $R_j[k]$）的复杂度为 $2 \times O(N_f \log N_f)$；一次频域点乘的复杂度为 $O(N_f)$；一次 IFFT 的复杂度为 $O(N_f \log N_f)$。故总复杂度为 $O(N_f \log N_f) = O(L \log L)$。
+\end{proof}
 
 利用 FFT 加速后，OC 变换的总复杂度从 $O(NML^2)$ 显著降低至 $O(NML \log L)$，在 $L$ 较大时带来数个数量级的加速比，使得实时 OC 变换成为可能。
 

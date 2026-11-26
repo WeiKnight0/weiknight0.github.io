@@ -37,13 +37,17 @@ $$|\mathcal{W}_{N,M}| \leq \sum_{d=1}^{N} \sum_{p=0}^{M} \binom{N}{d} \cdot \bin
 其中 $\binom{M}{p}$ 表示从 $M$ 个命题中选择 $p$ 个命题的组合数。
 \end{theorem}
 
-**证明**：对于每个可能的个体数 $d$（从 1 到 $N$），以及每个可能的命题数 $p$（从 0 到 $M$），个体集合 $D_w$ 的选择有 $\binom{N}{d}$ 种方式；命题集合 $\Phi_w$ 的选择有 $\binom{M}{p}$ 种方式；真值指派函数 $\models_w$ 对于每个命题有 2 种选择（真或假），因此对于 $p$ 个命题，有 $2^p$ 种不同的指派方式。因此，对于固定的 $d$ 和 $p$，可能的世界数为 $\binom{N}{d} \cdot \binom{M}{p} \cdot 2^p$。将所有可能的 $d$ 和 $p$ 的组合相加即得上界。此上界是宽松的，因为在实际的合法世界中，命题集 $\Phi_w$ 必须对否定封闭（$p$ 必须为偶数），排中律要求命题与其否定不能等价，且命题的内容应与个体域相关。
+\begin{proof}
+对于每个可能的个体数 $d$（从 1 到 $N$），以及每个可能的命题数 $p$（从 0 到 $M$），个体集合 $D_w$ 的选择有 $\binom{N}{d}$ 种方式；命题集合 $\Phi_w$ 的选择有 $\binom{M}{p}$ 种方式；真值指派函数 $\models_w$ 对于每个命题有 2 种选择（真或假），因此对于 $p$ 个命题，有 $2^p$ 种不同的指派方式。因此，对于固定的 $d$ 和 $p$，可能的世界数为 $\binom{N}{d} \cdot \binom{M}{p} \cdot 2^p$。将所有可能的 $d$ 和 $p$ 的组合相加即得上界。此上界是宽松的，因为在实际的合法世界中，命题集 $\Phi_w$ 必须对否定封闭（$p$ 必须为偶数），排中律要求命题与其否定不能等价，且命题的内容应与个体域相关。
+\end{proof}
 
 \begin{theorem}[世界不可混淆性定理（World Non-Confusability）]
 对任意 $w_1,w_2\in\mathcal{W}_0$，若存在 $\varphi\in\Phi_{w_1}\cap\Phi_{w_2}$ 使得 $\models_{w_1}(\varphi)\neq\models_{w_2}(\varphi)$，则 $w_1\neq w_2$。
 \end{theorem}
 
-**证明**：由世界的定义，一个世界的真值指派函数是唯一的。若 $w_1 = w_2$，则 $\models_{w_1}$ 和 $\models_{w_2}$ 是同一个函数，在 $\Phi_{w_1}\cap\Phi_{w_2}$ 上取值必然相同，与假设矛盾。
+\begin{proof}
+由世界的定义，一个世界的真值指派函数是唯一的。若 $w_1 = w_2$，则 $\models_{w_1}$ 和 $\models_{w_2}$ 是同一个函数，在 $\Phi_{w_1}\cap\Phi_{w_2}$ 上取值必然相同，与假设矛盾。
+\end{proof}
 
 ## 世界的层级
 
@@ -76,7 +80,9 @@ $$w\preceq w'\;\Longleftrightarrow\; \Phi_w \subseteq \Phi_{w'}\ \text{且 } \mo
 设 $S\subseteq\mathcal{W}_0$ 为非空子集。若 $S$ 在关系 $\prec$ 下不存在无限严格下降链 $\cdots \prec w_2 \prec w_1 \prec w_0$，则 $S$ 中存在 $\preceq$-极小元。
 \end{theorem}
 
-**证明**：假设 $S$ 没有极小元。任取 $w_0\in S$，由于 $w_0$ 不是极小元，存在 $w_1\in S$ 使得 $w_1\prec w_0$。同理可递归构造 $w_{n+1}\prec w_n$，从而得到无限严格下降链，这与假设矛盾。故 $S$ 必有极小元。
+\begin{proof}
+假设 $S$ 没有极小元。任取 $w_0\in S$，由于 $w_0$ 不是极小元，存在 $w_1\in S$ 使得 $w_1\prec w_0$。同理可递归构造 $w_{n+1}\prec w_n$，从而得到无限严格下降链，这与假设矛盾。故 $S$ 必有极小元。
+\end{proof}
 
 若不加入良基条件，上述结论一般不成立。例如命题集可以形成无限真包含下降链，此时相应的世界子集可能没有极小元。因此，层级函数只在满足良基条件的世界域或分支上具有通常意义。
 
@@ -134,7 +140,9 @@ $$G = (w_G, \, \mathcal{S}_G, \, \pi, \, \Vdash_G)$$
 设 $w' \in \mathcal{S}_G$ 且 $w'' \in \{w \mid w \in \mathcal{W}_0 \land w \sqsubseteq w'\}$，则 $w'' \in \mathcal{S}_G$。进而，神 $G$ 对 $w''$ 中的任意命题 $\varphi$ 的认知 $(w'', \varphi) \in \Vdash_G$ 与 $w'$ 中对 $\varphi$ 的认知 $(w', \varphi) \in \Vdash_G$ 是一致的（当 $\varphi \in \pi(w'')$ 时），且都符合各自世界的客观真值。
 \end{theorem}
 
-**证明**：由子世界关系的传递性可得 $w'' \in \mathcal{S}_G$。其认知的一致性由全知公理保证，因为 $\models_{w''}(\varphi)$ 与 $\models_{w'}(\varphi)$ 在 $\varphi \in \pi(w'')$ 时是一致的（根据结构子世界的定义）。
+\begin{proof}
+由子世界关系的传递性可得 $w'' \in \mathcal{S}_G$。其认知的一致性由全知公理保证，因为 $\models_{w''}(\varphi)$ 与 $\models_{w'}(\varphi)$ 在 $\varphi \in \pi(w'')$ 时是一致的（根据结构子世界的定义）。
+\end{proof}
 
 ## 无全域神定理
 
@@ -154,13 +162,15 @@ $$\forall w \in \mathcal{W}_0,\; \exists w' \in \mathcal{W}_0,\; \text{使得 } 
 在 ZFC、固定工作世界域与命题的无限扩张性公理下，不存在全域神。
 \end{theorem}
 
-**证明**：采用反证法。
+\begin{proof}
+采用反证法。
 
 1. 假设存在一个全域神 $G^*$。根据定义，有 $\mathcal{S}_{G^*} = \mathcal{W}_0$。
 2. 由于 $\mathcal{S}_{G^*}$ 是 $w_{G^*}$ 的所有结构子世界组成的集合，这意味着：$\forall w \in \mathcal{W}_0,\; D_w \subseteq D_{w_{G^*}}$ 且 $\Phi_w \subseteq \Phi_{w_{G^*}}$。
 3. 根据命题的无限扩张性公理，存在另一个世界 $w' \in \mathcal{W}_0$，使得 $\Phi_{w_{G^*}} \subsetneq \Phi_{w'}$。
 4. 但由第2点，由于 $w' \in \mathcal{W}_0$，必须有 $\Phi_{w'} \subseteq \Phi_{w_{G^*}}$。矛盾。
 5. 因此，全域神 $G^*$ 不存在。
+\end{proof}
 
 此证明不关心世界的具体内容（个体、真值），仅利用了两个基本事实：全域神的存在蕴含了存在一个世界其命题集包含所有其他世界的命题集；命题的无限扩张性保证了这样的世界不可能存在。
 
@@ -204,6 +214,8 @@ $$\forall \varphi \in R_G,\; \models_{w_G}(\varphi)=\text{true}\Rightarrow (w_G,
 **全域角色神**（即满足 $\mathcal{S}_G = \mathcal{W}_0$ 的角色神）同样不存在。
 \end{theorem}
 
-**证明**：假设存在一个全域角色神 $G^*$。根据定义，有 $\mathcal{S}_{G^*} = \mathcal{W}_0$。如无全域神定理的证明，这要求 $w_{G^*}$ 的命题集包含所有其他世界的命题集。但根据命题的无限扩张性公理，这样的世界不可能存在。因此，全域角色神 $G^*$ 也不存在。
+\begin{proof}
+假设存在一个全域角色神 $G^*$。根据定义，有 $\mathcal{S}_{G^*} = \mathcal{W}_0$。如无全域神定理的证明，这要求 $w_{G^*}$ 的命题集包含所有其他世界的命题集。但根据命题的无限扩张性公理，这样的世界不可能存在。因此，全域角色神 $G^*$ 也不存在。
+\end{proof}
 
 "角色神"概念的引入，完成了对"神性"的形式化构建。它允许在不违背无全域神定理的前提下，严谨地分析和讨论叙事作品中那些拥有巨大能力但却存在明确边界的"类神"角色。
