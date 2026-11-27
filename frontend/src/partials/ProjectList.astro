@@ -4,22 +4,7 @@ import type { Locale } from '@/utils/i18n';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
-const projects = [
-  ...projectExperience,
-  {
-    id: 'nyakomcl',
-    repo: 'https://github.com/WeiKnight0/NyakoMCL',
-    tags: ['C++', 'QML', 'CMake', 'Qt'],
-    en: {
-      title: 'NyakoMCL',
-      description: 'A Minecraft launcher built with Qt.',
-    },
-    'zh-cn': {
-      title: 'NyakoMCL',
-      description: '使用 Qt 开发的 Minecraft 启动器。',
-    },
-  },
-];
+const projects = projectExperience;
 const sourceLabel = locale === 'zh-cn' ? '查看源码' : 'View source';
 ---
 
