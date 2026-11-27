@@ -1,0 +1,23 @@
+---
+import { sitePath } from '@/utils/paths.mjs';
+import type { Locale } from '@/utils/i18n';
+import '@/styles/world-article.css';
+
+interface Props {
+  title: string;
+  locale: Locale;
+}
+
+const { title, locale } = Astro.props;
+const chinese = locale === 'zh-cn';
+---
+
+<article class="world-article" lang={chinese ? 'zh-CN' : 'en'}>
+  <a class="world-back" href={sitePath(chinese ? '/worldbuilding/zh-cn/' : '/worldbuilding/')}>
+    {chinese ? '← 返回世界观' : '← Back to worldbuilding'}
+  </a>
+  <header class="world-article-header">
+    <h1>{title}</h1>
+  </header>
+  <div class="world-prose"><slot /></div>
+</article>
